@@ -44,8 +44,8 @@ export const primaryNavigation: NavSection[] = [
       },
       {
         label: "Market Comparison",
-        href: "/markets/comparison",
-        description: "Spain, Portugal, France and Italy side by side",
+        href: "/markets/compare",
+        description: "Compatible series side by side",
       },
     ],
   },

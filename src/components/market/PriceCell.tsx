@@ -1,14 +1,13 @@
 import { formatPrice } from "@/lib/format";
-import type { PriceUnit } from "@/services/types";
 
-/** Monospace, tabular-numeral price with its unit. */
+/** Monospace, tabular-numeral price with its unit label. */
 export function PriceCell({
   value,
   unit,
   decimals = 2,
 }: {
   value: number;
-  unit?: PriceUnit;
+  unit?: string;
   decimals?: number;
 }) {
   return (
