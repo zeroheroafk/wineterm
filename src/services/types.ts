@@ -6,15 +6,32 @@
  * src/services without touching any component.
  */
 
-/** ISO 3166-1 alpha-2, uppercase. */
-export type CountryCode = "ES" | "PT" | "FR" | "IT";
+/** ISO 3166-1 alpha-2, uppercase. Producer countries plus trade partners. */
+export type CountryCode =
+  | "ES"
+  | "PT"
+  | "FR"
+  | "IT"
+  | "DE"
+  | "GB"
+  | "US"
+  | "NL"
+  | "BE";
 
 export const COUNTRY_NAMES: Record<CountryCode, string> = {
   ES: "Spain",
   PT: "Portugal",
   FR: "France",
   IT: "Italy",
+  DE: "Germany",
+  GB: "United Kingdom",
+  US: "United States",
+  NL: "Netherlands",
+  BE: "Belgium",
 };
+
+/** The four producer countries WineTerm covers at launch. */
+export type ProducerCountry = "ES" | "PT" | "FR" | "IT";
 
 export type WineColour = "red" | "white" | "rose";
 
@@ -53,6 +70,8 @@ export interface PriceQuote {
   change: number;
   /** Percentage change against the previous observation. */
   changePercent: number;
+  /** Percentage change against the same week a year earlier, when known. */
+  yoyPercent?: number;
   observedAt: string;
   status: DataStatus;
   source: DataSource;
@@ -101,4 +120,117 @@ export interface MarketCommentary {
   body: string;
   author: string;
   publishedAt: string;
+}
+
+/** One entry in the compact market status strip. */
+export interface StripQuote {
+  id: string;
+  /** Short display name, e.g. "CLM red". */
+  name: string;
+  country: CountryCode;
+  value: number;
+  unit: PriceUnit;
+  changePercent: number;
+  observedAt: string;
+  status: DataStatus;
+}
+
+/** One observation bullet in the lead market briefing. */
+export interface BriefingObservation {
+  id: string;
+  text: string;
+  direction: "up" | "down" | "flat";
+}
+
+/** The editorial market briefing that leads the homepage. */
+export interface MarketBriefing {
+  /** Short market status phrase, e.g. "Firm into the vintage". */
+  statusLabel: string;
+  headline: string;
+  summary: string;
+  observations: BriefingObservation[];
+  updatedAt: string;
+  status: DataStatus;
+  outlookHref: string;
+}
+
+/** One producer country's row in the supply snapshot. */
+export interface SupplyCountryRow {
+  country: ProducerCountry;
+  /** Estimated production for the campaign, million hl. */
+  productionMhl: number;
+  /** Opening stocks carried into the campaign, million hl. */
+  openingStocksMhl: number;
+  /** Production plus opening stocks, million hl. */
+  availabilityMhl: number;
+  /** Availability against the five-year average, percent. */
+  vsFiveYearPercent: number;
+}
+
+export interface SupplySnapshot {
+  /** Campaign reference, e.g. "2026/27 campaign, first estimates". */
+  campaign: string;
+  rows: SupplyCountryRow[];
+  note: string;
+  status: DataStatus;
+  source: DataSource;
+  updatedAt: string;
+}
+
+export type HarvestStageDirection = "up" | "down" | "flat";
+export type HarvestCondition = "good" | "mixed" | "stressed";
+
+/** One region's row in the harvest monitor. */
+export interface HarvestRegion {
+  id: string;
+  region: string;
+  country: ProducerCountry;
+  /** Current phenological or picking stage. */
+  stage: string;
+  condition: HarvestCondition;
+  conditionNote: string;
+  /** Expected crop against the previous vintage. */
+  expected: HarvestStageDirection;
+  updatedAt: string;
+}
+
+/** One ranked row in a trade flow table. */
+export interface TradeRankRow {
+  rank: number;
+  country: CountryCode;
+  /** Volume over the reference period, million hl. */
+  volumeMhl: number;
+  /** Year-on-year change in volume, percent. */
+  yoyPercent: number;
+}
+
+/** Volume share of a product category, percent. */
+export interface TradeSplitSegment {
+  label: string;
+  sharePercent: number;
+}
+
+export interface TradeOverview {
+  /** Reference period, e.g. "12 months to Jun 2026". */
+  period: string;
+  exporters: TradeRankRow[];
+  importers: TradeRankRow[];
+  split: TradeSplitSegment[];
+  status: DataStatus;
+  source: DataSource;
+  updatedAt: string;
+}
+
+/** A compact dated headline for the industry rail. */
+export interface IndustryItem {
+  id: string;
+  headline: string;
+  publishedAt: string;
+  href: string;
+}
+
+export interface IndustryDigest {
+  news: IndustryItem[];
+  deals: IndustryItem[];
+  regulation: IndustryItem[];
 }
