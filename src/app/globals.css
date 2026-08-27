@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/*
+ * WineTerm design tokens.
+ *
+ * All brand colours live here as CSS variables and are exposed to Tailwind
+ * through the @theme block below. Components must reference these tokens
+ * (bg-paper, text-ink, border-rule, ...) and never hardcode hex values.
+ */
+
+:root {
+  /* Surfaces */
+  --wt-ground: #f6f2eb; /* main page background */
+  --wt-paper: #fcfaf5; /* raised paper surface */
+
+  /* Text */
+  --wt-ink: #1d1a18; /* primary text */
+  --wt-ink-soft: #706a63; /* secondary text */
+
+  /* Brand */
+  --wt-wine: #6b2737; /* main burgundy */
+  --wt-wine-deep: #421724; /* dark burgundy */
+  --wt-wine-wash: #e8dadd; /* light burgundy surface */
+
+  /* Lines */
+  --wt-rule: #d6cfc5; /* borders and rules */
+
+  /* Market movement */
+  --wt-up: #3f6b4b; /* positive movement */
+  --wt-down: #a8443a; /* negative movement */
+
+  /* Accent */
+  --wt-ochre: #a67c3d; /* restrained ochre accent */
+}
+
+@theme inline {
+  --color-ground: var(--wt-ground);
+  --color-paper: var(--wt-paper);
+  --color-ink: var(--wt-ink);
+  --color-ink-soft: var(--wt-ink-soft);
+  --color-wine: var(--wt-wine);
+  --color-wine-deep: var(--wt-wine-deep);
+  --color-wine-wash: var(--wt-wine-wash);
+  --color-rule: var(--wt-rule);
+  --color-up: var(--wt-up);
+  --color-down: var(--wt-down);
+  --color-ochre: var(--wt-ochre);
+
+  --font-serif: var(--font-editorial), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-interface), system-ui, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-mono: var(--font-data), "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* WineTerm uses square corners; the single small radius is for tags only. */
+  --radius-none: 0;
+  --radius-hairline: 1px;
+}
+
+body {
+  background: var(--wt-ground);
+  color: var(--wt-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tabular numerals for anything numeric. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Small uppercase market/meta label, used across the whole interface. */
+.wt-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Editorial headline defaults. */
+.wt-headline {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+/* Keyboard focus: a square wine-coloured ring, no rounded halo. */
+:focus-visible {
+  outline: 2px solid var(--wt-wine);
+  outline-offset: 1px;
+}
+
+::selection {
+  background: var(--wt-wine-wash);
+  color: var(--wt-wine-deep);
+}
