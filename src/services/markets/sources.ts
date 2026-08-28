@@ -32,6 +32,9 @@ export type SourceId =
   | "sample-regional-observatory"
   | "sample-coop-network"
   | "sample-trade-reports"
+  | "sample-supply-stats"
+  | "sample-customs"
+  | "sample-harvest-network"
   | "wineterm-desk";
 
 export interface MarketSource {
@@ -125,6 +128,36 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     coverage: "Bulk trade, must and concentrate quotations",
     cadence: "Weekly",
     note: "Stand-in for broker and trade quotations. Figures are illustrative development data.",
+    isSample: true,
+  },
+  "sample-supply-stats": {
+    id: "sample-supply-stats",
+    name: "National supply statistics (sample)",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage: "Production, stocks and balance items, ES, PT, FR, IT",
+    cadence: "Monthly declarations and campaign balances",
+    note: "Stand-in for national production and stock declarations. Figures are illustrative development data.",
+    isSample: true,
+  },
+  "sample-customs": {
+    id: "sample-customs",
+    name: "Customs statistics (sample)",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage: "Wine, must and concentrate trade flows by partner",
+    cadence: "Monthly, with a two-month publication lag",
+    note: "Stand-in for customs trade statistics. Figures are illustrative development data.",
+    isSample: true,
+  },
+  "sample-harvest-network": {
+    id: "sample-harvest-network",
+    name: "Regional harvest reporting network (sample)",
+    kind: "regional-observatory",
+    classification: "reported",
+    coverage: "Vineyard and harvest conditions in covered regions",
+    cadence: "Weekly during the campaign",
+    note: "Stand-in for technician and grower reporting. Assessments are qualitative; figures are illustrative development data.",
     isSample: true,
   },
   "wineterm-desk": {

@@ -126,7 +126,7 @@ export const leadBriefing: MarketBriefing = {
   ],
   updatedAt: HOME_UPDATED_AT,
   status: "illustrative",
-  outlookHref: "/insights/analysis",
+  outlookHref: "/outlook",
 };
 
 /** Key bulk wine reference prices with weekly and year-on-year change. */
@@ -372,9 +372,9 @@ export const tradeOverview: TradeOverview = {
     { rank: 5, country: "BE", volumeMhl: 3.0, yoyPercent: -0.6 },
   ],
   split: [
-    { label: "Bulk", sharePercent: 38 },
-    { label: "Bottled", sharePercent: 54 },
-    { label: "Sparkling", sharePercent: 8 },
+    { label: "Bulk", sharePercent: 33 },
+    { label: "Bottled", sharePercent: 60 },
+    { label: "Sparkling", sharePercent: 7 },
   ],
   status: "illustrative",
   source: TRADE_SOURCE,

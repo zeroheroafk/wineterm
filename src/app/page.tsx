@@ -85,7 +85,7 @@ export default async function Home() {
           <SectionHeader
             kicker="Crop & Supply"
             title="European supply snapshot"
-            action={{ label: "Production and stocks", href: "/crop-supply" }}
+            action={{ label: "Production and stocks", href: "/supply" }}
           />
           <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-10">
             <div>
@@ -107,7 +107,7 @@ export default async function Home() {
             kicker="Crop & Supply"
             title="Harvest monitor"
             description="Stage, vineyard condition and expected crop for representative regions, updated as campaigns progress."
-            action={{ label: "Harvest outlook", href: "/crop-supply/harvest" }}
+            action={{ label: "Harvest outlook", href: "/harvest" }}
           />
           <div className="mt-5">
             <HarvestMonitor regions={harvest} />

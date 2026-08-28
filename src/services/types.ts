@@ -33,6 +33,8 @@ export const COUNTRY_NAMES: Record<CountryCode, string> = {
 /** The four producer countries WineTerm covers at launch. */
 export type ProducerCountry = "ES" | "PT" | "FR" | "IT";
 
+export const PRODUCER_COUNTRIES: ProducerCountry[] = ["ES", "PT", "FR", "IT"];
+
 export type WineColour = "red" | "white" | "rose";
 
 export type PriceUnit = "EUR/hl" | "EUR/kg" | "EUR/tonne";

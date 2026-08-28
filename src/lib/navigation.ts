@@ -51,32 +51,32 @@ export const primaryNavigation: NavSection[] = [
   },
   {
     label: "Crop & Supply",
-    href: "/crop-supply",
+    href: "/supply",
     code: "SUP",
     items: [
       {
         label: "Production",
-        href: "/crop-supply/production",
-        description: "Vintage production by country and region",
+        href: "/supply/production",
+        description: "Campaign production by country and colour",
       },
       {
         label: "Stocks",
-        href: "/crop-supply/stocks",
-        description: "Wine and must stocks held by operators",
+        href: "/supply/stocks",
+        description: "Declared stocks and historical comparison",
       },
       {
         label: "Availability",
-        href: "/crop-supply/availability",
-        description: "Stocks plus expected production against demand",
+        href: "/supply",
+        description: "Supply balance: stocks, production, use and trade",
       },
       {
         label: "Harvest Outlook",
-        href: "/crop-supply/harvest",
+        href: "/harvest",
         description: "Forecasts and progress for the coming vintage",
       },
       {
         label: "Weather",
-        href: "/crop-supply/weather",
+        href: "/harvest#weather",
         description: "Growing conditions across key regions",
       },
     ],
@@ -88,22 +88,22 @@ export const primaryNavigation: NavSection[] = [
     items: [
       {
         label: "Imports & Exports",
-        href: "/trade/flows",
+        href: "/trade",
         description: "Trade flows by origin, destination and product",
       },
       {
         label: "Bulk Wine Trade",
-        href: "/trade/bulk",
+        href: "/trade#bulk",
         description: "Bulk shipments, volumes and average values",
       },
       {
         label: "Bottled Wine Trade",
-        href: "/trade/bottled",
+        href: "/trade#bottled",
         description: "Bottled still wine trade by market",
       },
       {
         label: "Sparkling Wine Trade",
-        href: "/trade/sparkling",
+        href: "/trade#sparkling",
         description: "Sparkling categories and destinations",
       },
     ],
@@ -145,6 +145,11 @@ export const primaryNavigation: NavSection[] = [
     href: "/insights",
     code: "INS",
     items: [
+      {
+        label: "Market Outlook",
+        href: "/outlook",
+        description: "The desk's view over the next one to three months",
+      },
       {
         label: "News",
         href: "/insights/news",
@@ -192,9 +197,9 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
     items: [
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
       { label: "Grape Prices", href: "/markets/grapes" },
-      { label: "Production", href: "/crop-supply/production" },
-      { label: "Stocks", href: "/crop-supply/stocks" },
-      { label: "Imports & Exports", href: "/trade/flows" },
+      { label: "Production", href: "/supply/production" },
+      { label: "Stocks", href: "/supply/stocks" },
+      { label: "Imports & Exports", href: "/trade" },
     ],
   },
   {
