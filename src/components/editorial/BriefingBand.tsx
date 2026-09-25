@@ -1,4 +1,6 @@
+import { ActionForm } from "@/components/ui/ActionForm";
 import { Button } from "@/components/ui/Button";
+import { subscribeToBriefing } from "@/lib/actions";
 
 /**
  * Full-width weekly briefing band for the homepage: editorial copy on the
@@ -19,7 +21,11 @@ export function BriefingBand() {
             shaping the professional wine industry.
           </p>
         </div>
-        <form action="/briefing" aria-label="Newsletter signup">
+        <ActionForm
+          action={subscribeToBriefing}
+          aria-label="Newsletter signup"
+          messageClassName="text-wine"
+        >
           <div className="flex flex-col gap-2 sm:flex-row">
             <label htmlFor="band-briefing-email" className="sr-only">
               Work email
@@ -39,7 +45,7 @@ export function BriefingBand() {
           <p className="wt-label mt-2.5 text-ink-soft">
             Every Friday. No marketing lists. Unsubscribe at any time.
           </p>
-        </form>
+        </ActionForm>
       </div>
     </section>
   );

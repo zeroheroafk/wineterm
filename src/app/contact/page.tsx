@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
+import { ActionForm } from "@/components/ui/ActionForm";
 import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/SectionHeader";
+import { sendContactMessage } from "@/lib/actions";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -30,9 +32,11 @@ export default function ContactPage() {
       />
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <form
+        <ActionForm
+          action={sendContactMessage}
           aria-label="Contact form"
           className="max-w-xl border border-rule border-t-2 border-t-wine bg-paper p-6"
+          messageClassName="text-wine"
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
@@ -106,7 +110,7 @@ export default function ContactPage() {
           <p className="wt-label mt-3 leading-relaxed text-ink-soft">
             Message delivery is not connected yet in this development build.
           </p>
-        </form>
+        </ActionForm>
 
         <aside className="max-w-md">
           <div className="border border-rule bg-paper px-5 py-4">

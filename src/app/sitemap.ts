@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
 
 import { seriesFixtures } from "@/fixtures/markets/series";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Public sitemap. Only launched routes are listed; /design-system is
  * internal and is deliberately excluded (and disallowed in robots.ts).
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://wineterm.example";
+  const base = SITE_URL;
   const seriesEntries: MetadataRoute.Sitemap = seriesFixtures.map((f) => ({
     url: `${base}/markets/series/${f.series.code}`,
     changeFrequency: "weekly",

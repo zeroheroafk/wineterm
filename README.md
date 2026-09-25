@@ -44,3 +44,13 @@ npm run build      # production build
 
 `/design-system` documents the tokens and component set. It is excluded
 from the sitemap and marked noindex.
+
+## Environment
+
+- `SITE_URL`: canonical origin, including the scheme, used for
+  `metadataBase`, the sitemap and robots.txt. Optional: without it,
+  Vercel builds use the project's production domain and local builds
+  use `http://localhost:3000`.
+- `SITE_INDEXABLE`: set to `true` to let search engines index the site.
+  Until then every page is marked noindex, because the figures are
+  illustrative fixtures.

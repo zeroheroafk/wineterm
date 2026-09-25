@@ -2,12 +2,13 @@ import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
 import { WordmarkInverted } from "@/components/layout/Wordmark";
+import { ActionForm } from "@/components/ui/ActionForm";
+import { CurrentDate } from "@/components/ui/CurrentDate";
+import { subscribeToBriefing } from "@/lib/actions";
 import { footerNavigation } from "@/lib/navigation";
 
 /** Global footer on the dark burgundy institutional surface. */
 export function SiteFooter() {
-  const year = new Date().getFullYear();
-
   return (
     <footer className="mt-16 border-t-4 border-wine bg-wine-deep text-wine-wash">
       <Container className="py-10">
@@ -18,10 +19,11 @@ export function SiteFooter() {
               Prices, production, stocks, trade and crop intelligence for
               wineries, growers and the global wine trade.
             </p>
-            <form
+            <ActionForm
+              action={subscribeToBriefing}
               className="mt-6"
               aria-label="Newsletter signup"
-              action="/briefing"
+              messageClassName="text-ochre"
             >
               <label htmlFor="footer-briefing-email" className="wt-label">
                 The WineTerm briefing, in your inbox
@@ -42,7 +44,7 @@ export function SiteFooter() {
                   Get the briefing
                 </button>
               </div>
-            </form>
+            </ActionForm>
           </div>
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
@@ -68,7 +70,9 @@ export function SiteFooter() {
 
         <div className="mt-10 border-t border-wine pt-5">
           <p className="wt-label leading-relaxed">
-            &copy; {year} WineTerm. All rights reserved. Content is provided
+            &copy;{" "}
+            <CurrentDate id="copyright-year" options={{ year: "numeric" }} />{" "}
+            WineTerm. All rights reserved. Content is provided
             for professional information purposes and is not investment
             advice. Figures shown during development are illustrative samples,
             not live market data.
