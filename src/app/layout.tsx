@@ -3,7 +3,7 @@ import { Archivo, IBM_Plex_Mono, Newsreader } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { SITE_URL } from "@/lib/site";
+import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
@@ -35,6 +35,7 @@ export const metadata: Metadata = {
   },
   description:
     "Prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade.",
+  robots: SITE_INDEXABLE ? null : { index: false, follow: false },
 };
 
 export default function RootLayout({

@@ -51,3 +51,6 @@ from the sitemap and marked noindex.
   `metadataBase`, the sitemap and robots.txt. Optional: without it,
   Vercel builds use the project's production domain and local builds
   use `http://localhost:3000`.
+- `SITE_INDEXABLE`: set to `true` to let search engines index the site.
+  Until then every page is marked noindex, because the figures are
+  illustrative fixtures.

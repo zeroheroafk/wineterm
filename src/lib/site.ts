@@ -10,3 +10,10 @@ export const SITE_URL = (
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000")
 ).replace(/\/+$/, "");
+
+/**
+ * Search engines may index the site only once SITE_INDEXABLE=true is set,
+ * when real data has replaced the illustrative fixtures. Until then every
+ * page carries noindex, so sample figures never surface in search results.
+ */
+export const SITE_INDEXABLE = process.env.SITE_INDEXABLE === "true";
