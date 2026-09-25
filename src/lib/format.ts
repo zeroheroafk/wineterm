@@ -64,6 +64,12 @@ export function formatDateTime(iso: string): string {
   return `${formatted} UTC`;
 }
 
+/** Month label for compact chart ticks, e.g. "Jun 26" from "2026-06". */
+export function formatMonth(isoMonth: string): string {
+  const [year, month] = isoMonth.split("-").map(Number);
+  return `${new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(year, month - 1, 1)))} ${String(year).slice(2)}`;
+}
+
 export type MovementDirection = "up" | "down" | "flat";
 
 export function movementDirection(value: number): MovementDirection {

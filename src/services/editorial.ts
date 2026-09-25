@@ -1,27 +1,53 @@
 /**
  * Editorial content service.
  *
- * Same pattern as the market data service: a typed interface with a
- * fixture-backed implementation, swappable for a CMS or database later.
+ * Typed interface with a fixture-backed implementation, swappable for a
+ * CMS later. Serves news, analysis, Weekly Briefing editions and
+ * monthly reports for the Insights section.
  */
 
-import { sampleArticles } from "@/fixtures/editorial";
-import type { Article, ArticleKind } from "@/services/types";
+import {
+  analysisArticles,
+  briefingEditions,
+  monthlyReports,
+  newsArticles,
+} from "@/fixtures/insights";
+import type {
+  Article,
+  ArticleKind,
+  BriefingEdition,
+  MonthlyReport,
+} from "@/services/types";
 
 export interface EditorialService {
   getLatestArticles(limit?: number): Promise<Article[]>;
   getArticlesByKind(kind: ArticleKind, limit?: number): Promise<Article[]>;
+  getBriefingEditions(): Promise<BriefingEdition[]>;
+  getMonthlyReports(): Promise<MonthlyReport[]>;
 }
+
+const allArticles = [...newsArticles, ...analysisArticles];
 
 class FixtureEditorialService implements EditorialService {
   async getLatestArticles(limit = 10): Promise<Article[]> {
-    return [...sampleArticles]
+    return [...allArticles]
       .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
       .slice(0, limit);
   }
 
-  async getArticlesByKind(kind: ArticleKind, limit = 10): Promise<Article[]> {
-    return sampleArticles.filter((a) => a.kind === kind).slice(0, limit);
+  async getArticlesByKind(kind: ArticleKind, limit = 20): Promise<Article[]> {
+    return allArticles
+      .filter((a) => a.kind === kind)
+      .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+      .slice(0, limit);
+  }
+
+  async getBriefingEditions(): Promise<BriefingEdition[]> {
+    return [...briefingEditions].sort((a, b) => b.date.localeCompare(a.date));
+  }
+
+  async getMonthlyReports(): Promise<MonthlyReport[]> {
+    return monthlyReports;
   }
 }
 
