@@ -44,3 +44,10 @@ npm run build      # production build
 
 `/design-system` documents the tokens and component set. It is excluded
 from the sitemap and marked noindex.
+
+## Environment
+
+- `SITE_URL`: canonical origin, including the scheme, used for
+  `metadataBase`, the sitemap and robots.txt. Optional: without it,
+  Vercel builds use the project's production domain and local builds
+  use `http://localhost:3000`.

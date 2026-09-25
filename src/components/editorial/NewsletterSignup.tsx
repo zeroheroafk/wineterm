@@ -1,8 +1,10 @@
+import { ActionForm } from "@/components/ui/ActionForm";
 import { Button } from "@/components/ui/Button";
+import { subscribeToBriefing } from "@/lib/actions";
 
 /**
- * The main newsletter module. The form posts to the briefing landing
- * route; subscription handling arrives with the backend phase.
+ * The main newsletter module. Submissions go to the briefing Server
+ * Action; subscription handling arrives with the backend phase.
  */
 export function NewsletterSignup({
   variant = "panel",
@@ -13,34 +15,38 @@ export function NewsletterSignup({
 
   if (variant === "inline") {
     return (
-      <form
-        action="/briefing"
+      <ActionForm
+        action={subscribeToBriefing}
         aria-label="Newsletter signup"
-        className="flex flex-wrap items-end gap-3 border-y border-rule py-4"
+        className="border-y border-rule py-4"
+        messageClassName="text-wine"
       >
-        <div className="min-w-56 grow">
-          <label htmlFor={inputId} className="wt-label text-wine">
-            The Weekly Briefing
-          </label>
-          <input
-            id={inputId}
-            type="email"
-            name="email"
-            required
-            placeholder="work email"
-            className="mt-1.5 h-9 w-full border border-rule bg-paper px-3 font-mono text-sm text-ink placeholder:text-ink-soft"
-          />
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="min-w-56 grow">
+            <label htmlFor={inputId} className="wt-label text-wine">
+              The Weekly Briefing
+            </label>
+            <input
+              id={inputId}
+              type="email"
+              name="email"
+              required
+              placeholder="work email"
+              className="mt-1.5 h-9 w-full border border-rule bg-paper px-3 font-mono text-sm text-ink placeholder:text-ink-soft"
+            />
+          </div>
+          <Button type="submit">Get the briefing</Button>
         </div>
-        <Button type="submit">Get the briefing</Button>
-      </form>
+      </ActionForm>
     );
   }
 
   return (
-    <form
-      action="/briefing"
+    <ActionForm
+      action={subscribeToBriefing}
       aria-label="Newsletter signup"
       className="border border-rule border-t-2 border-t-wine bg-paper p-6"
+      messageClassName="text-wine"
     >
       <p className="wt-label text-wine">The Weekly Briefing</p>
       <h3 className="wt-headline mt-2 text-2xl font-semibold text-ink">
@@ -67,6 +73,6 @@ export function NewsletterSignup({
       <p className="wt-label mt-3 text-ink-soft">
         No marketing lists. Unsubscribe at any time.
       </p>
-    </form>
+    </ActionForm>
   );
 }

@@ -1,16 +1,7 @@
 import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
-
-function editionDate(): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date());
-}
+import { CurrentDate } from "@/components/ui/CurrentDate";
 
 /** Thin institutional strip above the main header. */
 export function UtilityBar() {
@@ -18,7 +9,17 @@ export function UtilityBar() {
     <div className="bg-wine-deep text-wine-wash">
       <Container className="flex h-8 items-center justify-between gap-4">
         <p className="wt-label truncate">
-          <span className="hidden sm:inline">{editionDate()}</span>
+          <span className="hidden sm:inline">
+            <CurrentDate
+              id="edition-date"
+              options={{
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              }}
+            />
+          </span>
           <span className="mx-2 hidden text-wine sm:inline" aria-hidden="true">
             |
           </span>

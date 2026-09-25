@@ -3,6 +3,7 @@ import { Archivo, IBM_Plex_Mono, Newsreader } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
@@ -27,6 +28,7 @@ const dataMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "WineTerm | Wine market intelligence",
     template: "%s | WineTerm",
