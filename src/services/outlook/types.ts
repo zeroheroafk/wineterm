@@ -45,6 +45,8 @@ export interface OutlookKeyPoint {
 export interface OutlookEdition {
   id: string;
   edition: string;
+  /** Edition headline, shown on the outlook page and in listings. */
+  headline: string;
   publishedAt: string;
   updatedAt: string;
   status: DataStatus;

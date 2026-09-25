@@ -85,7 +85,7 @@ export default async function OutlookPage() {
           {edition.edition}
         </p>
         <h1 className="wt-headline mt-2 max-w-3xl text-4xl leading-tight font-semibold text-ink sm:text-5xl">
-          Less slack than the stock figures suggest
+          {edition.headline}
         </h1>
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="text-sm text-ink">WineTerm Market Desk</span>

@@ -34,6 +34,47 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/harvest`, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/trade`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/outlook`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/insights`, changeFrequency: "daily", priority: 0.8 },
+    { url: `${base}/insights/news`, changeFrequency: "daily", priority: 0.7 },
+    {
+      url: `${base}/insights/analysis`,
+      changeFrequency: "daily",
+      priority: 0.7,
+    },
+    {
+      url: `${base}/insights/weekly-briefing`,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${base}/insights/monthly-reports`,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${base}/insights/methodology`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    { url: `${base}/industry`, changeFrequency: "daily", priority: 0.7 },
+    ...(
+      [
+        "companies",
+        "deals",
+        "regulation",
+        "technology",
+        "packaging-logistics",
+      ] as const
+    ).map((topic) => ({
+      url: `${base}/industry/${topic}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
+    { url: `${base}/directory`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${base}/about`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/contact`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/briefing`, changeFrequency: "monthly", priority: 0.6 },
     ...seriesEntries,
   ];

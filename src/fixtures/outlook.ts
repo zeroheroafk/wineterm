@@ -12,6 +12,7 @@ import type { OutlookEdition } from "@/services/outlook/types";
 export const currentOutlook: OutlookEdition = {
   id: "outlook-2026-08",
   edition: "Late August 2026",
+  headline: "Less slack than the stock figures suggest",
   publishedAt: "2026-08-21T08:00:00Z",
   updatedAt: "2026-08-21T09:30:00Z",
   status: "illustrative",
