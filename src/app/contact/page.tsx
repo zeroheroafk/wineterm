@@ -48,6 +48,7 @@ export default function ContactPage() {
                 name="name"
                 type="text"
                 required
+                maxLength={200}
                 className="mt-1.5 h-9 w-full border border-rule bg-ground px-3 font-mono text-sm text-ink"
               />
             </div>
@@ -60,6 +61,7 @@ export default function ContactPage() {
                 name="email"
                 type="email"
                 required
+                maxLength={254}
                 className="mt-1.5 h-9 w-full border border-rule bg-ground px-3 font-mono text-sm text-ink"
               />
             </div>
@@ -75,6 +77,7 @@ export default function ContactPage() {
               id="contact-organisation"
               name="organisation"
               type="text"
+              maxLength={200}
               className="mt-1.5 h-9 w-full border border-rule bg-ground px-3 font-mono text-sm text-ink"
             />
           </div>
@@ -101,6 +104,7 @@ export default function ContactPage() {
               name="message"
               rows={5}
               required
+              maxLength={5000}
               className="mt-1.5 w-full border border-rule bg-ground px-3 py-2 font-mono text-sm text-ink"
             />
           </div>
@@ -108,7 +112,7 @@ export default function ContactPage() {
             <Button type="submit">Send message</Button>
           </div>
           <p className="wt-label mt-3 leading-relaxed text-ink-soft">
-            Message delivery is not connected yet in this development build.
+            Messages are saved for the market desk.
           </p>
         </ActionForm>
 
