@@ -51,6 +51,26 @@ from the sitemap and marked noindex.
   `metadataBase`, the sitemap and robots.txt. Optional: without it,
   Vercel builds use the project's production domain and local builds
   use `http://localhost:3000`.
+- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
+  the Supabase project. With both set, the forms store briefing signups
+  and contact messages; without them, submissions are discarded and the
+  reply says so.
 - `SITE_INDEXABLE`: set to `true` to let search engines index the site.
   Until then every page is marked noindex, because the figures are
   illustrative fixtures.
+
+## Database
+
+Supabase project `wineterm`, in Paris (`eu-west-3`). Schema changes live
+in `supabase/migrations` and are applied in order;
+`src/lib/database.types.ts` is generated from the schema and must be
+regenerated after each migration.
+
+The site talks to the Data API with the publishable key, which runs as
+the `anon` role. Grants and row level security limit that role to
+inserting form submissions, which it can never read back, and to reading
+market data. New tables get no grants by default, so each migration
+grants exactly what a table needs.
+
+Real data providers that will replace the fixtures, with their coverage,
+access and licence status, are catalogued in `docs/data-sources.md`.

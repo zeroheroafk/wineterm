@@ -18,8 +18,8 @@ export default function BriefingPage() {
       <div className="mx-auto max-w-xl py-8">
         <NewsletterSignup />
         <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-          Signup processing is not connected yet in this development build.
           The briefing launches together with the first market sections.
+          Sign up now to receive the first edition.
         </p>
       </div>
     </Container>
