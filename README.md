@@ -71,3 +71,6 @@ the `anon` role. Grants and row level security limit that role to
 inserting form submissions, which it can never read back, and to reading
 market data. New tables get no grants by default, so each migration
 grants exactly what a table needs.
+
+Real data providers that will replace the fixtures, with their coverage,
+access and licence status, are catalogued in `docs/data-sources.md`.
