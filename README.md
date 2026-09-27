@@ -74,3 +74,28 @@ grants exactly what a table needs.
 
 Real data providers that will replace the fixtures, with their coverage,
 access and licence status, are catalogued in `docs/data-sources.md`.
+
+### Imports
+
+External data is fetched from Supabase, not from the site: the database
+queues each run in `import_runs` and calls an Edge Function, which
+executes only queued runs, writes with the service role and records the
+outcome on the run.
+
+- **Eurostat Comext** (`supabase/functions/import-comext`) loads monthly
+  trade in heading 2204 for Spain, Portugal, France and Italy into
+  `trade_flows`. The `pg_cron` job `import-comext-monthly` runs on the
+  20th of each month and refreshes the current and the previous year.
+  For a backfill, run in the SQL editor
+  `select private.start_comext_imports(2021, 2023);` and check
+  `select * from import_runs order by id desc;`.
+
+Scheduled calls need two Vault secrets, set once per project and never
+committed: `project_url` (the project's API URL) and `anon_key` (the
+legacy anon key, because the function verifies JWTs). Without them the
+job only logs a warning. If legacy keys are ever disabled, redeploy the
+function with JWT verification off: it trusts only runs the database
+queued, not the caller.
+
+Deploy a function with the Supabase CLI
+(`supabase functions deploy import-comext`) or the dashboard.
