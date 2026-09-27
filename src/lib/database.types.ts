@@ -44,6 +44,56 @@ export type Database = {
         }
         Relationships: []
       }
+      import_runs: {
+        Row: {
+          error: string | null
+          finished_at: string | null
+          id: number
+          job: Json
+          queued_at: string
+          rows_deleted: number | null
+          rows_upserted: number | null
+          scope: string
+          source_id: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          error?: string | null
+          finished_at?: string | null
+          id?: never
+          job: Json
+          queued_at?: string
+          rows_deleted?: number | null
+          rows_upserted?: number | null
+          scope: string
+          source_id: string
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          error?: string | null
+          finished_at?: string | null
+          id?: never
+          job?: Json
+          queued_at?: string
+          rows_deleted?: number | null
+          rows_upserted?: number | null
+          scope?: string
+          source_id?: string
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_runs_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_observations: {
         Row: {
           max_value: number | null
@@ -227,6 +277,50 @@ export type Database = {
           url?: string | null
         }
         Relationships: []
+      }
+      trade_flows: {
+        Row: {
+          flow: string
+          imported_at: string
+          partner: string
+          period: string
+          product: string
+          quantity_kg: number | null
+          reporter: string
+          source_id: string
+          value_eur: number | null
+        }
+        Insert: {
+          flow: string
+          imported_at?: string
+          partner: string
+          period: string
+          product: string
+          quantity_kg?: number | null
+          reporter: string
+          source_id: string
+          value_eur?: number | null
+        }
+        Update: {
+          flow?: string
+          imported_at?: string
+          partner?: string
+          period?: string
+          product?: string
+          quantity_kg?: number | null
+          reporter?: string
+          source_id?: string
+          value_eur?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_flows_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
