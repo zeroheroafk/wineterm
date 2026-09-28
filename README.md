@@ -84,11 +84,20 @@ outcome on the run.
 
 - **Eurostat Comext** (`supabase/functions/import-comext`) loads monthly
   trade in heading 2204 for Spain, Portugal, France and Italy into
-  `trade_flows`. The `pg_cron` job `import-comext-monthly` runs on the
-  20th of each month and refreshes the current and the previous year.
-  For a backfill, run in the SQL editor
+  `trade_flows`: value in euros, net mass and volume in litres. Comext
+  publishes litres only for CN8 codes, so the import also reads the CN8
+  codes listed in `cn8.ts` and stores their sum on each subheading row
+  when their values add up to the row's value. A run covers one
+  reporter, flow and year. `private.start_comext_imports()` queues the
+  runs and schedules the `pg_cron` job `dispatch-comext-imports`, which
+  posts them one at a time and removes itself when none is left. The job
+  `import-comext-monthly` starts the current and the previous year on
+  the 20th of each month. For a backfill, run in the SQL editor
   `select private.start_comext_imports(2021, 2023);` and check
-  `select * from import_runs order by id desc;`.
+  `select * from import_runs order by id desc;`. A run whose `note`
+  reports rows without litres usually means the January revision of the
+  Combined Nomenclature added a CN8 code: add it to `cn8.ts`, redeploy
+  and re-import that year.
 
 Scheduled calls need two Vault secrets, set once per project and never
 committed: `project_url` (the project's API URL) and `anon_key` (the

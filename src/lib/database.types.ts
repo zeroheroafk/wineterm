@@ -46,10 +46,12 @@ export type Database = {
       }
       import_runs: {
         Row: {
+          dispatched_at: string | null
           error: string | null
           finished_at: string | null
           id: number
           job: Json
+          note: string | null
           queued_at: string
           rows_deleted: number | null
           rows_upserted: number | null
@@ -59,10 +61,12 @@ export type Database = {
           status: string
         }
         Insert: {
+          dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
           id?: never
           job: Json
+          note?: string | null
           queued_at?: string
           rows_deleted?: number | null
           rows_upserted?: number | null
@@ -72,10 +76,12 @@ export type Database = {
           status?: string
         }
         Update: {
+          dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
           id?: never
           job?: Json
+          note?: string | null
           queued_at?: string
           rows_deleted?: number | null
           rows_upserted?: number | null
@@ -286,6 +292,7 @@ export type Database = {
           period: string
           product: string
           quantity_kg: number | null
+          quantity_l: number | null
           reporter: string
           source_id: string
           value_eur: number | null
@@ -297,6 +304,7 @@ export type Database = {
           period: string
           product: string
           quantity_kg?: number | null
+          quantity_l?: number | null
           reporter: string
           source_id: string
           value_eur?: number | null
@@ -308,6 +316,7 @@ export type Database = {
           period?: string
           product?: string
           quantity_kg?: number | null
+          quantity_l?: number | null
           reporter?: string
           source_id?: string
           value_eur?: number | null
