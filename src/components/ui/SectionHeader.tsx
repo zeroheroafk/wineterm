@@ -58,17 +58,30 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="border-b border-rule pb-6">
-      {kicker ? <p className="wt-label text-wine">{kicker}</p> : null}
-      <h1 className="wt-headline mt-2 text-4xl font-semibold text-ink sm:text-5xl">
-        {title}
-      </h1>
-      {description ? (
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft">
-          {description}
-        </p>
-      ) : null}
-      {children}
+    <header className="relative border-b-2 border-ink pb-7 pt-2">
+      <span
+        aria-hidden="true"
+        className="absolute bottom-[-2px] left-0 h-0.5 w-20 bg-wine"
+      />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.75fr)] lg:items-end lg:gap-12">
+        <div>
+          {kicker ? (
+            <p className="wt-label flex items-center gap-3 text-wine">
+              <span className="h-px w-6 bg-wine" aria-hidden="true" />
+              {kicker}
+            </p>
+          ) : null}
+          <h1 className="wt-headline mt-3 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.025em] text-ink sm:text-5xl lg:text-[3.5rem]">
+            {title}
+          </h1>
+        </div>
+        {description ? (
+          <p className="border-l border-wine pl-4 text-sm leading-relaxed text-ink-soft sm:text-base">
+            {description}
+          </p>
+        ) : null}
+      </div>
+      {children ? <div className="mt-5">{children}</div> : null}
     </header>
   );
 }

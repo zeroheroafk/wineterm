@@ -64,6 +64,44 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* A restrained cartographic field gives the homepage masthead depth without
+ * competing with the dense market information layered above it. */
+.wt-hero::before {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--wt-rule) 45%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--wt-rule) 38%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 4rem 4rem;
+  content: "";
+  inset: 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 2%,
+    black 62%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 2%,
+    black 62%,
+    transparent 100%
+  );
+  opacity: 0.42;
+  pointer-events: none;
+  position: absolute;
+}
+
+.wt-hero {
+  position: relative;
+}
+
 /* Tabular numerals for anything numeric. */
 .tnum {
   font-variant-numeric: tabular-nums;
