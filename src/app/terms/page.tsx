@@ -19,8 +19,8 @@ export default function TermsPage() {
           heading: "What WineTerm provides",
           paragraphs: [
             "WineTerm provides market information for the professional wine trade: price series, supply and trade statistics, harvest reporting and editorial analysis. Content is provided for professional information purposes only. It is not investment advice, not a recommendation to buy or sell any product, and not a substitute for commercial judgement.",
-            "During the development period, figures on the platform are illustrative samples and are marked as such, except those credited to an official source such as Eurostat. Illustrative figures must not be relied on for any commercial decision.",
-            "Official statistics are reproduced with attribution under their publishers' terms: Eurostat data under the Creative Commons Attribution 4.0 licence.",
+            "During the development period, figures on the platform are illustrative samples and are marked as such, except those credited to an official source such as Eurostat or the Spanish Ministry of Agriculture, Fisheries and Food (MAPA). Illustrative figures must not be relied on for any commercial decision.",
+            "Official statistics are reproduced with attribution under their publishers' terms: Eurostat data under the Creative Commons Attribution 4.0 licence, and MAPA data under the general conditions for reuse of public sector information of Law 37/2007, citing the ministry as the source together with the date of the data.",
           ],
         },
         {

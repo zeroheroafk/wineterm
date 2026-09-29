@@ -6,10 +6,14 @@ import { MarketCommentaryBlock } from "@/components/market/MarketCommentaryBlock
 import { PriceCell } from "@/components/market/PriceCell";
 import { MaybePercent, SeriesCodeLink, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
+import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { getMarketsService } from "@/services/markets/service";
+import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import type { MarketKind, MarketRow } from "@/services/markets/types";
+
+// Real series are read from the database; regenerate at most hourly.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Markets",
@@ -68,12 +72,19 @@ export default async function MarketsPage() {
   const recent = [...bulkRows, ...grapeRows, ...mustRows]
     .sort((a, b) => b.latest.date.localeCompare(a.latest.date))
     .slice(0, 6);
+  const hasReal = [...bulkRows, ...grapeRows, ...mustRows].some(
+    (row) => !isIllustrative(row),
+  );
 
   return (
     <Container className="pb-16">
       <MarketsPageHeader
         title="Markets"
-        description="Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its original unit, source and status; development figures are illustrative samples."
+        description={
+          hasReal
+            ? "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its original unit, source and status. Spain's weekly national bulk wine averages are official MAPA statistics; the other series are illustrative samples, marked as such."
+            : "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its original unit, source and status; development figures are illustrative samples."
+        }
         activeHref="/markets"
       />
 
@@ -81,7 +92,11 @@ export default async function MarketsPage() {
         <SectionHeader
           kicker="Coverage"
           title="Market coverage"
-          description="Direct access to every price section. Series counts and dates reflect the currently connected development fixtures."
+          description={
+            hasReal
+              ? "Direct access to every price section. Series counts and dates cover the real series and the illustrative samples together."
+              : "Direct access to every price section. Series counts and dates reflect the currently connected development fixtures."
+          }
         />
         <ul className="mt-5 border border-rule bg-paper">
           {PRODUCTS.map((product) => {
@@ -156,7 +171,7 @@ export default async function MarketsPage() {
             </caption>
             <thead>
               <tr className="border-b-2 border-ink">
-                <th scope="col" className={`${TH} hidden sm:table-cell`}>
+                <th scope="col" className={`${TH} hidden lg:table-cell`}>
                   Code
                 </th>
                 <th scope="col" className={TH}>
@@ -171,6 +186,9 @@ export default async function MarketsPage() {
                 <th scope="col" className={TH}>
                   Date
                 </th>
+                <th scope="col" className={`${TH} hidden sm:table-cell`}>
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -179,7 +197,7 @@ export default async function MarketsPage() {
                   key={row.series.code}
                   className="border-b border-rule transition-colors last:border-b-0 hover:bg-ground/70"
                 >
-                  <td className={`${TD} hidden sm:table-cell`}>
+                  <td className={`${TD} hidden lg:table-cell`}>
                     <SeriesCodeLink code={row.series.code} />
                   </td>
                   <td className={TD}>
@@ -189,6 +207,9 @@ export default async function MarketsPage() {
                     >
                       {row.series.name}
                     </Link>
+                    <span className="mt-1 block sm:hidden">
+                      <DataStatusLabel status={row.latest.status} />
+                    </span>
                   </td>
                   <td className={TD_RIGHT}>
                     <PriceCell value={row.latest.value} unit={row.series.unit} />
@@ -198,6 +219,9 @@ export default async function MarketsPage() {
                   </td>
                   <td className={`${TD} tnum font-mono text-xs text-ink-soft`}>
                     {formatDate(row.latest.date)}
+                  </td>
+                  <td className={`${TD} hidden sm:table-cell`}>
+                    <DataStatusLabel status={row.latest.status} />
                   </td>
                 </tr>
               ))}

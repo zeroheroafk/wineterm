@@ -151,6 +151,8 @@ export interface StripQuote {
   changePercent: number;
   observedAt: string;
   status: DataStatus;
+  /** Publisher of a real quote; illustrative quotes have none. */
+  source?: DataSource;
 }
 
 /** One observation bullet in the lead market briefing. */

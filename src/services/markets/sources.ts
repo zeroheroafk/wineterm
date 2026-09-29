@@ -1,11 +1,11 @@
 /**
  * Central typed source registry.
  *
- * Every market observation references one entry here by id. During
- * development all entries are explicitly marked as samples; none of them
- * is a real publishing body, and no real official source is imitated.
- * Real providers are added to this registry when their data is licensed
- * and connected.
+ * Every market observation references one entry here by id. Stand-ins
+ * for sources not yet connected are marked as samples; none of them is a
+ * real publishing body, and no real official source is imitated. Real
+ * providers are added to this registry when their data is licensed and
+ * connected, and each mirrors its row in the database table sources.
  */
 
 /** How a source's figures should be read. */
@@ -36,6 +36,7 @@ export type SourceId =
   | "sample-customs"
   | "sample-harvest-network"
   | "eurostat-comext"
+  | "mapa-pmn"
   | "wineterm-desk";
 
 export interface MarketSource {
@@ -175,6 +176,18 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     note: "Official customs and intra-EU trade statistics, imported unchanged: value in euros, and volume in litres summed from the CN8 codes. Source: Eurostat, CC BY 4.0.",
     isSample: false,
     url: "https://ec.europa.eu/eurostat/web/international-trade-in-goods/database",
+  },
+  "mapa-pmn": {
+    id: "mapa-pmn",
+    name: "MAPA, Precios Medios Nacionales",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Spain, national weekly averages of agricultural prices; WineTerm imports white and red wine without PDO/PGI",
+    cadence: "Weekly, a few days after the week ends",
+    note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, imported unchanged: ex-winery prices in euros per hectolitre. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
+    isSample: false,
+    url: "https://www.mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/economia/precios-medios-nacionales",
   },
   "wineterm-desk": {
     id: "wineterm-desk",

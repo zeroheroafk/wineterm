@@ -13,7 +13,9 @@ const HEAD_CELL = "wt-label px-3 py-2 font-normal text-ink-soft";
 /**
  * Homepage key prices: denser than the full MarketTable, with weekly and
  * year-on-year change side by side. Category and YoY columns yield on
- * narrow screens so price, movement, date and status stay in view.
+ * narrow screens so price, movement and date stay in view. The status
+ * tells real prices from illustrative ones, and the caption names every
+ * source in the table.
  */
 export function KeyPricesTable({
   quotes,
@@ -22,7 +24,9 @@ export function KeyPricesTable({
   quotes: PriceQuote[];
   updatedAt?: string;
 }) {
-  const tableSource = quotes[0]?.source;
+  const sources = [
+    ...new Map(quotes.map((quote) => [quote.source.name, quote.source])).values(),
+  ];
 
   return (
     <figure>
@@ -54,7 +58,7 @@ export function KeyPricesTable({
               <th scope="col" className={HEAD_CELL}>
                 Date
               </th>
-              <th scope="col" className={HEAD_CELL}>
+              <th scope="col" className={`${HEAD_CELL} hidden sm:table-cell`}>
                 Status
               </th>
             </tr>
@@ -71,6 +75,11 @@ export function KeyPricesTable({
                     <span className="text-sm font-medium text-ink">
                       {quote.market}
                     </span>
+                  </span>
+                  {/* On phones the status column is out of view, so the
+                      status rides under the market name. */}
+                  <span className="mt-1 block sm:hidden">
+                    <DataStatusLabel status={quote.status} />
                   </span>
                 </td>
                 <td className="hidden px-3 py-2.5 text-sm text-ink-soft sm:table-cell">
@@ -92,7 +101,7 @@ export function KeyPricesTable({
                 <td className="tnum px-3 py-2.5 font-mono text-xs whitespace-nowrap text-ink-soft">
                   {formatDate(quote.observedAt)}
                 </td>
-                <td className="px-3 py-2.5 whitespace-nowrap">
+                <td className="hidden px-3 py-2.5 whitespace-nowrap sm:table-cell">
                   <DataStatusLabel status={quote.status} />
                 </td>
               </tr>
@@ -100,9 +109,9 @@ export function KeyPricesTable({
           </tbody>
         </table>
       </div>
-      {tableSource ? (
+      {sources.length > 0 ? (
         <figcaption className="mt-2">
-          <SourceLine source={tableSource} updatedAt={updatedAt} />
+          <SourceLine source={sources} updatedAt={updatedAt} />
         </figcaption>
       ) : null}
     </figure>

@@ -43,7 +43,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative.",
     },
     history: {
-      latestValue: 4.1,
+      latestValue: 49.2,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.012,
@@ -73,7 +73,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative.",
     },
     history: {
-      latestValue: 3.85,
+      latestValue: 46.2,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -103,7 +103,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Mid-point of traded ranges reported by regional operators for PGI varietal reds. Development values are illustrative.",
     },
     history: {
-      latestValue: 4.9,
+      latestValue: 58.8,
       points: WEEKLY_3Y,
       stepDays: 7,
       volatility: 0.015,
@@ -133,7 +133,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Traded range mid-point for certified organic red where sufficient observations exist; weeks without observations are not interpolated. Development values are illustrative.",
     },
     history: {
-      latestValue: 5.6,
+      latestValue: 67.2,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.02,
@@ -163,7 +163,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly reference price for wine without GI in Extremadura trading centres. Development values are illustrative.",
     },
     history: {
-      latestValue: 3.95,
+      latestValue: 47.4,
       points: WEEKLY_3Y,
       stepDays: 7,
       volatility: 0.012,
@@ -224,7 +224,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly regional reference price for wine without GI. Development values are illustrative.",
     },
     history: {
-      latestValue: 5.4,
+      latestValue: 64.8,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -254,7 +254,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly regional reference price for wine without GI. Development values are illustrative.",
     },
     history: {
-      latestValue: 4.6,
+      latestValue: 55.2,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.015,
@@ -315,7 +315,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly weighted average of registered bulk contracts for red wine without GI. Development values are illustrative.",
     },
     history: {
-      latestValue: 7.8,
+      latestValue: 93.6,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.011,
@@ -375,7 +375,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative.",
     },
     history: {
-      latestValue: 5.9,
+      latestValue: 70.8,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -405,7 +405,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative.",
     },
     history: {
-      latestValue: 7.4,
+      latestValue: 88.8,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.014,
@@ -697,7 +697,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative.",
     },
     history: {
-      latestValue: 3.2,
+      latestValue: 38.4,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.018,
@@ -727,7 +727,7 @@ export const seriesFixtures: SeriesFixture[] = [
         "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative.",
     },
     history: {
-      latestValue: 3.5,
+      latestValue: 42,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.018,

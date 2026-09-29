@@ -103,7 +103,6 @@ export function generateHistory(
         (finalFactor * finalSeasonal),
     );
 
-    const isLatest = i === config.points - 1;
     const published = new Date(date);
     published.setUTCDate(published.getUTCDate() + 1);
 
@@ -118,7 +117,9 @@ export function generateHistory(
         config.rangeSpread !== undefined
           ? round2(value * (1 + config.rangeSpread))
           : undefined,
-      status: isLatest ? "provisional" : "final",
+      // Real series sit beside these in the same tables, so every
+      // generated observation says what it is.
+      status: "illustrative",
       publishedAt: `${isoDate(published)}T08:00:00Z`,
       updatedAt: FIXTURES_UPDATED_AT,
       revised: false,

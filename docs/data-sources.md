@@ -5,8 +5,9 @@ WineTerm sections they would feed. Researched on 2026-09-26 through web
 search, then checked against live responses on 2026-09-26 and 27. The
 development environment could not reach the providers then, so those
 checks ran from Supabase: Edge Functions and `pg_net` requests made from
-the project's database. The Comext litres checks of 2026-09-28 ran from
-the development environment, which now reaches Eurostat.
+the project's database. The Comext litres checks of 2026-09-28 and the
+MAPA price checks of 2026-09-29 ran from the development environment,
+which now reaches both providers.
 
 Status legend:
 
@@ -29,9 +30,12 @@ Status legend:
    Validated, but the newest data seen is from the 2024/25 campaign, so
    it may lag too much for a weekly market view. Portugal is not
    covered.
-3. **Spanish prices and supply: MAPA.** Weekly national prices in PDF and
-   monthly INFOVI declarations in Excel, both validated; commercial reuse
-   allowed under Law 37/2007.
+3. **Spanish bulk wine prices: MAPA. Imported.** Weekly national average
+   prices of white and red wine without PDO/PGI since January 2019,
+   refreshed twice a week. Feeds the Markets pages, the homepage key prices
+   and the market strip. The monthly INFOVI declarations (supply) are
+   validated, not yet imported; commercial reuse of both is allowed under
+   Law 37/2007.
 4. **Portugal: IVV.** Monthly trade synthesis in Excel validated; the
    production files are password-protected.
 5. **Harvest: national forecasts** (Agreste, IVV, Spanish regional and
@@ -67,19 +71,44 @@ Status legend:
 - Docs: [Wine API](https://agridata.ec.europa.eu/extensions/API_Documentation/wine.html),
   [wine prices dashboard](https://agridata.ec.europa.eu/extensions/DashboardWine/WinePrice.html).
 
-### Spain: MAPA weekly wine prices
+### Spain: MAPA weekly wine prices. Imported
 
-- **Covers:** national average prices for wine without PDO/PGI, white
-  and red, in EUR/hl, published weekly. Validated.
-- **Access:** weekly PDF bulletins. The text extracts cleanly with
-  `unpdf` in an Edge Function, so an import can read the national white
-  and red prices from it. Validated.
+- **Covers:** national average prices of white wine without PDO/PGI and
+  red wine without PDO/PGI of 12 points of colour, ex-winery ("salida
+  bodega"), in EUR/hl, weekly since January 2019.
+- **In the database:** `public.market_observations`, series
+  `ES-NAT-WHT-NGI` and `ES-NAT-RED-NGI` (`public.market_series`), source
+  `mapa-pmn`. 806 weekly prices at the first load (weeks 2019-01 to
+  2026-38).
+- **Access:** "Precios Medios Nacionales", one xlsx workbook per year on
+  the ministry's statistics page, linked as "Precios Medios Nacionales
+  2026". The current year's file is replaced weekly and its name changes
+  (`precios_medios_nacionales_2026-s36.xlsx` held weeks up to 38), so the
+  import looks the link up on each run. The sheet has a header row
+  "Semana 1" to "Semana 52/53" (ISO weeks), a row of date ranges typed by
+  hand (with typos such as "25/02-3-03"), and the wine rows "Vino blanco
+  sin DOP/IGP (€/hectolitro)" and "Vino tinto sin DOP/IGP, 12 p. color
+  (€/hectolitro)"; a few values are text with a decimal comma. The
+  `Last-Modified` header dates the upload: the 2026 workbook with week 38
+  was uploaded on Thursday 24 September 2026, four days after the week
+  ended. Files for 2019 to 2024 all carry 9 June 2025, a re-upload.
+  Validated.
+- **Checks:** the week 38/2026 bulletin (14 to 20 September) gives white
+  44.12 and red 49.48 EUR/hl, up 3.93% and 3.38% on the week and down
+  10.51% and up 10.50% on the year; the stored series give the same
+  prices and the same changes. Every workbook from 2019 reads without
+  error, one price per series and ISO week, no week twice.
+- **Weekly PDF bulletins:** the same prices with commentary, whose text
+  extracts cleanly with `unpdf`. Not needed while the workbook is
+  published.
+- **Refresh:** `pg_cron` job `import-mapa-prices`, Tuesday and Friday at
+  06:17 UTC, re-imports the current and the previous year. See
+  `README.md`, section Database.
 - **Licence:** Law 37/2007 general conditions allow commercial and
-  non-commercial reuse, citing the source. Confirmed.
-- **Feeds:** national Spanish reference series, filling the gap left by
-  the Agri-food lag.
-- Links: [weekly wine price bulletins](https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/boletines_semanales_precio_vino),
-  [national average prices](https://mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/economia/precios-medios-nacionales/default.aspx),
+  non-commercial reuse, citing the source and the date of the data.
+  Confirmed.
+- Links: [national average prices](https://www.mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/economia/precios-medios-nacionales),
+  [weekly wine price bulletins](https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/boletines_semanales_precio_vino),
   [reuse conditions](https://datos.gob.es/en/documentacion/aviso-legal-tipo-para-la-reutilizacion-de-la-informacion-del-sector-publico).
 
 ### Spain: Ciudad Real market (Cámara de Comercio)
@@ -245,8 +274,7 @@ Status legend:
 
 ## Next steps
 
-1. Build the MAPA weekly price import (PDF) and the INFOVI import
-   (Excel), both for Spain.
+1. Build the INFOVI import (Excel) for Spanish supply.
 2. Decide whether the Agri-food prices are recent enough to import.
 3. Read the licence pages still marked **to confirm** (Agri-food portal,
    IVV, FranceAgriMer) and record the attribution text in `sources`

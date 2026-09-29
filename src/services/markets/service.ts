@@ -1,14 +1,26 @@
 /**
  * Markets service: the typed seam between the Markets interface and the
- * data layer. The fixture-backed implementation derives everything from
- * the series fixtures; a production implementation talks to real
- * providers through the same interface.
+ * data layer. Series come from two catalogues read through one
+ * implementation: the database, which holds the series imported from
+ * real sources, and the illustrative fixtures for everything not yet
+ * connected. A real series and a sample behave alike in every table,
+ * filter and chart; their source and observation status say which is
+ * which, and real series are listed first.
  */
 
+import { unstable_cache } from "next/cache";
+import { cache } from "react";
+
 import { marketCommentary } from "@/fixtures/markets/commentary";
-import { generateHistory } from "@/fixtures/markets/history";
+import { FIXTURES_UPDATED_AT, generateHistory } from "@/fixtures/markets/history";
 import { seriesFixtures } from "@/fixtures/markets/series";
-import { getSource } from "@/services/markets/sources";
+import type { Database } from "@/lib/database.types";
+import { getSupabase } from "@/lib/supabase";
+import {
+  getSource,
+  SOURCE_REGISTRY,
+  type SourceId,
+} from "@/services/markets/sources";
 import {
   TIME_RANGES,
   UNIT_TO_REFERENCE,
@@ -21,7 +33,12 @@ import {
   type SeriesObservation,
   type TimeRangeKey,
 } from "@/services/markets/types";
-import type { MarketCommentary } from "@/services/types";
+import {
+  COUNTRY_NAMES,
+  type CountryCode,
+  type DataStatus,
+  type MarketCommentary,
+} from "@/services/types";
 
 /**
  * String filters as they arrive from the URL. Each field applies only to
@@ -70,6 +87,12 @@ export interface MarketsService {
 }
 
 const DAY_MS = 86400000;
+
+/**
+ * The day the fixtures were written for. Recency filters count back from
+ * it for sample series, and from today for real ones.
+ */
+const FIXTURES_TODAY_MS = Date.parse(`${FIXTURES_UPDATED_AT.slice(0, 10)}T00:00:00Z`);
 
 /** Marketing campaign (Aug to Jul) containing a date. */
 export function campaignOf(isoDate: string): string {
@@ -120,112 +143,240 @@ function computeChanges(history: SeriesObservation[]): SeriesChanges {
   };
 }
 
-class FixtureMarketsService implements MarketsService {
-  private historyCache = new Map<string, SeriesObservation[]>();
-  private rowCache = new Map<string, MarketRow>();
+/** A series and its observations, oldest first. */
+interface CatalogueEntry {
+  series: MarketSeries;
+  history: SeriesObservation[];
+}
 
-  private history(code: string): SeriesObservation[] {
-    let cached = this.historyCache.get(code);
-    if (!cached) {
-      const fixture = seriesFixtures.find((f) => f.series.code === code);
-      cached = fixture ? generateHistory(code, fixture.history) : [];
-      this.historyCache.set(code, cached);
+/**
+ * Whether a row is an illustrative sample rather than a real price: every
+ * fixture observation says so, and no imported one does.
+ */
+export function isIllustrative(row: MarketRow): boolean {
+  return row.latest.status === "illustrative";
+}
+
+let fixtureEntries: CatalogueEntry[] | null = null;
+
+/** The illustrative series, generated once per server. */
+function fixtureCatalogue(): CatalogueEntry[] {
+  fixtureEntries ??= seriesFixtures.map((fixture) => ({
+    series: fixture.series,
+    history: generateHistory(fixture.series.code, fixture.history),
+  }));
+  return fixtureEntries;
+}
+
+type SeriesRow = Database["public"]["Tables"]["market_series"]["Row"];
+type ObservationRow = Database["public"]["Tables"]["market_observations"]["Row"];
+
+/** The Data API returns at most this many rows per request. */
+const PAGE_SIZE = 1000;
+
+/** A stored series, or null when the site cannot describe its source or country. */
+function toSeries(row: SeriesRow): MarketSeries | null {
+  if (!(row.source_id in SOURCE_REGISTRY) || !(row.country in COUNTRY_NAMES)) {
+    return null;
+  }
+  // The table's check constraints hold the other coded fields to the
+  // values of their types.
+  return {
+    code: row.code,
+    kind: row.kind as MarketKind,
+    name: row.name,
+    country: row.country as CountryCode,
+    region: row.region,
+    appellation: row.appellation ?? undefined,
+    colour: (row.colour ?? undefined) as MarketSeries["colour"],
+    classification: (row.classification ?? undefined) as MarketSeries["classification"],
+    category: (row.category ?? undefined) as MarketSeries["category"],
+    variety: row.variety ?? undefined,
+    qualityCategory: row.quality_category ?? undefined,
+    harvestYear: row.harvest_year ?? undefined,
+    mustProduct: (row.must_product ?? undefined) as MarketSeries["mustProduct"],
+    spec: row.spec ?? undefined,
+    product: row.product,
+    unit: row.unit as MarketSeries["unit"],
+    currency: row.currency as MarketSeries["currency"],
+    campaign: row.campaign,
+    sourceId: row.source_id as SourceId,
+    sourceType: row.source_type as MarketSeries["sourceType"],
+    verification: row.verification as MarketSeries["verification"],
+    methodology: row.methodology,
+  };
+}
+
+function toObservation(row: ObservationRow): SeriesObservation {
+  return {
+    date: row.observed_on,
+    value: row.value,
+    min: row.min_value ?? undefined,
+    max: row.max_value ?? undefined,
+    status: row.status as DataStatus,
+    publishedAt: row.published_at,
+    updatedAt: row.updated_at,
+    revised: row.revised,
+  };
+}
+
+/**
+ * The series imported from real sources, with every observation. Read at
+ * most hourly: the sources publish weekly, and the pages that filter by
+ * query string would otherwise read the tables on each request.
+ */
+const loadDatabaseCatalogue = unstable_cache(
+  async (): Promise<CatalogueEntry[]> => {
+    const supabase = getSupabase();
+    if (!supabase) return [];
+
+    const series = await supabase.from("market_series").select("*").order("code");
+    if (series.error) {
+      throw new Error(`Reading market series failed: ${series.error.message}`);
     }
-    return cached;
-  }
 
-  private buildRow(series: MarketSeries): MarketRow | null {
-    const cached = this.rowCache.get(series.code);
-    if (cached) return cached;
-    const history = this.history(series.code);
-    const latest = history[history.length - 1];
-    if (!latest) return null;
-
-    const reference = referenceUnit(series.unit);
-    const normalisedValue =
-      series.unit === reference
-        ? null
-        : Math.round(latest.value * UNIT_TO_REFERENCE[series.unit] * 100) / 100;
-
-    const row: MarketRow = {
-      series,
-      latest,
-      changes: computeChanges(history),
-      normalisedValue,
-    };
-    this.rowCache.set(series.code, row);
-    return row;
-  }
-
-  private matches(row: MarketRow, filter: SeriesFilter): boolean {
-    const { series, latest } = row;
-    if (filter.country && series.country !== filter.country) return false;
-    if (filter.region && series.region !== filter.region) return false;
-    if (filter.classification && series.classification !== filter.classification)
-      return false;
-    if (filter.colour && series.colour !== filter.colour) return false;
-    if (filter.category && series.category !== filter.category) return false;
-    if (filter.campaign && series.campaign !== filter.campaign) return false;
-    if (filter.currency && series.currency !== filter.currency) return false;
-    if (filter.unit && series.unit !== filter.unit) return false;
-    if (filter.variety && series.variety !== filter.variety) return false;
-    if (filter.harvest && String(series.harvestYear) !== filter.harvest)
-      return false;
-    if (filter.sourceType && series.sourceType !== filter.sourceType)
-      return false;
-    if (filter.product && series.mustProduct !== filter.product) return false;
-    if (
-      filter.dataClass &&
-      getSource(series.sourceId).classification !== filter.dataClass
-    )
-      return false;
-    if (filter.window) {
-      const days = Number(filter.window);
-      if (Number.isFinite(days)) {
-        const age =
-          (new Date(`2026-08-21T00:00:00Z`).getTime() -
-            new Date(`${latest.date}T00:00:00Z`).getTime()) /
-          DAY_MS;
-        if (age > days) return false;
+    const observations: ObservationRow[] = [];
+    for (;;) {
+      const page = await supabase
+        .from("market_observations")
+        .select("*", { count: "exact" })
+        .order("series_code")
+        .order("observed_on")
+        .range(observations.length, observations.length + PAGE_SIZE - 1);
+      if (page.error) {
+        throw new Error(`Reading market observations failed: ${page.error.message}`);
       }
+      observations.push(...page.data);
+      if (page.data.length === 0 || observations.length >= (page.count ?? 0)) break;
     }
-    return true;
+
+    const histories = new Map<string, SeriesObservation[]>();
+    for (const row of observations) {
+      const history = histories.get(row.series_code) ?? [];
+      history.push(toObservation(row));
+      histories.set(row.series_code, history);
+    }
+    return series.data.flatMap((row) => {
+      const mapped = toSeries(row);
+      const history = histories.get(row.code);
+      return mapped && history ? [{ series: mapped, history }] : [];
+    });
+  },
+  ["market-catalogue"],
+  { revalidate: 3600, tags: ["market-data"] },
+);
+
+/**
+ * Every series, once per request: the imported ones, then the fixtures.
+ * A fixture whose code has been imported gives way to the real series.
+ */
+const loadCatalogue = cache(async (): Promise<CatalogueEntry[]> => {
+  const imported = getSupabase() ? await loadDatabaseCatalogue() : [];
+  const codes = new Set(imported.map((entry) => entry.series.code));
+  return [
+    ...imported,
+    ...fixtureCatalogue().filter((entry) => !codes.has(entry.series.code)),
+  ];
+});
+
+function buildRow({ series, history }: CatalogueEntry): MarketRow | null {
+  const latest = history[history.length - 1];
+  if (!latest) return null;
+
+  const reference = referenceUnit(series.unit);
+  const normalisedValue =
+    series.unit === reference
+      ? null
+      : Math.round(latest.value * UNIT_TO_REFERENCE[series.unit] * 100) / 100;
+
+  return {
+    series,
+    latest,
+    changes: computeChanges(history),
+    normalisedValue,
+  };
+}
+
+function matches(row: MarketRow, filter: SeriesFilter): boolean {
+  const { series, latest } = row;
+  if (filter.country && series.country !== filter.country) return false;
+  if (filter.region && series.region !== filter.region) return false;
+  if (filter.classification && series.classification !== filter.classification)
+    return false;
+  if (filter.colour && series.colour !== filter.colour) return false;
+  if (filter.category && series.category !== filter.category) return false;
+  if (filter.campaign && series.campaign !== filter.campaign) return false;
+  if (filter.currency && series.currency !== filter.currency) return false;
+  if (filter.unit && series.unit !== filter.unit) return false;
+  if (filter.variety && series.variety !== filter.variety) return false;
+  if (filter.harvest && String(series.harvestYear) !== filter.harvest)
+    return false;
+  if (filter.sourceType && series.sourceType !== filter.sourceType)
+    return false;
+  if (filter.product && series.mustProduct !== filter.product) return false;
+  if (
+    filter.dataClass &&
+    getSource(series.sourceId).classification !== filter.dataClass
+  )
+    return false;
+  if (filter.window) {
+    const days = Number(filter.window);
+    if (Number.isFinite(days)) {
+      const today = isIllustrative(row) ? FIXTURES_TODAY_MS : Date.now();
+      const age = (today - new Date(`${latest.date}T00:00:00Z`).getTime()) / DAY_MS;
+      if (age > days) return false;
+    }
+  }
+  return true;
+}
+
+/** Real series first, then by country, region and code. */
+function compareRows(a: MarketRow, b: MarketRow): number {
+  return (
+    Number(isIllustrative(a)) - Number(isIllustrative(b)) ||
+    `${a.series.country}-${a.series.region}-${a.series.code}`.localeCompare(
+      `${b.series.country}-${b.series.region}-${b.series.code}`,
+    )
+  );
+}
+
+class CatalogueMarketsService implements MarketsService {
+  constructor(private readonly catalogue: () => Promise<CatalogueEntry[]>) {}
+
+  private async entry(code: string): Promise<CatalogueEntry | undefined> {
+    return (await this.catalogue()).find((entry) => entry.series.code === code);
   }
 
   async listSeries(kind?: MarketKind): Promise<MarketSeries[]> {
-    return seriesFixtures
-      .map((f) => f.series)
+    return (await this.catalogue())
+      .map((entry) => entry.series)
       .filter((s) => (kind ? s.kind === kind : true));
   }
 
   async getSeries(code: string): Promise<MarketSeries | null> {
-    return seriesFixtures.find((f) => f.series.code === code)?.series ?? null;
+    return (await this.entry(code))?.series ?? null;
   }
 
   async getRows(kind: MarketKind, filter: SeriesFilter = {}): Promise<MarketRow[]> {
     const rows: MarketRow[] = [];
-    for (const fixture of seriesFixtures) {
-      if (fixture.series.kind !== kind) continue;
-      const row = this.buildRow(fixture.series);
-      if (row && this.matches(row, filter)) rows.push(row);
+    for (const entry of await this.catalogue()) {
+      if (entry.series.kind !== kind) continue;
+      const row = buildRow(entry);
+      if (row && matches(row, filter)) rows.push(row);
     }
-    return rows.sort((a, b) =>
-      `${a.series.country}-${a.series.region}-${a.series.code}`.localeCompare(
-        `${b.series.country}-${b.series.region}-${b.series.code}`,
-      ),
-    );
+    return rows.sort(compareRows);
   }
 
   async getRow(code: string): Promise<MarketRow | null> {
-    const series = await this.getSeries(code);
-    return series ? this.buildRow(series) : null;
+    const entry = await this.entry(code);
+    return entry ? buildRow(entry) : null;
   }
 
   async getHistory(
     code: string,
     range: TimeRangeKey = "max",
   ): Promise<SeriesObservation[]> {
-    const history = this.history(code);
+    const history = (await this.entry(code))?.history ?? [];
     const spec = TIME_RANGES.find((r) => r.key === range);
     if (!spec || spec.days === null || history.length === 0) return history;
     const latest = history[history.length - 1];
@@ -237,7 +388,7 @@ class FixtureMarketsService implements MarketsService {
   }
 
   async getAvailableRanges(code: string): Promise<TimeRangeKey[]> {
-    const history = this.history(code);
+    const history = (await this.entry(code))?.history ?? [];
     if (history.length < 2) return ["max"];
     const spanDays =
       (new Date(`${history[history.length - 1].date}T00:00:00Z`).getTime() -
@@ -249,7 +400,7 @@ class FixtureMarketsService implements MarketsService {
   }
 
   async getCampaignAverages(code: string): Promise<CampaignAverage[]> {
-    const history = this.history(code);
+    const history = (await this.entry(code))?.history ?? [];
     const groups = new Map<string, number[]>();
     for (const obs of history) {
       const campaign = campaignOf(obs.date);
@@ -275,27 +426,30 @@ class FixtureMarketsService implements MarketsService {
   }
 
   async getRelated(code: string, limit = 4): Promise<MarketRow[]> {
-    const series = await this.getSeries(code);
-    if (!series) return [];
-    const candidates = seriesFixtures
-      .map((f) => f.series)
-      .filter((s) => s.code !== code && s.kind === series.kind)
-      .map((s) => ({
-        s,
+    const entries = await this.catalogue();
+    const entry = entries.find((e) => e.series.code === code);
+    const current = entry ? buildRow(entry) : null;
+    if (!current) return [];
+    const { series } = current;
+    // Real series relate first to real ones, samples to samples.
+    return entries
+      .filter((e) => e.series.code !== code && e.series.kind === series.kind)
+      .flatMap((e) => {
+        const row = buildRow(e);
+        return row ? [row] : [];
+      })
+      .map((row) => ({
+        row,
         score:
-          (s.region === series.region ? 2 : 0) +
-          (s.country === series.country ? 1 : 0) +
-          (s.colour && s.colour === series.colour ? 1 : 0) +
-          (s.classification === series.classification ? 1 : 0),
+          (isIllustrative(row) === isIllustrative(current) ? 3 : 0) +
+          (row.series.region === series.region ? 2 : 0) +
+          (row.series.country === series.country ? 1 : 0) +
+          (row.series.colour && row.series.colour === series.colour ? 1 : 0) +
+          (row.series.classification === series.classification ? 1 : 0),
       }))
       .sort((a, b) => b.score - a.score)
-      .slice(0, limit);
-    const rows: MarketRow[] = [];
-    for (const { s } of candidates) {
-      const row = this.buildRow(s);
-      if (row) rows.push(row);
-    }
-    return rows;
+      .slice(0, limit)
+      .map(({ row }) => row);
   }
 
   async getFilterOptions(kind: MarketKind): Promise<FilterOptions> {
@@ -319,7 +473,14 @@ class FixtureMarketsService implements MarketsService {
 
 let service: MarketsService | null = null;
 
+/** Imported series when Supabase is configured, beside the fixtures. */
 export function getMarketsService(): MarketsService {
-  service ??= new FixtureMarketsService();
+  service ??= new CatalogueMarketsService(loadCatalogue);
   return service;
+}
+
+/** True when at least one series of a kind carries real prices. */
+export async function hasRealSeries(kind: MarketKind): Promise<boolean> {
+  const rows = await getMarketsService().getRows(kind);
+  return rows.some((row) => !isIllustrative(row));
 }

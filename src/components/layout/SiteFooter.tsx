@@ -76,7 +76,7 @@ export function SiteFooter() {
             for professional information purposes and is not investment
             advice. During development, figures are illustrative samples, not
             live market data, unless credited to an official source such as
-            Eurostat.
+            Eurostat or MAPA.
           </p>
         </div>
       </Container>

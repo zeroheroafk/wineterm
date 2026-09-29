@@ -11,14 +11,17 @@ export interface CompareOption {
   unitFamily: string;
   unit: string;
   currency: string;
+  /** An illustrative sample rather than a real price series. */
+  illustrative: boolean;
 }
 
 /**
  * Series picker for the comparison page. Selection lives in the ?s=
  * query parameter. After the first pick, only series of the same kind,
- * unit family and currency remain selectable, so invalid comparisons
- * (grapes against wine, volume against mass, mixed currencies) cannot be
- * built from the interface.
+ * unit family and currency remain selectable, and only real series beside
+ * a real one, samples beside a sample, so invalid comparisons (grapes
+ * against wine, volume against mass, mixed currencies, real prices
+ * against invented ones) cannot be built from the interface.
  */
 export function ComparePicker({
   options,
@@ -51,9 +54,17 @@ export function ComparePicker({
     return (
       option.kind === first.kind &&
       option.unitFamily === first.unitFamily &&
-      option.currency === first.currency
+      option.currency === first.currency &&
+      option.illustrative === first.illustrative
     );
   });
+  const groups = [
+    { label: "Real prices", options: addable.filter((o) => !o.illustrative) },
+    {
+      label: "Illustrative samples",
+      options: addable.filter((o) => o.illustrative),
+    },
+  ].filter((group) => group.options.length > 0);
 
   return (
     <div className="border-y border-rule bg-paper px-3 py-2.5">
@@ -107,10 +118,14 @@ export function ComparePicker({
                   ? "Add a series to compare"
                   : "Add a compatible series"}
               </option>
-              {addable.map((option) => (
-                <option key={option.code} value={option.code}>
-                  {option.label} ({option.unit})
-                </option>
+              {groups.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.options.map((option) => (
+                    <option key={option.code} value={option.code}>
+                      {option.label} ({option.unit})
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
@@ -132,9 +147,11 @@ export function ComparePicker({
       </div>
       {first ? (
         <p className="wt-label mt-2 text-ink-soft">
-          Comparing {first.kind === "bulk-wine" ? "bulk wine" : first.kind}{" "}
-          series quoted in {first.currency}, {first.unitFamily} units only.
-          Grape and wine prices are never mixed in one comparison.
+          Comparing {first.illustrative ? "illustrative" : "real"}{" "}
+          {first.kind === "bulk-wine" ? "bulk wine" : first.kind} series
+          quoted in {first.currency}, {first.unitFamily} units only. Grape and
+          wine prices are never mixed in one comparison, nor real prices with
+          samples.
         </p>
       ) : null}
     </div>

@@ -26,14 +26,19 @@ src/
     market/          Tables, price cells, changes, charts, commentary
     editorial/       Article previews, newsletter modules
   lib/               Navigation, formatting, Supabase client and form actions
-  services/          Typed service layer: Supabase for trade, fixtures elsewhere
+  services/          Typed service layer: Supabase for trade and imported
+                     prices, fixtures elsewhere
   fixtures/          Illustrative sample data only; see fixtures/README.md
 ```
 
 The service interfaces in `src/services` are the seam for real data
-sources; components depend only on those interfaces. Trade already reads
-Eurostat figures from the database; the other sections still use the
-fixtures, and nothing in `src/fixtures` is real market data.
+sources; components depend only on those interfaces. Trade reads Eurostat
+figures from the database, and Markets reads the Spanish Ministry of
+Agriculture's weekly national wine prices from it, listed before the
+illustrative series. Everything else still uses the fixtures, and nothing
+in `src/fixtures` is real market data: every fixture observation carries
+the Illustrative status, which is how the site tells samples from real
+prices.
 
 ## Commands
 
@@ -55,11 +60,14 @@ from the sitemap and marked noindex.
   use `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
-  and contact messages, and `/trade` and the homepage trade panel show
-  Eurostat figures, regenerated at most hourly; the build then reads the
-  database, and fails rather than publish volumes missing litres. Without
-  them, submissions are discarded and the reply says so, and trade shows
-  the illustrative fixtures.
+  and contact messages; `/trade` and the homepage trade panel show
+  Eurostat figures, and the Markets pages, the homepage key prices and the
+  market strip add MAPA's national wine prices to the illustrative series.
+  Pages regenerate at most hourly and database reads are cached for an
+  hour; the build then reads the database, and fails rather than publish
+  trade volumes missing litres. Without them, submissions are discarded
+  and the reply says so, and trade and markets show only the illustrative
+  fixtures.
 - `SITE_INDEXABLE`: set to `true` to let search engines index the site.
   Until then every page is marked noindex, because most figures are
   still illustrative fixtures.
@@ -83,6 +91,12 @@ The trade pages do not page through `trade_flows`: the functions
 the site calls them through the Data API. Their reference period ends at
 the latest month all four reporters have published, since France and
 Italy often publish a month after Spain and Portugal.
+
+The Markets pages read `market_series` and `market_observations` whole,
+paging through the observations, and cache them for an hour
+(`unstable_cache`, tag `market-data`). A stored series appears only when
+its source is in `src/services/markets/sources.ts`; a fixture with the
+same code gives way to it.
 
 Real data providers that will replace the fixtures, with their coverage,
 access and licence status, are catalogued in `docs/data-sources.md`.
@@ -111,6 +125,23 @@ outcome on the run.
   Combined Nomenclature added a CN8 code: add it to `cn8.ts`, redeploy
   and re-import that year.
 
+- **MAPA, Precios Medios Nacionales** (`supabase/functions/import-mapa-prices`)
+  loads the Spanish Ministry of Agriculture's weekly national average
+  prices of white and red wine without PDO/PGI, ex-winery in EUR/hl, into
+  `market_observations` as the series `ES-NAT-WHT-NGI` and
+  `ES-NAT-RED-NGI`. The ministry publishes one workbook per year, from
+  2019, and replaces the current year's each week; `pmn.ts` finds its link
+  on the ministry's page, reads the two wine rows and dates each price to
+  the Sunday ending its ISO week, checking the week against the dates
+  printed under it. A run covers one year: new weeks are stored with the
+  workbook's upload time as their publication date, and a changed value is
+  stored as a revision. `private.start_mapa_imports()` posts one run per
+  year at once; the job `import-mapa-prices` starts the current and the
+  previous year on Tuesday and Friday mornings. For a backfill, run
+  `select private.start_mapa_imports(2019);`. A failed run names the
+  workbook, week or row that did not read as expected, which usually means
+  the ministry changed the workbook's layout.
+
 Scheduled calls need two Vault secrets, set once per project and never
 committed: `project_url` (the project's API URL) and `anon_key` (the
 legacy anon key, because the function verifies JWTs). Without them the
@@ -119,4 +150,5 @@ function with JWT verification off: it trusts only runs the database
 queued, not the caller.
 
 Deploy a function with the Supabase CLI
-(`supabase functions deploy import-comext`) or the dashboard.
+(`supabase functions deploy import-comext`, `supabase functions deploy
+import-mapa-prices`) or the dashboard.
