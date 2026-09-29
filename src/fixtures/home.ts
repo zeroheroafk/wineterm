@@ -372,8 +372,9 @@ export const tradeOverview: TradeOverview = {
     { rank: 5, country: "BE", volumeMhl: 3.0, yoyPercent: -0.6 },
   ],
   split: [
-    { label: "Bulk", sharePercent: 33 },
-    { label: "Bottled", sharePercent: 60 },
+    { label: "Bulk", sharePercent: 31 },
+    { label: "Bottled", sharePercent: 58 },
+    { label: "Bag-in-box", sharePercent: 4 },
     { label: "Sparkling", sharePercent: 7 },
   ],
   status: "illustrative",

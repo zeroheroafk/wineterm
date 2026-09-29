@@ -3,9 +3,10 @@
 Candidate providers to replace the illustrative fixtures, mapped to the
 WineTerm sections they would feed. Researched on 2026-09-26 through web
 search, then checked against live responses on 2026-09-26 and 27. The
-development environment cannot reach the providers, so the checks ran
-from Supabase: Edge Functions and `pg_net` requests made from the
-project's database.
+development environment could not reach the providers then, so those
+checks ran from Supabase: Edge Functions and `pg_net` requests made from
+the project's database. The Comext litres checks of 2026-09-28 ran from
+the development environment, which now reaches Eurostat.
 
 Status legend:
 
@@ -21,8 +22,9 @@ Status legend:
 ## Recommended order
 
 1. **Trade: Eurostat Comext. Imported.** Monthly trade in heading 2204
-   for Spain, Portugal, France and Italy since January 2021, refreshed
-   every month. Feeds `/trade` once the section reads from the database.
+   for Spain, Portugal, France and Italy since January 2021, in euros,
+   net mass and litres, refreshed every month. Feeds `/trade` and the
+   homepage trade panel.
 2. **Bulk wine prices for ES, FR and IT: EU Agri-food Data Portal.**
    Validated, but the newest data seen is from the 2024/25 campaign, so
    it may lag too much for a weekly market view. Portugal is not
@@ -181,18 +183,32 @@ Status legend:
   at the first load (July 2026 data, published on 2026-09-15).
 - **Quantities:** the 4 and 6-digit codes carry `VALUE_IN_EUROS` and
   `QUANTITY_IN_100KG` only, stored as euros and kilograms of net mass.
-  Litres (`SUPPLEMENTARY_QUANTITY`) exist only at CN8 level, so volumes
-  in hectolitres need a CN8 import, or must be labelled as estimates
-  from mass.
+  Litres (`SUPPLEMENTARY_QUANTITY`) exist only at CN8 level. The import
+  asks for every CN8 code of each subheading in Comext's CN codelist
+  (180 codes, current and discontinued) and stores their litres, summed,
+  in `quantity_l` on the subheading and heading rows, but only where the
+  CN8 values add up exactly to the row's value; otherwise the litres stay
+  null and the run's note counts the rows. Mass is no substitute for
+  volume: in France's 2025 exports it runs from 1.01 kg per litre (bulk,
+  bottles up to 2 l) to 1.05 (sparkling) and about 1.2 (2 to 10 l
+  containers, grape must).
 - **Access:** JSON-stat 2.0 from
   `https://ec.europa.eu/eurostat/api/comext/dissemination/statistics/1.0/data/DS-045409`,
   filtered by `reporter`, `flow` (1 import, 2 export), `product` and
   `indicators`, with `sinceTimePeriod`/`untilTimePeriod`. Months not yet
   published come back empty, and a future year as an empty dataset.
+  Large requests are deferred with `413 ASYNCHRONOUS_RESPONSE`; a year
+  of 36 CN8 codes with two indicators comes back directly, in up to
+  about 30 seconds the first time and at once when repeated.
 - **Checks:** Portugal's exports of 2204 to the United States in January
   2026 read EUR 5,611,515 and 1,440,938 kg, as on Eurostat. For every
   reporter and flow in 2025, the five subheadings add up exactly to
-  2204, and the partner countries add up exactly to `WORLD`.
+  2204, and the partner countries add up exactly to `WORLD`. For every
+  reporter, flow, partner, subheading and month of 2025, the CN8 values
+  add up exactly to the subheading's value and every CN8 value has its
+  litres, so no row lacks litres; 2021 checks the same for Italy's
+  imports. Stored litres match a separate sum of the CN8 detail, for
+  example Portugal's 2025 exports of 2204: 339,194,243 litres.
 - **Refresh:** `pg_cron` job `import-comext-monthly` on the 20th of each
   month re-imports the current and the previous year, which picks up
   Eurostat's revisions. See `README.md`, section Database.
@@ -229,11 +245,9 @@ Status legend:
 
 ## Next steps
 
-1. Switch `/trade` from fixtures to `trade_flows`, labelling quantities
-   as net mass (or adding the CN8 litres import first).
-2. Build the MAPA weekly price import (PDF) and the INFOVI import
+1. Build the MAPA weekly price import (PDF) and the INFOVI import
    (Excel), both for Spain.
-3. Decide whether the Agri-food prices are recent enough to import.
-4. Read the licence pages still marked **to confirm** (Agri-food portal,
+2. Decide whether the Agri-food prices are recent enough to import.
+3. Read the licence pages still marked **to confirm** (Agri-food portal,
    IVV, FranceAgriMer) and record the attribution text in `sources`
    before importing from them.

@@ -74,8 +74,9 @@ export function SiteFooter() {
             <CurrentDate id="copyright-year" options={{ year: "numeric" }} />{" "}
             WineTerm. All rights reserved. Content is provided
             for professional information purposes and is not investment
-            advice. Figures shown during development are illustrative samples,
-            not live market data.
+            advice. During development, figures are illustrative samples, not
+            live market data, unless credited to an official source such as
+            Eurostat.
           </p>
         </div>
       </Container>

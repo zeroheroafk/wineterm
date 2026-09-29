@@ -30,6 +30,22 @@ export const COUNTRY_NAMES: Record<CountryCode, string> = {
   BE: "Belgium",
 };
 
+const REGION_NAMES = new Intl.DisplayNames(["en-GB"], { type: "region" });
+
+/**
+ * English name of any ISO 3166-1 alpha-2 code: the names above for the
+ * countries WineTerm covers, the runtime's region names for trade partners
+ * elsewhere, and the code itself when neither knows it.
+ */
+export function countryName(code: string): string {
+  if (code in COUNTRY_NAMES) return COUNTRY_NAMES[code as CountryCode];
+  try {
+    return REGION_NAMES.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 /** The four producer countries WineTerm covers at launch. */
 export type ProducerCountry = "ES" | "PT" | "FR" | "IT";
 
@@ -196,14 +212,14 @@ export interface HarvestRegion {
   updatedAt: string;
 }
 
-/** One ranked row in a trade flow table. */
+/** One ranked row in a trade flow table; any ISO 3166-1 alpha-2 country. */
 export interface TradeRankRow {
   rank: number;
-  country: CountryCode;
+  country: string;
   /** Volume over the reference period, million hl. */
   volumeMhl: number;
-  /** Year-on-year change in volume, percent. */
-  yoyPercent: number;
+  /** Year-on-year change in volume, percent, when a year earlier is known. */
+  yoyPercent: number | null;
 }
 
 /** Volume share of a product category, percent. */

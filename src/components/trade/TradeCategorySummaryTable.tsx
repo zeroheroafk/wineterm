@@ -8,17 +8,11 @@ import {
   type TradeCategorySummary,
 } from "@/services/trade/types";
 
-const CATEGORY_ANCHORS: Record<string, string> = {
-  bulk: "#bulk",
-  bottled: "#bottled",
-  sparkling: "#sparkling",
-  must: "#must",
-};
-
 /**
- * Category overview: one row per customs category, EU4 external trade.
- * Categories are separate headings; no combined total row exists,
- * because volumes and unit values are not comparable across them.
+ * Category overview: one row per customs category, trade of the four
+ * countries. Categories are separate subheadings; no combined total row
+ * exists, because unit values are not comparable across them and grape
+ * must volumes are not wine.
  */
 export function TradeCategorySummaryTable({
   summaries,
@@ -74,7 +68,7 @@ export function TradeCategorySummaryTable({
               >
                 <td className={TD}>
                   <Link
-                    href={`/trade${CATEGORY_ANCHORS[summary.category]}`}
+                    href={`/trade#${summary.category}`}
                     className="text-sm font-medium text-ink hover:text-wine-deep"
                   >
                     {TRADE_CATEGORY_LABELS[summary.category]}
@@ -116,10 +110,11 @@ export function TradeCategorySummaryTable({
         </table>
       </div>
       <figcaption className="wt-label mt-2 max-w-3xl leading-relaxed text-ink-soft">
-        External trade of ES, PT, FR and IT combined, {period}. Categories are
-        distinct customs headings and are never summed: bulk, bottled and
-        sparkling volumes are wine; must and concentrate volumes are product
-        as shipped at varying concentration.
+        Trade of ES, PT, FR and IT with every partner, {period}: exports and
+        imports each add up the four countries. Categories are distinct
+        customs subheadings and are never summed: bulk, bottled, bag-in-box
+        and sparkling volumes are wine; grape must volumes are product as
+        shipped at varying concentration.
       </figcaption>
     </figure>
   );

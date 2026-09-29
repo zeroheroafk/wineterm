@@ -12,6 +12,9 @@ import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getHomeService } from "@/services/home";
 
+// The trade panel reads Eurostat figures; regenerate at most hourly.
+export const revalidate = 3600;
+
 export default async function Home() {
   const home = getHomeService();
   const [

@@ -46,10 +46,12 @@ export type Database = {
       }
       import_runs: {
         Row: {
+          dispatched_at: string | null
           error: string | null
           finished_at: string | null
           id: number
           job: Json
+          note: string | null
           queued_at: string
           rows_deleted: number | null
           rows_upserted: number | null
@@ -59,10 +61,12 @@ export type Database = {
           status: string
         }
         Insert: {
+          dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
           id?: never
           job: Json
+          note?: string | null
           queued_at?: string
           rows_deleted?: number | null
           rows_upserted?: number | null
@@ -72,10 +76,12 @@ export type Database = {
           status?: string
         }
         Update: {
+          dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
           id?: never
           job?: Json
+          note?: string | null
           queued_at?: string
           rows_deleted?: number | null
           rows_upserted?: number | null
@@ -286,6 +292,7 @@ export type Database = {
           period: string
           product: string
           quantity_kg: number | null
+          quantity_l: number | null
           reporter: string
           source_id: string
           value_eur: number | null
@@ -297,6 +304,7 @@ export type Database = {
           period: string
           product: string
           quantity_kg?: number | null
+          quantity_l?: number | null
           reporter: string
           source_id: string
           value_eur?: number | null
@@ -308,6 +316,7 @@ export type Database = {
           period?: string
           product?: string
           quantity_kg?: number | null
+          quantity_l?: number | null
           reporter?: string
           source_id?: string
           value_eur?: number | null
@@ -327,7 +336,59 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      trade_destinations: {
+        Args: { end_month: string; top_n?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          litres_month: number
+          litres_prior_month: number
+          litres_prior_year: number
+          partner: string
+          product: string
+          value_eur: number
+          value_eur_prior_year: number
+        }[]
+      }
+      trade_latest_month: { Args: never; Returns: string }
+      trade_monthly: {
+        Args: { end_month: string; months?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          period: string
+          product: string
+          value_eur: number
+        }[]
+      }
+      trade_top_flows: {
+        Args: { end_month: string; top_n?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          litres_prior_year: number
+          partner: string
+          product: string
+          reporter: string
+          value_eur: number
+          value_eur_prior_year: number
+        }[]
+      }
+      trade_totals: {
+        Args: { end_month: string }
+        Returns: {
+          flow: string
+          litres: number
+          litres_complete: boolean
+          litres_month: number
+          litres_prior_month: number
+          litres_prior_year: number
+          product: string
+          reporter: string
+          value_eur: number
+          value_eur_prior_year: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
