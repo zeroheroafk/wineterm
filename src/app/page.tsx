@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
 import { IndustryHeadlineList } from "@/components/editorial/IndustryHeadlineList";
@@ -42,32 +44,104 @@ export default async function Home() {
     <>
       <MarketStatusStrip quotes={strip} />
 
-      <Container>
-        <section className="grid grid-cols-1 gap-8 py-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] lg:gap-12">
-          <div className="max-w-xl">
-            <p className="wt-label text-wine">European wine market desk</p>
-            <h1 className="wt-headline mt-3 text-4xl font-semibold leading-tight text-ink sm:text-5xl">
-              Market intelligence for the wine industry.
-            </h1>
-            <p className="mt-4 text-lg leading-relaxed text-ink-soft">
-              Prices, production, stocks, trade and crop intelligence for
-              wineries, growers and the global wine trade.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/markets">Explore markets</ButtonLink>
-              <ButtonLink href="/briefing" variant="secondary">
-                Get the weekly briefing
-              </ButtonLink>
+      <section className="wt-hero overflow-hidden border-b border-rule bg-paper">
+        <Container className="relative">
+          <div className="grid grid-cols-1 gap-9 py-10 sm:py-14 lg:grid-cols-[minmax(0,1.2fr)_minmax(22rem,0.8fr)] lg:items-center lg:gap-16 lg:py-18">
+            <div className="relative z-10 max-w-2xl">
+              <div className="flex items-center gap-3">
+                <span className="h-px w-8 bg-wine" aria-hidden="true" />
+                <p className="wt-label text-wine">European wine market desk</p>
+              </div>
+              <h1 className="wt-headline mt-5 text-[2.8rem] font-semibold leading-[0.98] tracking-[-0.035em] text-ink sm:text-6xl lg:text-[4.35rem]">
+                Clarity for a market
+                <span className="block font-normal italic text-wine">
+                  in motion.
+                </span>
+              </h1>
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg">
+                Prices, production, stocks, trade and crop intelligence for
+                wineries, growers and the global wine trade.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <ButtonLink href="/markets" className="h-10 px-5">
+                  Explore market data <span aria-hidden="true">&rarr;</span>
+                </ButtonLink>
+                <ButtonLink
+                  href="/briefing"
+                  variant="secondary"
+                  className="h-10 px-5"
+                >
+                  Get the weekly briefing
+                </ButtonLink>
+              </div>
+              <div className="mt-9 grid max-w-xl grid-cols-2 border-y border-rule sm:grid-cols-4">
+                {[
+                  ["04", "Markets"],
+                  ["05", "Data series"],
+                  ["Weekly", "Analysis"],
+                  ["EU", "Coverage"],
+                ].map(([value, label]) => (
+                  <div
+                    key={label}
+                    className="border-l border-rule px-3 py-3 first:border-l-0 [&:nth-child(odd)]:border-l-0 sm:[&:nth-child(odd)]:border-l sm:first:border-l-0"
+                  >
+                    <p className="tnum font-mono text-sm font-medium text-ink">
+                      {value}
+                    </p>
+                    <p className="wt-label mt-1 text-ink-soft">{label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <p className="wt-label mt-6 text-ink-soft">
-              Coverage: Spain and Portugal first, with comparative data for
-              France and Italy
-            </p>
-          </div>
-          <LeadBriefing briefing={briefing} />
-        </section>
 
-        <section className="mt-2">
+            <div className="relative z-10 lg:py-3">
+              <p className="wt-label mb-2 flex items-center justify-between text-ink-soft">
+                <span>This week at a glance</span>
+                <span className="text-wine">WT / 01</span>
+              </p>
+              <div className="shadow-[12px_12px_0_var(--wt-wine-wash)]">
+                <LeadBriefing briefing={briefing} />
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <Container className="pt-12 sm:pt-16">
+        <aside
+          aria-label="WineTerm data principles"
+          className="grid border-y border-rule md:grid-cols-[1fr_1fr_1fr_auto] md:items-stretch"
+        >
+          {[
+            ["01", "Source-led", "Every figure keeps its provenance."],
+            ["02", "Unit-exact", "Original market units stay visible."],
+            ["03", "Decision-ready", "Signals are separated from noise."],
+          ].map(([number, title, description]) => (
+            <div
+              key={number}
+              className="grid grid-cols-[2rem_1fr] gap-2 border-b border-rule py-3 last:border-b-0 md:border-r md:border-b-0 md:px-4 md:first:pl-0"
+            >
+              <span className="wt-label pt-0.5 text-wine">{number}</span>
+              <div>
+                <p className="text-sm font-semibold text-ink">{title}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-ink-soft">
+                  {description}
+                </p>
+              </div>
+            </div>
+          ))}
+          <Link
+            href="/insights/methodology"
+            className="wt-label flex items-center py-3 text-wine transition-colors hover:text-wine-deep md:pl-5"
+          >
+            Our methodology
+            <span className="ml-2" aria-hidden="true">
+              &rarr;
+            </span>
+          </Link>
+        </aside>
+
+        <section className="mt-14">
           <SectionHeader
             kicker="Markets"
             title="Key bulk wine prices"

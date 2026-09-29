@@ -12,7 +12,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
 };
 
 const BASE_CLASSES =
-  "inline-flex h-9 items-center justify-center gap-2 px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-9 items-center justify-center gap-2 px-4 text-sm font-medium transition-[color,background-color,border-color,box-shadow] hover:shadow-[3px_3px_0_var(--wt-wine-wash)] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none";
 
 export function Button({
   variant = "primary",
