@@ -25,22 +25,28 @@ const LINE_COLOURS = [
   "var(--wt-ink-soft)",
 ];
 
-/** Multi-series monthly line chart with compact month ticks. */
+/**
+ * Monthly line chart with compact month ticks. A single series needs no
+ * legend: the chart's title names it.
+ */
 export function MonthlyLinesChart({
   points,
   series,
   unit,
+  decimals = 1,
   height = 300,
 }: {
   points: MonthlyPoint[];
   series: { key: string; name: string }[];
   unit: string;
+  /** Decimals on the value axis. */
+  decimals?: number;
   height?: number;
 }) {
   return (
     <div style={{ height }} className="w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={points} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
+        <LineChart data={points} margin={{ top: 8, right: 20, bottom: 0, left: 0 }}>
           <CartesianGrid stroke="var(--wt-rule)" strokeWidth={1} vertical={false} />
           <XAxis
             dataKey="month"
@@ -57,7 +63,7 @@ export function MonthlyLinesChart({
           <YAxis
             width={40}
             domain={[0, "auto"]}
-            tickFormatter={(value: number) => formatPrice(value, 1)}
+            tickFormatter={(value: number) => formatPrice(value, decimals)}
             tick={{
               fill: "var(--wt-ink-soft)",
               fontSize: 10,
@@ -82,15 +88,17 @@ export function MonthlyLinesChart({
               String(name),
             ]}
           />
-          <Legend
-            wrapperStyle={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-            }}
-            iconType="plainline"
-          />
+          {series.length > 1 ? (
+            <Legend
+              wrapperStyle={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+              iconType="plainline"
+            />
+          ) : null}
           {series.map((s, index) => (
             <Line
               key={s.key}

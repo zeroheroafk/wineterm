@@ -35,6 +35,7 @@ export type SourceId =
   | "sample-supply-stats"
   | "sample-customs"
   | "sample-harvest-network"
+  | "eurostat-comext"
   | "wineterm-desk";
 
 export interface MarketSource {
@@ -57,6 +58,8 @@ export interface MarketSource {
   note: string;
   /** True while the entry is an illustrative development stand-in. */
   isSample: boolean;
+  /** The publisher's page for the data, for real sources. */
+  url?: string;
 }
 
 export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
@@ -159,6 +162,19 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     cadence: "Weekly during the campaign",
     note: "Stand-in for technician and grower reporting. Assessments are qualitative; figures are illustrative development data.",
     isSample: true,
+  },
+  "eurostat-comext": {
+    id: "eurostat-comext",
+    name: "Eurostat Comext, EU trade by CN8 (DS-045409)",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Trade of Spain, Portugal, France and Italy in wine and grape must (CN 2204) with every partner",
+    cadence:
+      "Monthly, mid-month, for the month two months earlier; recent months are revised",
+    note: "Official customs and intra-EU trade statistics, imported unchanged: value in euros, and volume in litres summed from the CN8 codes. Source: Eurostat, CC BY 4.0.",
+    isSample: false,
+    url: "https://ec.europa.eu/eurostat/web/international-trade-in-goods/database",
   },
   "wineterm-desk": {
     id: "wineterm-desk",

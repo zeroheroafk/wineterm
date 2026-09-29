@@ -1,11 +1,9 @@
-import { PercentChange } from "@/components/market/ChangeCell";
+import { MaybePercent } from "@/components/markets/cells";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatPrice } from "@/lib/format";
 import type { TradeOverview, TradeRankRow } from "@/services/types";
-
-const SPLIT_COLOURS = ["bg-wine", "bg-ochre", "bg-ink-soft"];
 
 function RankedTable({
   title,
@@ -52,7 +50,7 @@ function RankedTable({
                 <span className="ml-1.5 text-[0.65rem] text-ink-soft">Mhl</span>
               </td>
               <td className="py-2.5 pr-3 pl-2 text-right whitespace-nowrap">
-                <PercentChange value={row.yoyPercent} />
+                <MaybePercent value={row.yoyPercent} />
               </td>
             </tr>
             ))}
@@ -65,8 +63,8 @@ function RankedTable({
 
 /**
  * Trade flow overview: leading exporters and import destinations as
- * ranked tables, plus the bulk versus bottled volume split as a single
- * labelled proportional bar.
+ * ranked tables, plus the export volume split by product form as one
+ * labelled bar per form. Wine only: grape must is never added to wine.
  */
 export function TradeFlowsPanel({ overview }: { overview: TradeOverview }) {
   return (
@@ -91,24 +89,20 @@ export function TradeFlowsPanel({ overview }: { overview: TradeOverview }) {
           </h3>
           <DataStatusLabel status={overview.status} />
         </div>
-        <div aria-hidden="true" className="mt-3 flex h-5 w-full bg-ground">
-          {overview.split.map((segment, index) => (
-            <span
+        <dl className="mt-3 space-y-2">
+          {overview.split.map((segment) => (
+            <div
               key={segment.label}
-              className={SPLIT_COLOURS[index % SPLIT_COLOURS.length]}
-              style={{ width: `${segment.sharePercent}%` }}
-            />
-          ))}
-        </div>
-        <dl className="mt-2.5 flex flex-wrap gap-x-6 gap-y-1">
-          {overview.split.map((segment, index) => (
-            <div key={segment.label} className="flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className={`h-2 w-2 ${SPLIT_COLOURS[index % SPLIT_COLOURS.length]}`}
-              />
+              className="grid grid-cols-[6.5rem_minmax(0,1fr)_2.5rem] items-center gap-3"
+            >
               <dt className="wt-label text-ink-soft">{segment.label}</dt>
-              <dd className="tnum font-mono text-sm text-ink">
+              <dd aria-hidden="true" className="h-2.5 bg-ground">
+                <span
+                  className="block h-full bg-wine"
+                  style={{ width: `${segment.sharePercent}%` }}
+                />
+              </dd>
+              <dd className="tnum text-right font-mono text-sm text-ink">
                 {formatPrice(segment.sharePercent, 0)}%
               </dd>
             </div>
@@ -116,7 +110,11 @@ export function TradeFlowsPanel({ overview }: { overview: TradeOverview }) {
         </dl>
       </div>
 
-      <figcaption className="mt-2">
+      <figcaption className="mt-2 space-y-1">
+        <p className="wt-label text-ink-soft">
+          Wine exported by Spain, Portugal, France and Italy to all partners:
+          bulk, bottled, bag-in-box and sparkling. Grape must is left out.
+        </p>
         <SourceLine source={overview.source} updatedAt={overview.updatedAt} />
       </figcaption>
     </figure>

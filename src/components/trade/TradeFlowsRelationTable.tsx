@@ -57,7 +57,7 @@ export function TradeFlowsRelationTable({
                   </span>
                 </td>
                 <td className={`${TD_RIGHT} tnum font-mono text-sm text-ink`}>
-                  {formatPrice(row.volumeMhl, 1)}
+                  {formatPrice(row.volumeMhl, 2)}
                 </td>
                 <td
                   className={`${TD_RIGHT} tnum hidden font-mono text-sm text-ink sm:table-cell`}

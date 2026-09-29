@@ -18,20 +18,22 @@ Portugal first, comparative data for France and Italy).
 
 ```
 src/
-  app/               Routes: interim home, /briefing, /design-system (internal)
+  app/               Routes: home, Markets, Crop & Supply, Trade, Insights,
+                     Industry, Directory, institutional pages, /design-system
   components/
     layout/          Global shell: header, navigation, footer, breadcrumbs
     ui/              Section headers, buttons, filters, tabs, labels, states
     market/          Tables, price cells, changes, charts, commentary
     editorial/       Article previews, newsletter modules
-  lib/               Navigation config and formatting helpers
-  services/          Typed service layer (fixture-backed for now)
+  lib/               Navigation, formatting, Supabase client and form actions
+  services/          Typed service layer: Supabase for trade, fixtures elsewhere
   fixtures/          Illustrative sample data only; see fixtures/README.md
 ```
 
 The service interfaces in `src/services` are the seam for real data
-sources, authentication and a database later; components depend only on
-those interfaces. Nothing in `src/fixtures` is real market data.
+sources; components depend only on those interfaces. Trade already reads
+Eurostat figures from the database; the other sections still use the
+fixtures, and nothing in `src/fixtures` is real market data.
 
 ## Commands
 
@@ -53,11 +55,14 @@ from the sitemap and marked noindex.
   use `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
-  and contact messages; without them, submissions are discarded and the
-  reply says so.
+  and contact messages, and `/trade` and the homepage trade panel show
+  Eurostat figures, regenerated at most hourly; the build then reads the
+  database, and fails rather than publish volumes missing litres. Without
+  them, submissions are discarded and the reply says so, and trade shows
+  the illustrative fixtures.
 - `SITE_INDEXABLE`: set to `true` to let search engines index the site.
-  Until then every page is marked noindex, because the figures are
-  illustrative fixtures.
+  Until then every page is marked noindex, because most figures are
+  still illustrative fixtures.
 
 ## Database
 
@@ -71,6 +76,13 @@ the `anon` role. Grants and row level security limit that role to
 inserting form submissions, which it can never read back, and to reading
 market data. New tables get no grants by default, so each migration
 grants exactly what a table needs.
+
+The trade pages do not page through `trade_flows`: the functions
+`trade_latest_month`, `trade_totals`, `trade_destinations`,
+`trade_top_flows` and `trade_monthly` aggregate it in the database and
+the site calls them through the Data API. Their reference period ends at
+the latest month all four reporters have published, since France and
+Italy often publish a month after Spain and Portugal.
 
 Real data providers that will replace the fixtures, with their coverage,
 access and licence status, are catalogued in `docs/data-sources.md`.

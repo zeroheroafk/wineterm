@@ -23,8 +23,8 @@ Status legend:
 
 1. **Trade: Eurostat Comext. Imported.** Monthly trade in heading 2204
    for Spain, Portugal, France and Italy since January 2021, in euros,
-   net mass and litres, refreshed every month. Feeds `/trade` once the
-   section reads from the database.
+   net mass and litres, refreshed every month. Feeds `/trade` and the
+   homepage trade panel.
 2. **Bulk wine prices for ES, FR and IT: EU Agri-food Data Portal.**
    Validated, but the newest data seen is from the 2024/25 campaign, so
    it may lag too much for a weekly market view. Portugal is not
@@ -245,11 +245,9 @@ Status legend:
 
 ## Next steps
 
-1. Switch `/trade` from fixtures to `trade_flows`, in hectolitres from
-   `quantity_l`.
-2. Build the MAPA weekly price import (PDF) and the INFOVI import
+1. Build the MAPA weekly price import (PDF) and the INFOVI import
    (Excel), both for Spain.
-3. Decide whether the Agri-food prices are recent enough to import.
-4. Read the licence pages still marked **to confirm** (Agri-food portal,
+2. Decide whether the Agri-food prices are recent enough to import.
+3. Read the licence pages still marked **to confirm** (Agri-food portal,
    IVV, FranceAgriMer) and record the attribution text in `sources`
    before importing from them.

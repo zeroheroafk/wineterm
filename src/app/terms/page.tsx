@@ -13,13 +13,14 @@ export default function TermsPage() {
     <LegalPage
       title="Terms of Use"
       description="The terms under which WineTerm content and data are provided."
-      updatedAt="2026-08-21"
+      updatedAt="2026-09-29"
       sections={[
         {
           heading: "What WineTerm provides",
           paragraphs: [
             "WineTerm provides market information for the professional wine trade: price series, supply and trade statistics, harvest reporting and editorial analysis. Content is provided for professional information purposes only. It is not investment advice, not a recommendation to buy or sell any product, and not a substitute for commercial judgement.",
-            "During the development period, all figures on the platform are illustrative samples and are marked as such. They must not be relied on for any commercial decision.",
+            "During the development period, figures on the platform are illustrative samples and are marked as such, except those credited to an official source such as Eurostat. Illustrative figures must not be relied on for any commercial decision.",
+            "Official statistics are reproduced with attribution under their publishers' terms: Eurostat data under the Creative Commons Attribution 4.0 licence.",
           ],
         },
         {

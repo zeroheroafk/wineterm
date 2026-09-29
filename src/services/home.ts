@@ -17,8 +17,8 @@ import {
   leadBriefing,
   stripQuotes,
   supplySnapshot,
-  tradeOverview,
 } from "@/fixtures/home";
+import { getTradeService } from "@/services/trade/service";
 import type {
   Article,
   HarvestRegion,
@@ -65,7 +65,8 @@ class FixtureHomeService implements HomeService {
   }
 
   async getTradeOverview(): Promise<TradeOverview> {
-    return tradeOverview;
+    // Trade has a real source: Eurostat when Supabase is configured.
+    return getTradeService().getOverview();
   }
 
   async getLeadAnalysis(): Promise<Article> {

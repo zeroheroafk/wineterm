@@ -336,7 +336,59 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      trade_destinations: {
+        Args: { end_month: string; top_n?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          litres_month: number
+          litres_prior_month: number
+          litres_prior_year: number
+          partner: string
+          product: string
+          value_eur: number
+          value_eur_prior_year: number
+        }[]
+      }
+      trade_latest_month: { Args: never; Returns: string }
+      trade_monthly: {
+        Args: { end_month: string; months?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          period: string
+          product: string
+          value_eur: number
+        }[]
+      }
+      trade_top_flows: {
+        Args: { end_month: string; top_n?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          litres_prior_year: number
+          partner: string
+          product: string
+          reporter: string
+          value_eur: number
+          value_eur_prior_year: number
+        }[]
+      }
+      trade_totals: {
+        Args: { end_month: string }
+        Returns: {
+          flow: string
+          litres: number
+          litres_complete: boolean
+          litres_month: number
+          litres_prior_month: number
+          litres_prior_year: number
+          product: string
+          reporter: string
+          value_eur: number
+          value_eur_prior_year: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

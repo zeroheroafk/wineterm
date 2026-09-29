@@ -5,7 +5,9 @@ import type { TradePartnerRow } from "@/services/trade/types";
 
 /**
  * Ranked partner table within one customs category: exporters or import
- * destinations, with volume, value, unit value, changes and share.
+ * destinations, with volume, value, unit value, changes and share. The
+ * monthly change shows only while the table spans the content width; on
+ * wide screens two tables sit side by side and it would push out the share.
  */
 export function TradePartnersTable({
   title,
@@ -45,7 +47,7 @@ export function TradePartnersTable({
               <th scope="col" className={`${TH_RIGHT} hidden md:table-cell`}>
                 EUR/l
               </th>
-              <th scope="col" className={`${TH_RIGHT} hidden lg:table-cell`}>
+              <th scope="col" className={`${TH_RIGHT} hidden lg:table-cell xl:hidden`}>
                 MoM
               </th>
               <th scope="col" className={TH_RIGHT}>
@@ -66,7 +68,7 @@ export function TradePartnersTable({
                   <CountryLabel code={row.country} withName />
                 </td>
                 <td className={`${TD_RIGHT} tnum font-mono text-sm text-ink`}>
-                  {formatPrice(row.volumeMhl, 1)}
+                  {formatPrice(row.volumeMhl, 2)}
                 </td>
                 <td
                   className={`${TD_RIGHT} tnum hidden font-mono text-sm text-ink sm:table-cell`}
@@ -78,7 +80,7 @@ export function TradePartnersTable({
                 >
                   {formatPrice(row.unitValueEurL)}
                 </td>
-                <td className={`${TD_RIGHT} hidden lg:table-cell`}>
+                <td className={`${TD_RIGHT} hidden lg:table-cell xl:hidden`}>
                   <MaybePercent value={row.momPercent} />
                 </td>
                 <td className={TD_RIGHT}>

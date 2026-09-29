@@ -42,8 +42,9 @@ export default function AboutPage() {
               importers and exporters, industry suppliers and analysts.
             </p>
             <p>
-              WineTerm is currently in development. Every figure shown today
-              is an illustrative sample, marked as such; the{" "}
+              WineTerm is currently in development. Trade figures credited to
+              Eurostat are official statistics; every other figure shown
+              today is an illustrative sample, marked as such. The{" "}
               <Link
                 href="/insights/methodology"
                 className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"

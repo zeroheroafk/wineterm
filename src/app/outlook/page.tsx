@@ -23,7 +23,7 @@ import { getHomeService } from "@/services/home";
 import { getSource } from "@/services/markets/sources";
 import { getOutlookService } from "@/services/outlook/service";
 import { getSupplyService } from "@/services/supply/service";
-import { getTradeService } from "@/services/trade/service";
+import { getIllustrativeTradeService } from "@/services/trade/service";
 
 export const metadata: Metadata = {
   title: "Market Outlook",
@@ -53,7 +53,9 @@ export default async function OutlookPage() {
   const outlook = getOutlookService();
   const supply = getSupplyService();
   const harvest = getHarvestService();
-  const trade = getTradeService();
+  // The edition is an illustrative sample written against the fixtures,
+  // so its trade table stays on them rather than on live Eurostat data.
+  const trade = getIllustrativeTradeService();
   const home = getHomeService();
 
   const edition = await outlook.getCurrentEdition();

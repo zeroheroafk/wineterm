@@ -60,7 +60,7 @@ export const currentOutlook: OutlookEdition = {
   ],
   trade: [
     "Bulk export volumes are down again on a twelve-month basis, with value roughly held by higher unit values. Bottled volumes are flat with value up around two percent, and sparkling continues to grow from a smaller base. The pattern is consistent with a market trading less wine at higher average prices.",
-    "Flows into Germany and the United Kingdom remain the volume anchors for bulk; the United States remains the value anchor for bottled and sparkling. Must and concentrate trade is small and stable, and we treat it separately throughout: its volumes are not comparable with wine.",
+    "Flows into Germany and the United Kingdom remain the volume anchors for bulk; the United States remains the value anchor for bottled and sparkling. Grape must trade is small and stable, and we treat it separately throughout: its volumes are not comparable with wine.",
   ],
   countryOutlooks: [
     {

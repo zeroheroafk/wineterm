@@ -14,7 +14,7 @@ import type {
   TradePartnerRow,
   TradePeriod,
 } from "@/services/trade/types";
-import type { CountryCode } from "@/services/types";
+import type { CountryCode, ProducerCountry } from "@/services/types";
 
 export const TRADE_UPDATED_AT = "2026-08-21T09:30:00Z";
 
@@ -64,7 +64,7 @@ const destination = (
 });
 
 const flow = (
-  origin: CountryCode,
+  origin: ProducerCountry,
   dest: CountryCode,
   volumeMhl: number,
   valueMeur: number,
@@ -90,7 +90,7 @@ export const tradeCategoryDetails: TradeCategoryDetail[] = [
       exportUnitValueEurL: 0.79,
       volumeYoYPercent: -2.9,
       valueYoYPercent: 0.8,
-      status: "provisional",
+      status: "illustrative",
     },
     exporters: [
       exporter(1, "ES", 10.9, 720, -3.0, 1.2, 62.3),
@@ -127,7 +127,7 @@ export const tradeCategoryDetails: TradeCategoryDetail[] = [
       exportUnitValueEurL: 4.12,
       volumeYoYPercent: -0.8,
       valueYoYPercent: 2.1,
-      status: "provisional",
+      status: "illustrative",
     },
     exporters: [
       exporter(1, "IT", 11.2, 4480, -0.5, 0.6, 34.9),
@@ -154,6 +154,39 @@ export const tradeCategoryDetails: TradeCategoryDetail[] = [
     updatedAt: TRADE_UPDATED_AT,
   },
   {
+    category: "bag-in-box",
+    summary: {
+      category: "bag-in-box",
+      exportVolumeMhl: 2.0,
+      exportValueMeur: 390,
+      importVolumeMhl: 0.2,
+      importValueMeur: 35,
+      exportUnitValueEurL: 1.95,
+      volumeYoYPercent: 1.5,
+      valueYoYPercent: 2.2,
+      status: "illustrative",
+    },
+    exporters: [
+      exporter(1, "FR", 0.8, 190, 0.6, 0.4, 40.0),
+      exporter(2, "ES", 0.6, 80, 2.8, 1.1, 30.0),
+      exporter(3, "IT", 0.5, 95, 1.0, -0.3, 25.0),
+      exporter(4, "PT", 0.1, 25, 3.2, 0.8, 5.0),
+    ],
+    destinations: [
+      destination(1, "DE", 0.3, 55, 1.4, 0.2, 15.0),
+      destination(2, "FR", 0.2, 25, 4.0, 1.5, 10.0),
+      destination(3, "GB", 0.2, 40, -0.8, -0.4, 10.0),
+    ],
+    topFlows: [
+      flow("ES", "FR", 0.15, 16, 3.8),
+      flow("FR", "BE", 0.12, 22, -1.2),
+      flow("IT", "DE", 0.08, 15, 0.9),
+    ],
+    note: "Bag-in-box covers still wine in containers of more than two and up to ten litres, a customs subheading of its own between bottles and bulk.",
+    sourceId: "sample-customs",
+    updatedAt: TRADE_UPDATED_AT,
+  },
+  {
     category: "sparkling",
     summary: {
       category: "sparkling",
@@ -164,7 +197,7 @@ export const tradeCategoryDetails: TradeCategoryDetail[] = [
       exportUnitValueEurL: 9.56,
       volumeYoYPercent: 2.4,
       valueYoYPercent: 4.0,
-      status: "provisional",
+      status: "illustrative",
     },
     exporters: [
       exporter(1, "IT", 2.1, 1540, 3.1, 1.4, 53.8),
@@ -182,7 +215,7 @@ export const tradeCategoryDetails: TradeCategoryDetail[] = [
       flow("IT", "GB", 0.5, 330, 1.5),
       flow("FR", "US", 0.4, 560, 0.4),
     ],
-    note: "Sparkling wine is a distinct customs heading with its own price structure; volumes are small relative to still wine but value shares are large.",
+    note: "Sparkling wine is a distinct customs subheading with its own price structure; volumes are small relative to still wine but value shares are large.",
     sourceId: "sample-customs",
     updatedAt: TRADE_UPDATED_AT,
   },
@@ -197,7 +230,7 @@ export const tradeCategoryDetails: TradeCategoryDetail[] = [
       exportUnitValueEurL: 3.0,
       volumeYoYPercent: 1.0,
       valueYoYPercent: 3.2,
-      status: "provisional",
+      status: "illustrative",
     },
     exporters: [
       exporter(1, "ES", 0.5, 150, 1.5, 0.3, 71.4),
@@ -209,7 +242,7 @@ export const tradeCategoryDetails: TradeCategoryDetail[] = [
       destination(3, "GB", 0.1, 30, 0.8, 0.2, 14.3),
     ],
     topFlows: [flow("ES", "DE", 0.15, 45, 1.9), flow("ES", "FR", 0.1, 28, 1.1)],
-    note: "Grape must and concentrates are separate customs headings from wine. Volumes here are litres of product as shipped, at very different concentrations, and must never be added to wine volumes.",
+    note: "Grape must is a separate customs subheading from wine. Volumes here are litres of product as shipped, at very different concentrations, and must never be added to wine volumes.",
     sourceId: "sample-customs",
     updatedAt: TRADE_UPDATED_AT,
   },
@@ -221,6 +254,7 @@ const MONTHLY_BASES: Record<
 > = {
   bulk: { base: 1.46, seasonality: 0.1, peakMonth: 10, trend: -0.03 },
   bottled: { base: 2.68, seasonality: 0.16, peakMonth: 10, trend: -0.01 },
+  "bag-in-box": { base: 0.17, seasonality: 0.12, peakMonth: 6, trend: 0.01 },
   sparkling: { base: 0.32, seasonality: 0.45, peakMonth: 11, trend: 0.03 },
   must: { base: 0.058, seasonality: 0.3, peakMonth: 9, trend: 0.01 },
 };
