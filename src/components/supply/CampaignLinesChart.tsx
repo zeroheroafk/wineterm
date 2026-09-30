@@ -41,8 +41,9 @@ interface DotProps {
  * Month-by-month lines of whole campaigns, August to July, laid over one
  * another so each month reads against the same month a year earlier. The
  * first campaign is the one the chart is about: accent colour and its
- * latest value labelled; the others are grey context. Both carry an end
- * dot and appear in the legend.
+ * latest value labelled, above or below its end away from the other
+ * lines; the others are grey context. All carry an end dot and appear in
+ * the legend.
  */
 export function CampaignLinesChart({
   lines,
@@ -63,6 +64,19 @@ export function CampaignLinesChart({
     }
     return row;
   });
+
+  // The emphasised campaign's latest value is labelled on the side away
+  // from the other lines, so the label never sits on one of them.
+  const emphasisEnd = lines[0]?.points.at(-1);
+  const labelBelow =
+    emphasisEnd !== undefined &&
+    lines.slice(1).some((line) =>
+      line.points.some(
+        (p) =>
+          campaignIndex(p.month) === campaignIndex(emphasisEnd.month) &&
+          p.value > emphasisEnd.value,
+      ),
+    );
 
   return (
     <div style={{ height }} className="w-full">
@@ -116,11 +130,13 @@ export function CampaignLinesChart({
               color: "var(--wt-ink)",
             }}
             iconType="plainline"
-            // The campaign the chart is about first, not alphabetical order.
-            itemSorter={null}
+            // The campaign the chart is about first, whatever the draw order.
+            itemSorter={(item) => (item.value === lines[0]?.campaign ? 0 : 1)}
           />
-          {lines.map((line, order) => {
-            const colour = order === 0 ? ACCENT : CONTEXT;
+          {/* Context lines first, so the emphasised one is drawn on top. */}
+          {[...lines].reverse().map((line) => {
+            const emphasis = line === lines[0];
+            const colour = emphasis ? ACCENT : CONTEXT;
             const last = line.points.at(-1);
             const lastIndex = last ? campaignIndex(last.month) : -1;
             return (
@@ -151,13 +167,13 @@ export function CampaignLinesChart({
                   )
                 }
                 label={
-                  order === 0
+                  emphasis
                     ? ({ x, y, index }: { x?: number | string; y?: number | string; index?: number }) =>
                         index === lastIndex && x !== undefined && y !== undefined && last ? (
                           <text
                             key={`label-${line.campaign}`}
                             x={Number(x)}
-                            y={Number(y) - 12}
+                            y={labelBelow ? Number(y) + 18 : Number(y) - 12}
                             textAnchor="middle"
                             fill="var(--wt-ink)"
                             fontSize={11}

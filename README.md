@@ -35,8 +35,9 @@ The service interfaces in `src/services` are the seam for real data
 sources; components depend only on those interfaces. Trade reads Eurostat
 figures from the database, Markets reads the Spanish Ministry of
 Agriculture's weekly national wine prices from it, listed before the
-illustrative series, and the stocks page reads Spain's month-end wine
-stocks. Everything else still uses the fixtures, and nothing
+illustrative series, and the stocks and production pages read Spain's
+month-end wine stocks and wine made since 1 August. Everything else
+still uses the fixtures, and nothing
 in `src/fixtures` is real market data: every fixture observation carries
 the Illustrative status, which is how the site tells samples from real
 prices.
@@ -64,7 +65,8 @@ from the sitemap and marked noindex.
   and contact messages; `/trade` and the homepage trade panel show
   Eurostat figures, the Markets pages, the homepage key prices and the
   market strip add MAPA's national wine prices to the illustrative series,
-  and `/supply/stocks` shows Spain's INFOVI stocks.
+  and `/supply/stocks` and `/supply/production` show Spain's INFOVI
+  stocks and wine production.
   Pages regenerate at most hourly and database reads are cached for an
   hour; the build then reads the database, and fails rather than publish
   trade volumes missing litres. Without them, submissions are discarded
@@ -98,8 +100,8 @@ The Markets pages read `market_series` and `market_observations` whole,
 paging through the observations, and cache them for an hour
 (`unstable_cache`, tag `market-data`). A stored series appears only when
 its source is in `src/services/markets/sources.ts`; a fixture with the
-same code gives way to it. The stocks page reads Spain's rows of
-`supply_figures` the same way (tag `supply-data`).
+same code gives way to it. The stocks and production pages read
+Spain's rows of `supply_figures` the same way (tag `supply-data`).
 
 Real data providers that will replace the fixtures, with their coverage,
 access and licence status, are catalogued in `docs/data-sources.md`.

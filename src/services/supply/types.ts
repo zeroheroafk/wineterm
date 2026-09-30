@@ -112,21 +112,27 @@ export interface StockComparison extends StockRecord {
   monthsOfUse: number | null;
 }
 
-/** Wine stocks at the end of one month, Mhl. */
-export interface MonthlyStocksPoint {
-  /** Month of the stocks, e.g. "2026-07". */
+/** A volume of wine at one month: stocks at its end, or made up to it. Mhl. */
+export interface MonthlyWinePoint {
+  /** e.g. "2026-07" */
   month: string;
   wineMhl: number;
 }
 
-/** One line of the Spanish stocks breakdown, Mhl. */
-export interface StocksBreakdownRow {
+/** A figure for the latest month against the same month a year earlier, Mhl. */
+export interface YearOnYearRow {
   label: string;
   latestMhl: number;
   /** The same month a year earlier; null when not declared. */
   yearEarlierMhl: number | null;
   /** Totals are set apart from their parts. */
   isTotal: boolean;
+}
+
+/** Month by month through one campaign, August to July, as far as declared. */
+export interface CampaignPath {
+  campaign: string;
+  points: MonthlyWinePoint[];
 }
 
 /**
@@ -137,9 +143,41 @@ export interface StocksBreakdownRow {
 export interface SpainMonthlyStocks {
   /** Latest month with declarations, e.g. "2026-07". */
   latestMonth: string;
-  breakdown: StocksBreakdownRow[];
-  /** Latest campaign first; each runs August to July, as far as declared. */
-  campaigns: { campaign: string; points: MonthlyStocksPoint[] }[];
+  breakdown: YearOnYearRow[];
+  /** Latest campaign first. */
+  campaigns: CampaignPath[];
+  sourceId: SourceId;
+  /** When the ministry published the latest month. */
+  publishedAt: string;
+  /** When WineTerm last updated the figures. */
+  updatedAt: string;
+}
+
+/** Wine made in one completed campaign, by colour, Mhl. */
+export interface CampaignProduction {
+  campaign: string;
+  redRoseMhl: number;
+  whiteMhl: number;
+  totalMhl: number;
+}
+
+/**
+ * Spain's wine production as declared to the Ministry of Agriculture
+ * (INFOVI) by producers of 1,000 hl or more: wine made since 1 August,
+ * month by month, and the totals of completed campaigns. Must is not
+ * included.
+ */
+export interface SpainProduction {
+  /** Latest month with declarations, e.g. "2026-07". */
+  latestMonth: string;
+  /** Campaign of the latest month, e.g. "2025/26". */
+  campaign: string;
+  /** Wine made from 1 August to the end of the latest month, by colour, against a campaign earlier. */
+  toDate: YearOnYearRow[];
+  /** Latest campaign first. */
+  campaigns: CampaignPath[];
+  /** Completed campaigns, latest first. */
+  history: CampaignProduction[];
   sourceId: SourceId;
   /** When the ministry published the latest month. */
   publishedAt: string;

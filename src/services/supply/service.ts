@@ -1,8 +1,9 @@
 /**
  * Supply service: balances, production comparisons and stocks with
- * derived context. Spain's stocks come from the Ministry of Agriculture's
- * INFOVI declarations when Supabase is configured; everything else is
- * still the illustrative fixtures, and every row says which it is.
+ * derived context. Spain's stocks and wine production come from the
+ * Ministry of Agriculture's INFOVI declarations when Supabase is
+ * configured; everything else is still the illustrative fixtures, and
+ * every row says which it is.
  */
 
 import { unstable_cache } from "next/cache";
@@ -21,10 +22,11 @@ import type { Database } from "@/lib/database.types";
 import { getSupabase } from "@/lib/supabase";
 import type {
   Campaign,
-  MonthlyStocksPoint,
+  CampaignPath,
   ProductionComparison,
   ProductionRecord,
   SpainMonthlyStocks,
+  SpainProduction,
   StockComparison,
   StockRecord,
   SupplyBalanceComputed,
@@ -46,6 +48,8 @@ export interface SupplyService {
   >;
   /** Spain's month-end stocks in detail; null without a real source. */
   getSpainMonthlyStocks(): Promise<SpainMonthlyStocks | null>;
+  /** Spain's declared wine production; null without a real source. */
+  getSpainProduction(): Promise<SpainProduction | null>;
 }
 
 function computeBalance(
@@ -187,6 +191,10 @@ class FixtureSupplyService implements SupplyService {
   async getSpainMonthlyStocks(): Promise<SpainMonthlyStocks | null> {
     return null;
   }
+
+  async getSpainProduction(): Promise<SpainProduction | null> {
+    return null;
+  }
 }
 
 type FigureRow = Database["public"]["Tables"]["supply_figures"]["Row"];
@@ -246,15 +254,19 @@ function volume(
   return found.length > 0 ? found.reduce((sum, row) => sum + row.volume_hl, 0) : null;
 }
 
-/** Wine held at the end of each month, hl, by month ("2026-07"). */
-function wineStocksByMonth(rows: FigureRow[]): Map<string, number> {
+/** Wine of one measure, hl, by month ("2026-07"): held at its end, or made up to it. */
+function wineByMonth(rows: FigureRow[], measure: FigureRow["measure"]): Map<string, number> {
   const byMonth = new Map<string, number>();
   for (const row of rows) {
-    if (row.measure !== "closing-stocks" || row.product !== "wine") continue;
+    if (row.measure !== measure || row.product !== "wine") continue;
     const month = row.period.slice(0, 7);
     byMonth.set(month, (byMonth.get(month) ?? 0) + row.volume_hl);
   }
   return byMonth;
+}
+
+function wineStocksByMonth(rows: FigureRow[]): Map<string, number> {
+  return wineByMonth(rows, "closing-stocks");
 }
 
 /** The same month a year earlier: "2026-07" to "2025-07". */
@@ -267,6 +279,23 @@ function campaignOfMonth(month: string): string {
   const year = Number(month.slice(0, 4));
   const start = Number(month.slice(5, 7)) >= 8 ? year : year - 1;
   return `${start}/${String((start + 1) % 100).padStart(2, "0")}`;
+}
+
+/** The campaign before, "2025/26" to "2024/25". */
+function campaignBefore(campaign: string): string {
+  const start = Number(campaign.slice(0, 4)) - 1;
+  return `${start}/${String((start + 1) % 100).padStart(2, "0")}`;
+}
+
+/** A campaign's months from a month map, in order, as far as declared. */
+function campaignPath(byMonth: Map<string, number>, campaign: string): CampaignPath {
+  return {
+    campaign,
+    points: [...byMonth]
+      .filter(([month]) => campaignOfMonth(month) === campaign)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, hl]) => ({ month, wineMhl: hl / HL_PER_MHL })),
+  };
 }
 
 /** The last day of a month: "2026-07" to "2026-07-31". */
@@ -346,22 +375,75 @@ class LiveSupplyService extends FixtureSupplyService {
     ];
 
     const latestCampaign = campaignOfMonth(latestMonth);
-    const previousStart = Number(latestCampaign.slice(0, 4)) - 1;
-    const previousCampaign = `${previousStart}/${String((previousStart + 1) % 100).padStart(2, "0")}`;
-    const campaignPoints = (campaign: string): MonthlyStocksPoint[] =>
-      [...stocks]
-        .filter(([month]) => campaignOfMonth(month) === campaign)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([month, hl]) => ({ month, wineMhl: hl / HL_PER_MHL }));
-
-    const latestRows = rows.filter((row) => row.period.startsWith(latestMonth));
+    const latestRows = rows.filter(
+      (row) => row.period.startsWith(latestMonth) && row.measure === "closing-stocks",
+    );
     return {
       latestMonth,
       breakdown,
-      campaigns: [latestCampaign, previousCampaign].map((campaign) => ({
-        campaign,
-        points: campaignPoints(campaign),
-      })),
+      campaigns: [latestCampaign, campaignBefore(latestCampaign)].map((campaign) =>
+        campaignPath(stocks, campaign)
+      ),
+      sourceId: INFOVI,
+      publishedAt: latestRows.map((row) => row.published_at).sort().at(-1)!,
+      updatedAt: rows.map((row) => row.updated_at).sort().at(-1)!,
+    };
+  }
+
+  async getSpainProduction(): Promise<SpainProduction | null> {
+    const rows = await spainFigures();
+    const made = wineByMonth(rows, "production-to-date");
+    const latestMonth = [...made.keys()].sort().at(-1);
+    if (!latestMonth) return null;
+    const earlierMonth = yearBefore(latestMonth);
+
+    const line = (
+      label: string,
+      match: Parameters<typeof volume>[2],
+      isTotal = false,
+    ) => {
+      const latest = volume(rows, latestMonth, { measure: "production-to-date", ...match });
+      const earlier = volume(rows, earlierMonth, { measure: "production-to-date", ...match });
+      return latest === null
+        ? []
+        : [{
+            label,
+            latestMhl: latest / HL_PER_MHL,
+            yearEarlierMhl: earlier === null ? null : earlier / HL_PER_MHL,
+            isTotal,
+          }];
+    };
+
+    // A campaign is complete once its July is declared: wine made from
+    // 1 August to 31 July.
+    const history = [...made.keys()]
+      .filter((month) => month.endsWith("-07"))
+      .sort((a, b) => b.localeCompare(a))
+      .map((july) => {
+        const red = volume(rows, july, { measure: "production-to-date", colour: "red-rose" }) ?? 0;
+        const white = volume(rows, july, { measure: "production-to-date", colour: "white" }) ?? 0;
+        return {
+          campaign: campaignOfMonth(july),
+          redRoseMhl: red / HL_PER_MHL,
+          whiteMhl: white / HL_PER_MHL,
+          totalMhl: (red + white) / HL_PER_MHL,
+        };
+      });
+
+    const campaign = campaignOfMonth(latestMonth);
+    const latestRows = rows.filter(
+      (row) => row.period.startsWith(latestMonth) && row.measure === "production-to-date",
+    );
+    return {
+      latestMonth,
+      campaign,
+      toDate: [
+        ...line("Red and rosé", { colour: "red-rose" }),
+        ...line("White", { colour: "white" }),
+        ...line("All wine", {}, true),
+      ],
+      campaigns: [campaign, campaignBefore(campaign)].map((c) => campaignPath(made, c)),
+      history,
       sourceId: INFOVI,
       publishedAt: latestRows.map((row) => row.published_at).sort().at(-1)!,
       updatedAt: rows.map((row) => row.updated_at).sort().at(-1)!,

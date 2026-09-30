@@ -35,8 +35,9 @@ Status legend:
    January 2019, refreshed twice a week, feed the Markets pages, the
    homepage key prices and the market strip. The monthly INFOVI
    declarations since January 2018, refreshed weekly, feed Spain's stocks
-   on `/supply/stocks`; their production figures are imported but not yet
-   shown. Commercial reuse of both is allowed under Law 37/2007.
+   on `/supply/stocks` and the wine made since 1 August on
+   `/supply/production`. Commercial reuse of both is allowed under Law
+   37/2007.
 4. **Portugal: IVV.** Monthly trade synthesis in Excel validated; the
    production files are password-protected.
 5. **Harvest: national forecasts** (Agreste, IVV, Spanish regional and
@@ -212,8 +213,11 @@ Status legend:
   re-imports the current year, and the previous one until mid-March. See
   `README.md`, section Database.
 - **Licence:** Law 37/2007, commercial reuse citing the source.
-- **Feeds:** Spain's stocks on `/supply/stocks`. Production to date is
-  stored for the production page.
+- **Feeds:** Spain's stocks on `/supply/stocks`, and on
+  `/supply/production` the wine made since 1 August against the same
+  month of the previous campaign, with the totals of completed campaigns.
+  That is wine only: must is not in table 2.2, so the totals sit below
+  Spain's headline production of wine and must.
 - Links: [INFOVI 2024](https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/infovi_2024),
   [wine balance](https://www.mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/agricultura/balance-del-vino).
 
@@ -305,9 +309,9 @@ Status legend:
 
 ## Next steps
 
-1. Show INFOVI production on `/supply/production`: wine made since
-   1 August against the same month of the previous campaign, which tracks
-   the Spanish harvest from the August workbook on.
+1. Read INFOVI's entries and exits (tables 3.2 and 4) as well, towards
+   a real Spanish balance on `/supply`: imports, exports and domestic
+   exits by month.
 2. Decide whether the Agri-food prices are recent enough to import.
 3. Read the licence pages still marked **to confirm** (Agri-food portal,
    IVV, FranceAgriMer) and record the attribution text in `sources`
