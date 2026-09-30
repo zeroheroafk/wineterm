@@ -38,6 +38,10 @@ export type SourceId =
   | "eurostat-comext"
   | "mapa-pmn"
   | "mapa-infovi"
+  | "mapa-avances"
+  | "agreste"
+  | "ivv"
+  | "uiv-assoenologi-ismea"
   | "wineterm-desk";
 
 export interface MarketSource {
@@ -196,11 +200,57 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     kind: "official-bulletin",
     classification: "official",
     coverage:
-      "Spain: stocks, production, entries and exits of wine declared every month by producers of 1,000 hl or more and by warehouse holders; WineTerm imports the national stocks and production",
+      "Spain: stocks, production, entries and exits of wine declared every month by producers of 1,000 hl or more and by warehouse holders; WineTerm imports their national totals",
     cadence: "Monthly, about six weeks after the month ends",
     note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, compiled from the compulsory monthly declarations of the wine sector and imported unchanged, in hectolitres. Producers making less than 1,000 hl a year do not declare monthly and are not included. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
     isSample: false,
     url: "https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/datos_infovi_anteriores",
+  },
+  "mapa-avances": {
+    id: "mapa-avances",
+    name: "MAPA, crop area and production estimates",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Spain: monthly estimates of crop areas and production, including wine grapes and, once the harvest is in, wine and must",
+    cadence: "Monthly, about three months after the month estimated",
+    note: "Official estimates of the Spanish Ministry of Agriculture, Fisheries and Food (Avances de superficies y producciones de cultivos). WineTerm enters the wine grape and wine figures by hand, with their date. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
+    isSample: false,
+    url: "https://www.mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/agricultura/avances-superficies-producciones-agricolas",
+  },
+  agreste: {
+    id: "agreste",
+    name: "Agreste, Infos rapides Viticulture",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "France: estimates of wine production by category and wine basin, from August to November",
+    cadence: "Monthly through the harvest",
+    note: "Harvest estimates of the statistical service of the French Ministry of Agriculture. WineTerm enters the national totals from each release by hand, with its date. Source: Agreste, Ministère de l'Agriculture et de la Souveraineté alimentaire.",
+    isSample: false,
+    url: "https://agreste.agriculture.gouv.fr/agreste-web/disaron/IraVit26107/detail/",
+  },
+  ivv: {
+    id: "ivv",
+    name: "IVV, harvest forecast",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage: "Portugal: wine production forecast by wine region",
+    cadence: "Once a year, before the harvest",
+    note: "Forecast of the Instituto da Vinha e do Vinho, Portugal's wine institute. WineTerm enters the national total and the regional changes by hand, with its date. Source: Instituto da Vinha e do Vinho, I.P.",
+    isSample: false,
+    url: "https://www.ivv.gov.pt/noticias/previsao-de-colheita-campanha-2026-2027/",
+  },
+  "uiv-assoenologi-ismea": {
+    id: "uiv-assoenologi-ismea",
+    name: "Unione Italiana Vini, Assoenologi and ISMEA",
+    kind: "trade-reporting",
+    classification: "reported",
+    coverage: "Italy: the joint production forecast published before the harvest",
+    cadence: "Once a year in early September; none in 2026",
+    note: "Italy's usual harvest forecast comes from the trade associations Unione Italiana Vini and Assoenologi with the public agency ISMEA. For 2026 they published none, and will report results after the harvest.",
+    isSample: false,
+    url: "https://www.unioneitalianavini.it/approfondimenti-tematici/news/vendemmia-2026-dati-consuntivi-fine-campagna",
   },
   "wineterm-desk": {
     id: "wineterm-desk",

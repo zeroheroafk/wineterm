@@ -386,11 +386,11 @@ export default function MethodologyPage() {
             Spain&apos;s national average bulk wine prices and its monthly
             declarations of wine stocks, production, entries and exits
             credited to MAPA are official statistics, refreshed every week.
-            Every other
+            The harvest forecasts credited to Agreste, the IVV and MAPA are
+            official too, entered by hand from each release. Every other
             figure currently shown is an illustrative sample carrying the
-            Illustrative, Forecast or Estimate status, every other named
-            source is a stand-in, and nothing on the platform is investment
-            advice. This page describes the methodology those samples
+            Illustrative status, every other named source is a stand-in, and
+            nothing on the platform is investment advice. This page describes the methodology those samples
             demonstrate and that live data follows.
           </p>
         </Prose>

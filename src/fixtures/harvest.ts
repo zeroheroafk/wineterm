@@ -16,6 +16,7 @@ import type {
 export const HARVEST_UPDATED_AT = "2026-08-21T09:30:00Z";
 
 export const harvestSummary: HarvestSummary = {
+  status: "illustrative",
   updatedAt: HARVEST_UPDATED_AT,
   paragraphs: [
     "Picking is under way across the early zones of the south: whites in Castilla-La Mancha and Alentejo, early varieties in Sicilia and Puglia, and sparkling bases in the Languedoc. Northern appellations remain two to three weeks from their first significant volumes.",
@@ -55,7 +56,7 @@ export const countryForecasts: CountryHarvestForecast[] = [
     direction: "up",
     commentary:
       "Recovery from two short campaigns, led by white varieties in the centre; dryland reds limit the upside.",
-    status: "forecast",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     updatedAt: HARVEST_UPDATED_AT,
   },
@@ -67,7 +68,7 @@ export const countryForecasts: CountryHarvestForecast[] = [
     direction: "flat",
     commentary:
       "Near the recent norm; coastal regions comfortable, Douro upper valley needs rain to hold the range.",
-    status: "forecast",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     updatedAt: HARVEST_UPDATED_AT,
   },
@@ -79,7 +80,7 @@ export const countryForecasts: CountryHarvestForecast[] = [
     direction: "down",
     commentary:
       "Southern heat spikes trimmed potential; northern appellations near normal so far.",
-    status: "forecast",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     updatedAt: HARVEST_UPDATED_AT,
   },
@@ -91,7 +92,7 @@ export const countryForecasts: CountryHarvestForecast[] = [
     direction: "up",
     commentary:
       "Regular season in the north and a sound crop in Puglia and Sicilia point above last campaign.",
-    status: "forecast",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     updatedAt: HARVEST_UPDATED_AT,
   },
@@ -103,7 +104,7 @@ const r = (
   },
 ): HarvestRegionReport => ({
   sourceId: "sample-harvest-network",
-  status: "estimate",
+  status: "illustrative",
   updatedAt: HARVEST_UPDATED_AT,
   ...report,
 });

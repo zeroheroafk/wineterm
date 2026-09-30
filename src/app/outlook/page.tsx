@@ -18,7 +18,7 @@ import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { UpdatedAt } from "@/components/ui/SourceLine";
 import { formatDate } from "@/lib/format";
-import { getHarvestService } from "@/services/harvest/service";
+import { getIllustrativeHarvestService } from "@/services/harvest/service";
 import { getIllustrativeHomeService } from "@/services/home";
 import { getSource } from "@/services/markets/sources";
 import { getOutlookService } from "@/services/outlook/service";
@@ -52,9 +52,10 @@ const STANCE_STYLES = {
 export default async function OutlookPage() {
   const outlook = getOutlookService();
   const supply = getSupplyService();
-  const harvest = getHarvestService();
   // The edition is an illustrative sample written against the fixtures,
-  // so its trade and price tables stay on them rather than on live data.
+  // so its harvest, trade and price tables stay on them rather than on
+  // real data.
+  const harvest = getIllustrativeHarvestService();
   const trade = getIllustrativeTradeService();
   const home = getIllustrativeHomeService();
 

@@ -39,8 +39,9 @@ Status legend:
    both is allowed under Law 37/2007.
 4. **Portugal: IVV.** Monthly trade synthesis in Excel validated; the
    production files are password-protected.
-5. **Harvest: national forecasts** (Agreste, IVV, Spanish regional and
-   cooperative estimates) plus the OIV world outlook.
+5. **Harvest: official national forecasts. On `/harvest`.** Agreste,
+   IVV and MAPA's crop estimates, entered by hand from each release; the
+   OIV world outlook still to add.
 6. **Gaps to cover with partners or desk estimates:** grape prices,
    must and concentrate prices, and Portuguese bulk wine prices.
 
@@ -309,21 +310,40 @@ Status legend:
 
 ## Harvest
 
-- **France, Agreste:** harvest forecasts in "Infos rapides Viticulture"
-  with downloadable figure data. The 1 September 2026 estimate is about
-  34 Mhl, 6% below 2025 and 17% below the 2021 to 2025 average.
-  Link: [2026 forecast data](https://agreste.agriculture.gouv.fr/agreste-web/download/publication/publie/IraVit26107/2026_107inforapviticulture.pdf).
-- **Portugal, IVV:** 2026/27 forecast of 6.7 Mhl, up 12% and 4% below
-  the five-campaign average, with regional detail (Douro +25%, Alentejo,
-  Setúbal and Trás-os-Montes +15%). 2025/26 closed at 5.9 Mhl.
+The official forecasts below feed the country forecasts on `/harvest`.
+They come as PDF releases and web pages, so they are entered by hand in
+`src/services/harvest/official.ts`, with each release's date, and updated
+when a new release appears. Checked on 30 September 2026.
+
+- **France, Agreste:** "Infos rapides Viticulture", monthly from August
+  to November, with downloadable figure data. Issue 2026-107, published
+  7 September 2026: 33,864 thousand hl estimated at 1 September, 6% below
+  2025 (35,894) and 17% below the 2021 to 2025 average (40,666). All
+  wine, including wine for brandy. The site's server sends no
+  intermediate certificate, so `curl` needs the HARICA "GEANT TLS RSA 1"
+  certificate added to its CA file.
+  Links: [issue 2026-107](https://agreste.agriculture.gouv.fr/agreste-web/disaron/IraVit26107/detail/),
+  [PDF](https://agreste.agriculture.gouv.fr/agreste-web/download/publication/publie/IraVit26107/2026_107inforapviticulture.pdf).
+- **Portugal, IVV:** 2026/27 forecast published 3 August 2026: 6,666
+  thousand hl, 12% above 2025/26 (5,956) and 4% below the five-campaign
+  average (6,926), with a table by region (Douro +25%; Alentejo,
+  Península de Setúbal and Trás-os-Montes +15%; Azores -20%).
   Link: [forecast 2026/27](https://www.ivv.gov.pt/noticias/previsao-de-colheita-campanha-2026-2027/).
-- **Spain:** no single official early forecast was found; cooperative
-  estimates (31.5 Mhl of wine and must for 2025/26) and regional
-  interprofession figures (Castilla-La Mancha around 19 Mhl for 2026).
-  Link: [cooperatives' estimate](https://www.agro-alimentarias.coop/docs_download/la-vendimia-2025-2026-se-estima-en-315-millones-de-hectolitros).
-- **Italy:** Assoenologi, ISMEA and UIV suspended the 2026 forecast;
-  final figures are due at the end of the harvest, around mid-November.
-  2025 production reported to the Commission: 44.4 Mhl.
+- **Spain, MAPA crop estimates** ("Avances de superficies y producciones
+  de cultivos"): monthly, about three months late. The May 2026 notebook,
+  uploaded 14 September 2026, puts 2026 wine grapes at 4,877 thousand
+  tonnes, 8.8% above 2025 (4,483), from 810.5 thousand ha in production
+  (-2.5%); wine and must appear only after the harvest (2025: 32,575
+  thousand hl, provisional). No national wine forecast yet; cooperatives
+  and regional bodies publish their own estimates (31.5 Mhl of wine and
+  must for 2025/26 from the cooperatives).
+  Links: [crop estimates](https://www.mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/agricultura/avances-superficies-producciones-agricolas),
+  [cooperatives' 2025/26 estimate](https://www.agro-alimentarias.coop/docs_download/la-vendimia-2025-2026-se-estima-en-315-millones-de-hectolitros).
+- **Italy:** on 29 July 2026 Unione Italiana Vini, Assoenologi and ISMEA
+  dropped their pre-harvest forecast; results come after the harvest,
+  around mid-November if the grape harvest declarations are brought
+  forward. 2025 production reported to the Commission: 44.4 Mhl, per
+  press reports.
   Link: [announcement](https://www.unioneitalianavini.it/approfondimenti-tematici/news/vendemmia-2026-dati-consuntivi-fine-campagna).
 
 ## World context
@@ -335,8 +355,10 @@ Status legend:
 
 ## Next steps
 
-1. Put the official 2026 harvest forecasts (Agreste, IVV) on `/harvest`
-   with their source and date, in place of the illustrative ones.
+1. Keep the harvest forecasts current: Agreste's October and November
+   estimates, MAPA's wine and must once the harvest is in, Italy's
+   results in mid-November and the OIV's world estimate in October or
+   November.
 2. Split Spain's exits to other countries into bulk and packaged, by
    colour, from INFOVI tables 4.3 and 4.4.
 3. Check the Agri-food prices' lag again every few months, and import
