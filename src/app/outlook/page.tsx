@@ -19,7 +19,7 @@ import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { UpdatedAt } from "@/components/ui/SourceLine";
 import { formatDate } from "@/lib/format";
 import { getHarvestService } from "@/services/harvest/service";
-import { getHomeService } from "@/services/home";
+import { getIllustrativeHomeService } from "@/services/home";
 import { getSource } from "@/services/markets/sources";
 import { getOutlookService } from "@/services/outlook/service";
 import { getSupplyService } from "@/services/supply/service";
@@ -54,9 +54,9 @@ export default async function OutlookPage() {
   const supply = getSupplyService();
   const harvest = getHarvestService();
   // The edition is an illustrative sample written against the fixtures,
-  // so its trade table stays on them rather than on live Eurostat data.
+  // so its trade and price tables stay on them rather than on live data.
   const trade = getIllustrativeTradeService();
-  const home = getHomeService();
+  const home = getIllustrativeHomeService();
 
   const edition = await outlook.getCurrentEdition();
   const [balances, forecasts, tradeSummaries, tradePeriod, keyPrices, updatedAt] =

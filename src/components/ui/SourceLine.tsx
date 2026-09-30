@@ -10,31 +10,42 @@ export function UpdatedAt({ iso }: { iso: string }) {
   );
 }
 
+function SourceName({ source }: { source: DataSource }) {
+  return source.url ? (
+    <a
+      href={source.url}
+      className="underline decoration-rule underline-offset-2 hover:text-wine"
+    >
+      {source.name}
+    </a>
+  ) : (
+    <>{source.name}</>
+  );
+}
+
 /**
  * Source attribution line shown under every table and chart, optionally
- * combined with the last-updated timestamp.
+ * combined with the last-updated timestamp. A table that mixes sources
+ * names each of them.
  */
 export function SourceLine({
   source,
   updatedAt,
 }: {
-  source: DataSource;
+  source: DataSource | DataSource[];
   updatedAt?: string;
 }) {
+  const sources = Array.isArray(source) ? source : [source];
   return (
     <p className="wt-label flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-soft">
       <span>
-        Source:{" "}
-        {source.url ? (
-          <a
-            href={source.url}
-            className="underline decoration-rule underline-offset-2 hover:text-wine"
-          >
-            {source.name}
-          </a>
-        ) : (
-          source.name
-        )}
+        {sources.length > 1 ? "Sources: " : "Source: "}
+        {sources.map((item, index) => (
+          <span key={item.name}>
+            {index > 0 ? "; " : null}
+            <SourceName source={item} />
+          </span>
+        ))}
       </span>
       {updatedAt ? (
         <>

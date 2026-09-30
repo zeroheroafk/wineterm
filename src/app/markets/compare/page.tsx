@@ -18,14 +18,16 @@ import {
   type CompareOption,
 } from "@/components/markets/ComparePicker";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
+import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { formatDate, formatPrice } from "@/lib/format";
-import { getMarketsService } from "@/services/markets/service";
+import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
 import {
   FAMILY_REFERENCE_UNIT,
   MAX_COMPARE_SERIES,
   UNIT_FAMILY,
   UNIT_TO_REFERENCE,
+  type MarketKind,
   type MarketSeries,
 } from "@/services/markets/types";
 
@@ -36,6 +38,10 @@ export const metadata: Metadata = {
 };
 
 const PRESETS: { label: string; codes: string[] }[] = [
+  {
+    label: "Spain national averages, white and red (MAPA)",
+    codes: ["ES-NAT-WHT-NGI", "ES-NAT-RED-NGI"],
+  },
   {
     label: "Iberian generic red",
     codes: ["ES-CLM-RED-GEN", "ES-EXT-RED-GEN", "PT-ALE-RED-GEN"],
@@ -61,7 +67,12 @@ export default async function ComparePage({
 }) {
   const query = await searchParams;
   const markets = getMarketsService();
-  const allSeries = await markets.listSeries();
+  const kinds: MarketKind[] = ["bulk-wine", "grape", "must"];
+  const allRows = (await Promise.all(kinds.map((kind) => markets.getRows(kind)))).flat();
+  const allSeries = allRows.map((row) => row.series);
+  const illustrative = new Map(
+    allRows.map((row) => [row.series.code, isIllustrative(row)]),
+  );
 
   const options: CompareOption[] = allSeries.map((s) => ({
     code: s.code,
@@ -70,7 +81,12 @@ export default async function ComparePage({
     unitFamily: UNIT_FAMILY[s.unit],
     unit: s.unit,
     currency: s.currency,
+    illustrative: illustrative.get(s.code) ?? true,
   }));
+  const presets = PRESETS.filter((preset) =>
+    preset.codes.every((code) => illustrative.has(code)),
+  );
+  const hasReal = [...illustrative.values()].some((value) => !value);
 
   const requested = (firstParam(query, "s") ?? "")
     .split(",")
@@ -94,7 +110,8 @@ export default async function ComparePage({
     const compatible =
       series.kind === first.kind &&
       UNIT_FAMILY[series.unit] === UNIT_FAMILY[first.unit] &&
-      series.currency === first.currency;
+      series.currency === first.currency &&
+      illustrative.get(series.code) === illustrative.get(first.code);
     if (compatible) {
       selected.push(series);
     } else {
@@ -133,7 +150,11 @@ export default async function ComparePage({
       <MarketsPageHeader
         crumb="Market Comparison"
         title="Market Comparison"
-        description="Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed. Development figures are illustrative samples."
+        description={
+          hasReal
+            ? "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed, and real prices are compared only with real prices, illustrative samples with samples."
+            : "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed. Development figures are illustrative samples."
+        }
         activeHref="/markets/compare"
       />
 
@@ -152,7 +173,7 @@ export default async function ComparePage({
           {dropped.join(", ")}{" "}
           {dropped.length === 1 ? "was" : "were"} removed: series must share
           the same market type, unit family and currency as the first
-          selection.
+          selection, and be real prices or illustrative samples like it.
         </p>
       ) : null}
 
@@ -182,7 +203,7 @@ export default async function ComparePage({
               Suggested comparisons
             </h2>
             <ul className="mt-3 space-y-2">
-              {PRESETS.map((preset) => (
+              {presets.map((preset) => (
                 <li key={preset.label}>
                   <Link
                     href={`/markets/compare?s=${preset.codes.join(",")}`}
@@ -228,7 +249,7 @@ export default async function ComparePage({
               </caption>
               <thead>
                 <tr className="border-b-2 border-ink">
-                  <th scope="col" className={TH}>
+                  <th scope="col" className={`${TH} hidden lg:table-cell`}>
                     Code
                   </th>
                   <th scope="col" className={TH}>
@@ -248,6 +269,9 @@ export default async function ComparePage({
                   <th scope="col" className={TH}>
                     Date
                   </th>
+                  <th scope="col" className={TH}>
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -257,11 +281,16 @@ export default async function ComparePage({
                       key={row.series.code}
                       className="border-b border-rule last:border-b-0"
                     >
-                      <td className={TD}>
+                      <td className={`${TD} hidden lg:table-cell`}>
                         <SeriesCodeLink code={row.series.code} />
                       </td>
-                      <td className={`${TD} text-sm font-medium text-ink`}>
-                        {row.series.name}
+                      <td className={TD}>
+                        <Link
+                          href={`/markets/series/${row.series.code}`}
+                          className="text-sm font-medium text-ink hover:text-wine-deep"
+                        >
+                          {row.series.name}
+                        </Link>
                       </td>
                       <td className={TD_RIGHT}>
                         <PriceCell
@@ -287,6 +316,9 @@ export default async function ComparePage({
                       </td>
                       <td className={`${TD} tnum font-mono text-xs text-ink-soft`}>
                         {formatDate(row.latest.date)}
+                      </td>
+                      <td className={TD}>
+                        <DataStatusLabel status={row.latest.status} />
                       </td>
                     </tr>
                   ) : null,

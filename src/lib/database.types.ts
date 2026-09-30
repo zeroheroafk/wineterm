@@ -284,6 +284,56 @@ export type Database = {
         }
         Relationships: []
       }
+      supply_figures: {
+        Row: {
+          colour: string
+          country: string
+          measure: string
+          period: string
+          presentation: string
+          product: string
+          published_at: string
+          revised: boolean
+          source_id: string
+          updated_at: string
+          volume_hl: number
+        }
+        Insert: {
+          colour: string
+          country: string
+          measure: string
+          period: string
+          presentation: string
+          product: string
+          published_at: string
+          revised?: boolean
+          source_id: string
+          updated_at?: string
+          volume_hl: number
+        }
+        Update: {
+          colour?: string
+          country?: string
+          measure?: string
+          period?: string
+          presentation?: string
+          product?: string
+          published_at?: string
+          revised?: boolean
+          source_id?: string
+          updated_at?: string
+          volume_hl?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supply_figures_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trade_flows: {
         Row: {
           flow: string

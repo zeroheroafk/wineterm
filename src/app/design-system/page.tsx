@@ -155,7 +155,7 @@ export default async function DesignSystemPage() {
           <div className="border-t border-rule pt-5">
             <p className="wt-label text-ink-soft">Data mono / IBM Plex Mono</p>
             <p className="tnum mt-2 font-mono text-sm text-ink">
-              ES-CLM-RED-GEN &nbsp; 4.10 EUR/hl &nbsp; +2.5% &nbsp; 20 Aug 2026
+              ES-CLM-RED-GEN &nbsp; 49.20 EUR/hl &nbsp; +2.5% &nbsp; 20 Aug 2026
             </p>
             <p className="wt-label mt-2 text-wine">
               Small uppercase market labels use the mono at 11px with wide
@@ -262,7 +262,7 @@ export default async function DesignSystemPage() {
           movement. Flat movement is neutral.
         </Spec>
         <div className="flex flex-wrap items-center gap-x-8 gap-y-4 border border-rule bg-paper p-6">
-          <PriceCell value={4.1} unit="EUR/hl" />
+          <PriceCell value={49.2} unit="EUR/hl" />
           <PriceCell value={1234.5} unit="EUR/tonne" decimals={1} />
           <PercentChange value={2.5} />
           <PercentChange value={-4.2} />
