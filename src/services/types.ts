@@ -113,6 +113,11 @@ export interface Article {
   publishedAt: string;
   readingMinutes: number;
   href: string;
+  /**
+   * Code of the price series the article discusses, when there is one.
+   * The homepage charts it beside the lead preview.
+   */
+  seriesCode?: string;
 }
 
 /** A short dated commentary block attached to a market table. */
@@ -163,7 +168,12 @@ export interface SupplyCountryRow {
   productionMhl: number;
   /** Opening stocks carried into the campaign, million hl. */
   openingStocksMhl: number;
-  /** Production plus opening stocks, million hl. */
+  /** Imports expected over the campaign, million hl. */
+  importsMhl: number;
+  /**
+   * Opening stocks plus production plus imports, million hl, matching
+   * the supply balance.
+   */
   availabilityMhl: number;
   /** Availability against the five-year average, percent. */
   vsFiveYearPercent: number;
@@ -173,6 +183,9 @@ export interface SupplySnapshot {
   /** Campaign reference, e.g. "2026/27 campaign, first estimates". */
   campaign: string;
   rows: SupplyCountryRow[];
+  /** The desk's one-sentence reading of the rows. */
+  takeaway: string;
+  /** Short definition of the figures; full methodology lives elsewhere. */
   note: string;
   status: DataStatus;
   source: DataSource;
@@ -194,6 +207,7 @@ export interface HarvestRegion {
   /** Expected crop against the previous vintage. */
   expected: HarvestStageDirection;
   updatedAt: string;
+  status: DataStatus;
 }
 
 /** One ranked row in a trade flow table. */

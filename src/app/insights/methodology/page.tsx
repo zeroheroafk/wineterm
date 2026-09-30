@@ -261,7 +261,7 @@ export default function MethodologyPage() {
         </div>
       </section>
 
-      <section className="mt-12">
+      <section id="supply-balance" className="mt-12 scroll-mt-6">
         <SectionHeader
           kicker="Definitions"
           title="Campaigns and the supply balance"

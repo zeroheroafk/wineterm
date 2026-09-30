@@ -1,28 +1,65 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { ArrowLink } from "@/components/ui/ArrowLink";
+
 /**
- * Bulletin-style section header: a heavy rule over a thin rule, a small
- * monospace kicker, an editorial serif title and an optional action link.
+ * Section header in two treatments.
+ *
+ * "bulletin" (default): a heavy rule over a thin rule, a small monospace
+ * kicker, an editorial serif title and an optional action link.
+ *
+ * "editorial": a single fine rule, a sans kicker, the serif title and a
+ * descriptive link sharing the title's baseline. Used where hierarchy
+ * should come from type and spacing rather than stacked rules.
  */
 export function SectionHeader({
   kicker,
   title,
   description,
   action,
+  id,
+  variant = "bulletin",
 }: {
   kicker?: string;
   title: string;
   description?: string;
   action?: { label: string; href: string };
+  /** Id for the title, so a section can reference it with aria-labelledby. */
+  id?: string;
+  variant?: "bulletin" | "editorial";
 }) {
+  if (variant === "editorial") {
+    return (
+      <header className="border-t border-ink pt-3">
+        {kicker ? <p className="wt-kicker text-wine">{kicker}</p> : null}
+        <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <h2
+            id={id}
+            className="wt-headline text-[1.625rem] leading-tight font-semibold text-balance text-ink"
+          >
+            {title}
+          </h2>
+          {action ? (
+            <ArrowLink href={action.href}>{action.label}</ArrowLink>
+          ) : null}
+        </div>
+        {description ? (
+          <p className="mt-1.5 max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-ink-soft">
+            {description}
+          </p>
+        ) : null}
+      </header>
+    );
+  }
+
   return (
     <header className="border-t-2 border-ink">
       <div className="border-t border-rule pt-3">
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <div>
             {kicker ? <p className="wt-label text-wine">{kicker}</p> : null}
-            <h2 className="wt-headline mt-1 text-2xl font-semibold text-ink">
+            <h2 id={id} className="wt-headline mt-1 text-2xl font-semibold text-ink">
               {title}
             </h2>
           </div>

@@ -19,12 +19,14 @@ import {
   supplySnapshot,
   tradeOverview,
 } from "@/fixtures/home";
+import { getMarketDataService } from "@/services/market-data";
 import type {
   Article,
   HarvestRegion,
   IndustryDigest,
   MarketBriefing,
   PriceQuote,
+  PriceSeries,
   StripQuote,
   SupplySnapshot,
   TradeOverview,
@@ -38,6 +40,11 @@ export interface HomeService {
   getHarvestRegions(): Promise<HarvestRegion[]>;
   getTradeOverview(): Promise<TradeOverview>;
   getLeadAnalysis(): Promise<Article>;
+  /**
+   * History of the series the lead analysis discusses, or null when the
+   * article names none or the series has no history to chart.
+   */
+  getLeadAnalysisSeries(): Promise<PriceSeries | null>;
   getSecondaryAnalysis(): Promise<Article[]>;
   getIndustryDigest(): Promise<IndustryDigest>;
   getLastUpdated(): Promise<string>;
@@ -70,6 +77,14 @@ class FixtureHomeService implements HomeService {
 
   async getLeadAnalysis(): Promise<Article> {
     return homeLeadAnalysis;
+  }
+
+  async getLeadAnalysisSeries(): Promise<PriceSeries | null> {
+    const code = homeLeadAnalysis.seriesCode;
+    if (!code) return null;
+    // The market data fixtures carry the history behind the homepage key
+    // prices: the same latest value, observation date and source.
+    return getMarketDataService().getPriceSeries(code);
   }
 
   async getSecondaryAnalysis(): Promise<Article[]> {

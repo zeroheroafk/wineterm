@@ -26,6 +26,29 @@ export function PercentChange({
   );
 }
 
+/**
+ * Percentage movement that inherits font and size from its context, for
+ * editorial layouts set in the interface sans. The sign always carries
+ * the direction; colour and the optional glyph reinforce it.
+ */
+export function InlinePercentChange({
+  value,
+  withIndicator = false,
+}: {
+  value: number;
+  withIndicator?: boolean;
+}) {
+  const direction = movementDirection(value);
+  return (
+    <span
+      className={`tnum inline-flex items-center gap-1 whitespace-nowrap ${DIRECTION_TEXT[direction]}`}
+    >
+      {withIndicator ? <TrendIndicator value={value} /> : null}
+      {formatPercent(value)}
+    </span>
+  );
+}
+
 /** Absolute movement in the series unit, in the movement colours. */
 export function AbsoluteChange({
   value,

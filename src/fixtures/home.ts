@@ -245,6 +245,11 @@ export const keyPrices: PriceQuote[] = [
   },
 ];
 
+/**
+ * Production, opening stocks and imports match the 2026/27 rows of the
+ * supply balance fixtures (src/fixtures/supply.ts), so availability here
+ * is the same opening stocks plus production plus imports.
+ */
 export const supplySnapshot: SupplySnapshot = {
   campaign: "2026/27 campaign, first estimates",
   rows: [
@@ -252,6 +257,7 @@ export const supplySnapshot: SupplySnapshot = {
       country: "ES",
       productionMhl: 34.5,
       openingStocksMhl: 30.2,
+      importsMhl: 0.8,
       availabilityMhl: 65.5,
       vsFiveYearPercent: -3.2,
     },
@@ -259,6 +265,7 @@ export const supplySnapshot: SupplySnapshot = {
       country: "PT",
       productionMhl: 6.9,
       openingStocksMhl: 7.4,
+      importsMhl: 1.5,
       availabilityMhl: 15.8,
       vsFiveYearPercent: 1.8,
     },
@@ -266,6 +273,7 @@ export const supplySnapshot: SupplySnapshot = {
       country: "FR",
       productionMhl: 42.0,
       openingStocksMhl: 37.5,
+      importsMhl: 0.7,
       availabilityMhl: 80.2,
       vsFiveYearPercent: -6.5,
     },
@@ -273,11 +281,14 @@ export const supplySnapshot: SupplySnapshot = {
       country: "IT",
       productionMhl: 47.3,
       openingStocksMhl: 38.9,
+      importsMhl: 0.3,
       availabilityMhl: 86.5,
       vsFiveYearPercent: 0.9,
     },
   ],
-  note: "Availability is opening stocks plus estimated production plus imports, matching the supply balance; the bars show production and opening stocks. First estimates are revised through the autumn.",
+  takeaway:
+    "France and Spain start the campaign below their five-year average availability; Italy and Portugal sit slightly above theirs.",
+  note: "Availability is opening stocks plus production plus imports. First estimates are revised through the autumn.",
   status: "forecast",
   source: { name: "National harvest estimates (sample)" },
   updatedAt: HOME_UPDATED_AT,
@@ -293,6 +304,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Dry; heat stress in unirrigated plots",
     expected: "down",
     updatedAt: "2026-08-20",
+    status: "illustrative",
   },
   {
     id: "hv-rioja",
@@ -303,6 +315,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Healthy canopy, moderate temperatures",
     expected: "flat",
     updatedAt: "2026-08-19",
+    status: "illustrative",
   },
   {
     id: "hv-alentejo",
@@ -313,6 +326,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Clean fruit, good acidity retention",
     expected: "up",
     updatedAt: "2026-08-20",
+    status: "illustrative",
   },
   {
     id: "hv-douro",
@@ -323,6 +337,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Sound, but rain needed in upper valley",
     expected: "down",
     updatedAt: "2026-08-18",
+    status: "illustrative",
   },
   {
     id: "hv-languedoc",
@@ -333,6 +348,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Uneven ripening after summer heat spikes",
     expected: "down",
     updatedAt: "2026-08-19",
+    status: "illustrative",
   },
   {
     id: "hv-puglia",
@@ -343,6 +359,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Good sanitary state, average yields",
     expected: "up",
     updatedAt: "2026-08-20",
+    status: "illustrative",
   },
   {
     id: "hv-veneto",
@@ -353,6 +370,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Regular season, normal disease pressure",
     expected: "flat",
     updatedAt: "2026-08-17",
+    status: "illustrative",
   },
 ];
 
@@ -392,6 +410,7 @@ export const homeLeadAnalysis: Article = {
   publishedAt: "2026-08-21T07:00:00Z",
   readingMinutes: 6,
   href: "/insights/analysis",
+  seriesCode: "ES-CLM-RED-GEN",
 };
 
 export const homeSecondaryAnalysis: Article[] = [

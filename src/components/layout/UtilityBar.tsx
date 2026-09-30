@@ -2,39 +2,49 @@ import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
 
-function editionDate(): string {
+function editionDate(now: Date): string {
   return new Intl.DateTimeFormat("en-GB", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date());
+  }).format(now);
 }
 
-/** Thin institutional strip above the main header. */
+/**
+ * Compact institutional strip above the masthead: edition date, coverage
+ * and secondary links, set small and in sentence case so it never
+ * competes with the primary navigation.
+ */
 export function UtilityBar() {
+  const now = new Date();
+
   return (
-    <div className="bg-wine-deep text-wine-wash">
-      <Container className="flex h-8 items-center justify-between gap-4">
-        <p className="wt-label truncate">
-          <span className="hidden sm:inline">{editionDate()}</span>
-          <span className="mx-2 hidden text-wine sm:inline" aria-hidden="true">
-            |
+    <div className="wt-on-dark bg-wine-deep text-xs text-wine-wash">
+      <Container className="flex h-7 items-center justify-between gap-4">
+        <p className="truncate">
+          <time dateTime={now.toISOString().slice(0, 10)}>
+            {editionDate(now)}
+          </time>
+          <span className="hidden md:inline">
+            <span aria-hidden="true" className="mx-2.5 opacity-50">
+              |
+            </span>
+            Coverage: Spain, Portugal, France and Italy
           </span>
-          European wine market intelligence
         </p>
-        <nav aria-label="Utility" className="flex items-center gap-4">
-          <span className="wt-label hidden text-ochre md:inline">
-            ES&nbsp;&middot;&nbsp;PT&nbsp;&middot;&nbsp;FR&nbsp;&middot;&nbsp;IT
-          </span>
+        <nav aria-label="Utility" className="flex shrink-0 items-center gap-4">
           <Link
             href="/insights/methodology"
-            className="wt-label hidden hover:text-paper sm:inline"
+            className="hidden underline-offset-2 hover:text-paper hover:underline sm:inline"
           >
             Methodology
           </Link>
-          <Link href="/about" className="wt-label hover:text-paper">
+          <Link
+            href="/about"
+            className="underline-offset-2 hover:text-paper hover:underline"
+          >
             About
           </Link>
         </nav>
