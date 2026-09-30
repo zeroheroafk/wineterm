@@ -33,9 +33,10 @@ src/
 
 The service interfaces in `src/services` are the seam for real data
 sources; components depend only on those interfaces. Trade reads Eurostat
-figures from the database, and Markets reads the Spanish Ministry of
+figures from the database, Markets reads the Spanish Ministry of
 Agriculture's weekly national wine prices from it, listed before the
-illustrative series. Everything else still uses the fixtures, and nothing
+illustrative series, and the stocks page reads Spain's month-end wine
+stocks. Everything else still uses the fixtures, and nothing
 in `src/fixtures` is real market data: every fixture observation carries
 the Illustrative status, which is how the site tells samples from real
 prices.
@@ -61,8 +62,9 @@ from the sitemap and marked noindex.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
   and contact messages; `/trade` and the homepage trade panel show
-  Eurostat figures, and the Markets pages, the homepage key prices and the
-  market strip add MAPA's national wine prices to the illustrative series.
+  Eurostat figures, the Markets pages, the homepage key prices and the
+  market strip add MAPA's national wine prices to the illustrative series,
+  and `/supply/stocks` shows Spain's INFOVI stocks.
   Pages regenerate at most hourly and database reads are cached for an
   hour; the build then reads the database, and fails rather than publish
   trade volumes missing litres. Without them, submissions are discarded
@@ -96,7 +98,8 @@ The Markets pages read `market_series` and `market_observations` whole,
 paging through the observations, and cache them for an hour
 (`unstable_cache`, tag `market-data`). A stored series appears only when
 its source is in `src/services/markets/sources.ts`; a fixture with the
-same code gives way to it.
+same code gives way to it. The stocks page reads Spain's rows of
+`supply_figures` the same way (tag `supply-data`).
 
 Real data providers that will replace the fixtures, with their coverage,
 access and licence status, are catalogued in `docs/data-sources.md`.
@@ -142,6 +145,20 @@ outcome on the run.
   workbook, week or row that did not read as expected, which usually means
   the ministry changed the workbook's layout.
 
+- **MAPA, INFOVI** (`supabase/functions/import-infovi`) loads Spain's
+  monthly declarations of the wine sector into `supply_figures`: wine
+  stocks at the end of each month by colour, bulk and packaged, stocks of
+  must that is not concentrated, and wine made since 1 August, national
+  totals in hectolitres. They cover producers of 1,000 hl or more and
+  warehouse holders. The ministry publishes a workbook per month, from
+  2018, about six weeks after the month ends; `infovi.ts` finds each by its
+  link label on the year's page, anchors on the TOTAL row of tables 5 and
+  2.2, checks the headings above it and that the parts add up to the
+  printed totals. A run covers one year; the job `import-infovi` starts the
+  current year every Monday, and the previous one until mid-March. For a
+  backfill, run `select private.start_infovi_imports(2018, 2020);`. A
+  failed run names the table and the check that did not hold.
+
 Scheduled calls need two Vault secrets, set once per project and never
 committed: `project_url` (the project's API URL) and `anon_key` (the
 legacy anon key, because the function verifies JWTs). Without them the
@@ -150,5 +167,5 @@ function with JWT verification off: it trusts only runs the database
 queued, not the caller.
 
 Deploy a function with the Supabase CLI
-(`supabase functions deploy import-comext`, `supabase functions deploy
-import-mapa-prices`) or the dashboard.
+(`supabase functions deploy import-comext`, and likewise
+`import-mapa-prices` and `import-infovi`) or the dashboard.

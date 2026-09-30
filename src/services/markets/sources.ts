@@ -37,6 +37,7 @@ export type SourceId =
   | "sample-harvest-network"
   | "eurostat-comext"
   | "mapa-pmn"
+  | "mapa-infovi"
   | "wineterm-desk";
 
 export interface MarketSource {
@@ -188,6 +189,18 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, imported unchanged: ex-winery prices in euros per hectolitre. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
     isSample: false,
     url: "https://www.mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/economia/precios-medios-nacionales",
+  },
+  "mapa-infovi": {
+    id: "mapa-infovi",
+    name: "MAPA, INFOVI monthly declarations",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Spain: stocks, production, entries and exits of wine declared every month by producers of 1,000 hl or more and by warehouse holders; WineTerm imports the national stocks and production",
+    cadence: "Monthly, about six weeks after the month ends",
+    note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, compiled from the compulsory monthly declarations of the wine sector and imported unchanged, in hectolitres. Producers making less than 1,000 hl a year do not declare monthly and are not included. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
+    isSample: false,
+    url: "https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/datos_infovi_anteriores",
   },
   "wineterm-desk": {
     id: "wineterm-desk",

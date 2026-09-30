@@ -97,12 +97,52 @@ export interface StockRecord {
 export interface StockComparison extends StockRecord {
   /** Change against the year-earlier reference, percent. */
   yoyPercent: number;
-  /** Share of the four-country total at the latest reference, percent. */
-  shareOfTotalPercent: number;
+  /**
+   * Share of the four-country total at the latest reference, percent.
+   * Null when the four rows do not all come from real sources, since a
+   * share of a total that mixes real and illustrative figures means
+   * nothing.
+   */
+  shareOfTotalPercent: number | null;
   /**
    * Opening stocks divided by monthly average use (domestic use plus
    * exports) of the latest complete campaign, in months. Null when the
    * balance data does not support the ratio.
    */
   monthsOfUse: number | null;
+}
+
+/** Wine stocks at the end of one month, Mhl. */
+export interface MonthlyStocksPoint {
+  /** Month of the stocks, e.g. "2026-07". */
+  month: string;
+  wineMhl: number;
+}
+
+/** One line of the Spanish stocks breakdown, Mhl. */
+export interface StocksBreakdownRow {
+  label: string;
+  latestMhl: number;
+  /** The same month a year earlier; null when not declared. */
+  yearEarlierMhl: number | null;
+  /** Totals are set apart from their parts. */
+  isTotal: boolean;
+}
+
+/**
+ * Spain's month-end stocks as declared to the Ministry of Agriculture
+ * (INFOVI): the latest month in detail, and the monthly path of the
+ * latest two campaigns.
+ */
+export interface SpainMonthlyStocks {
+  /** Latest month with declarations, e.g. "2026-07". */
+  latestMonth: string;
+  breakdown: StocksBreakdownRow[];
+  /** Latest campaign first; each runs August to July, as far as declared. */
+  campaigns: { campaign: string; points: MonthlyStocksPoint[] }[];
+  sourceId: SourceId;
+  /** When the ministry published the latest month. */
+  publishedAt: string;
+  /** When WineTerm last updated the figures. */
+  updatedAt: string;
 }

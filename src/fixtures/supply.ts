@@ -134,7 +134,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-07-31",
     stocksMhl: 30.2,
     yearEarlierMhl: 28.9,
-    status: "provisional",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "Monthly operator declarations covering wineries and storage holders, published about three weeks after the reference date.",
@@ -144,7 +144,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-07-31",
     stocksMhl: 7.4,
     yearEarlierMhl: 7.5,
-    status: "provisional",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "End-of-campaign declarations by all holders, provisional until the campaign closure is validated in the autumn.",
@@ -154,7 +154,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-07-31",
     stocksMhl: 37.5,
     yearEarlierMhl: 38.6,
-    status: "provisional",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "Annual stock declaration at 31 July: one yearly reference point, not a monthly series, so intra-campaign comparisons are not available.",
@@ -164,7 +164,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-06-30",
     stocksMhl: 41.2,
     yearEarlierMhl: 41.8,
-    status: "final",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "Monthly extract of the electronic wine registry; the latest available month runs one month behind the other countries.",

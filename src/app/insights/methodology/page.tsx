@@ -324,7 +324,7 @@ export default function MethodologyPage() {
         <SectionHeader
           kicker="Registry"
           title="Source registry"
-          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices, are added as their data is licensed and connected."
+          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and wine stocks, are added as their data is licensed and connected."
         />
         <div className="mt-5 overflow-x-auto border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
@@ -381,8 +381,9 @@ export default function MethodologyPage() {
           <p>
             WineTerm is in development. Trade figures credited to Eurostat
             Comext are official statistics, refreshed every month, and
-            Spain&apos;s national average bulk wine prices credited to MAPA
-            are official statistics, refreshed every week. Every other
+            Spain&apos;s national average bulk wine prices and month-end wine
+            stocks credited to MAPA are official statistics, refreshed every
+            week. Every other
             figure currently shown is an illustrative sample carrying the
             Illustrative, Forecast or Estimate status, every other named
             source is a stand-in, and nothing on the platform is investment
