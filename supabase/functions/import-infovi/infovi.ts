@@ -1,10 +1,12 @@
 /**
  * MAPA, INFOVI: the Spanish Ministry of Agriculture's monthly summary of
  * the compulsory declarations of the wine sector, one workbook per month
- * listed on one page per year. WineTerm reads the national totals of two
- * of its tables: stocks at the end of the month (table 5) and wine made
- * from 1 August to the end of the month (table 2.2). No database access
- * here.
+ * listed on one page per year. WineTerm reads the national totals of its
+ * tables of stocks at the end of the month (table 5), wine made from
+ * 1 August to the end of the month (table 2.2), wine that came in during
+ * the month from Spain and from other countries (tables 3.1 and 3.2) and
+ * wine that went out, by destination (tables 4.0 and 4.6). No database
+ * access here.
  */
 
 import * as XLSX from "npm:xlsx@0.18.5";
@@ -43,14 +45,42 @@ const MONTHS = [
 const MAX_STOCKS_HL = 100_000_000;
 const MIN_WINE_STOCKS_HL = 5_000_000;
 const MAX_PRODUCTION_HL = 60_000_000;
+const MAX_MONTH_FLOW_HL = 20_000_000;
+
+/**
+ * Months whose flow tables contradict one another, so that only their
+ * stocks and production are read. In September 2018 the summary of exits
+ * (table 4.0) disagrees with the detailed exit tables 4.1 to 4.4, and one
+ * figure turns up in cells of unrelated regions in tables 3.2 and 4.0.
+ */
+const INCONSISTENT_FLOWS = new Set(["2018-09"]);
+
+/**
+ * Wine that came in during the month, by origin, or went out, by
+ * destination. Domestic entries come from other operators in Spain;
+ * domestic exits are those other than to distilleries and vinegar makers;
+ * own operations are wine declarants took out for their own operations
+ * ("operaciones propias"), a table published since July 2021.
+ */
+export type Flow =
+  | "entries-domestic"
+  | "entries-eu"
+  | "entries-third-countries"
+  | "exits-domestic"
+  | "exits-distillation"
+  | "exits-vinegar"
+  | "exits-eu"
+  | "exits-third-countries"
+  | "exits-own-operations";
 
 export interface Figure {
   /** First day of the month the figure refers to, e.g. "2026-07-01". */
   period: string;
-  /** Stocks on the last day of the month, or wine made since 1 August. */
-  measure: "closing-stocks" | "production-to-date";
+  /** Stocks on the last day of the month, wine made since 1 August, or a flow in the month. */
+  measure: "closing-stocks" | "production-to-date" | Flow;
   product: "wine" | "must";
-  colour: "red-rose" | "white";
+  /** "all" for flows, which WineTerm reads as totals. */
+  colour: "red-rose" | "white" | "all";
   /** Bulk or packaged, for wine stocks; "all" where the table has no split. */
   presentation: "bulk" | "packaged" | "all";
   volume_hl: number;
@@ -183,6 +213,14 @@ function totals(rows: Row[], table: string): Totals {
   throw new Error(`${table} has no TOTAL row`);
 }
 
+/** Whether a heading above the totals, `offset` columns right of TOTAL, matches. */
+function hasHeading(totals: Totals, offset: number, pattern: RegExp): boolean {
+  for (let row = totals.row - 1; row >= Math.max(0, totals.row - 30); row--) {
+    if (pattern.test(plain(totals.rows[row][totals.column + offset]))) return true;
+  }
+  return false;
+}
+
 /** Fails unless a heading above the totals, `offset` columns right of TOTAL, matches. */
 function expectHeading(
   totals: Totals,
@@ -190,12 +228,11 @@ function expectHeading(
   pattern: RegExp,
   table: string,
 ): void {
-  for (let row = totals.row - 1; row >= Math.max(0, totals.row - 30); row--) {
-    if (pattern.test(plain(totals.rows[row][totals.column + offset]))) return;
+  if (!hasHeading(totals, offset, pattern)) {
+    throw new Error(
+      `${table} has no heading matching ${pattern} in column ${totals.column + offset + 1}`,
+    );
   }
-  throw new Error(
-    `${table} has no heading matching ${pattern} in column ${totals.column + offset + 1}`,
-  );
 }
 
 /** The title of a sheet's first table, "cuadro 5. existencias finales a 31 de ...". */
@@ -203,12 +240,20 @@ function title(rows: Row[]): string {
   return rows.flat().map(plain).find((text) => text.startsWith("cuadro")) ?? "";
 }
 
+/** Fails unless the sheet's title is the table's, so a misplaced sheet is not read. */
+function expectTitle(rows: Row[], pattern: RegExp, table: string): void {
+  if (!pattern.test(title(rows))) {
+    throw new Error(`${table} is titled "${title(rows)}"`);
+  }
+}
+
 /**
  * Fails unless a title names the workbook's month and year, even when
- * typed without a space before the month ("28 defebrero de 2019").
+ * typed without a space before the month ("28 defebrero de 2019") or with
+ * a dash before the year ("septiembre - 2023").
  */
 function expectPeriod(rows: Row[], table: string, month: number, year: number): void {
-  const pattern = new RegExp(`${monthPattern(month)} (?:de )?${year}\\b`);
+  const pattern = new RegExp(`${monthPattern(month)} (?:de |- )?${year}\\b`);
   if (!pattern.test(title(rows))) {
     throw new Error(`${table} is titled "${title(rows)}", not ${MONTHS[month - 1]} ${year}`);
   }
@@ -234,18 +279,64 @@ function sheet(workbook: XLSX.WorkBook, pattern: RegExp): Row[] | null {
 }
 
 const RED = /^tinto\s*\/\s*rosado$/;
+/** Wine by colour, bulk then packaged, from the first column after TOTAL. */
+const BY_COLOUR_AND_PRESENTATION = [
+  [1, RED],
+  [1, /^granel$/],
+  [2, /^envasado$/],
+  [3, /^blanco$/],
+  [3, /^granel$/],
+  [4, /^envasado$/],
+] as const;
 const STOCKS_SHEET = /^5\s*\./;
 const MONTH_PRODUCTION_SHEET = /^2\s*[.,]\s*1\b/;
 const CAMPAIGN_PRODUCTION_SHEET = /^2\s*[.,]\s*2\b/;
+const DOMESTIC_ENTRIES_SHEET = /^3\s*[.,]\s*1\b/;
+const FOREIGN_ENTRIES_SHEET = /^3\s*[.,]\s*2\b/;
+const EXITS_SHEET = /^4\s*\.\s*(?:resumen|salidas)\b/i;
+const OWN_OPERATIONS_SHEET = /^4\s*[.,]\s*6\b/;
 
-/** The national stocks and production of one month's workbook. */
+/**
+ * The national totals of a table of one month's flows, after checking
+ * its title, its period and the headings above them. Null when the
+ * workbook has no such table.
+ */
+function flowTotals(
+  workbook: XLSX.WorkBook,
+  sheetPattern: RegExp,
+  titlePattern: RegExp,
+  headings: readonly (readonly [number, RegExp])[],
+  table: string,
+  month: number,
+  year: number,
+): Totals | null {
+  const rows = sheet(workbook, sheetPattern);
+  if (!rows) return null;
+  expectTitle(rows, titlePattern, table);
+  expectPeriod(rows, table, month, year);
+  const found = totals(rows, table);
+  for (const [offset, pattern] of headings) {
+    expectHeading(found, offset, pattern, table);
+  }
+  const outlier = found.values.find((value) => value < 0 || value > MAX_MONTH_FLOW_HL);
+  if (outlier !== undefined) throw new Error(`${table} reads ${outlier} hl`);
+  return found;
+}
+
+/** The national stocks, production and flows of one month's workbook. */
 export function figures(file: ArrayBuffer, year: number, month: number): Figure[] {
   const data = new Uint8Array(file);
   const names = XLSX.read(data, { type: "array", bookSheets: true }).SheetNames;
   const wanted = names.filter((name) =>
-    [STOCKS_SHEET, MONTH_PRODUCTION_SHEET, CAMPAIGN_PRODUCTION_SHEET].some((p) =>
-      p.test(name.trim())
-    )
+    [
+      STOCKS_SHEET,
+      MONTH_PRODUCTION_SHEET,
+      CAMPAIGN_PRODUCTION_SHEET,
+      DOMESTIC_ENTRIES_SHEET,
+      FOREIGN_ENTRIES_SHEET,
+      EXITS_SHEET,
+      OWN_OPERATIONS_SHEET,
+    ].some((p) => p.test(name.trim()))
   );
   const workbook = XLSX.read(data, { type: "array", sheets: wanted });
   const label = `${MONTHS[month - 1]} ${year}`;
@@ -261,12 +352,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
   const stocks = totals(stockRows, stockTable);
   for (
     const [offset, pattern] of [
-      [1, RED],
-      [1, /^granel$/],
-      [2, /^envasado$/],
-      [3, /^blanco$/],
-      [3, /^granel$/],
-      [4, /^envasado$/],
+      ...BY_COLOUR_AND_PRESENTATION,
       [5, /mosto/],
       [5, RED],
       [6, /^blanco$/],
@@ -278,10 +364,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
   const [redBulk, redPackaged, whiteBulk, whitePackaged, mustRed, mustWhite, wine] =
     stocks.values;
   expectSum([redBulk, redPackaged, whiteBulk, whitePackaged], wine, `${stockTable}, wine`);
-  const mustTotal = stockRows
-    .slice(Math.max(0, stocks.row - 30), stocks.row)
-    .some((row) => /^total mosto/.test(plain(row[stocks.column + 8])));
-  if (mustTotal) {
+  if (hasHeading(stocks, 8, /^total mosto/)) {
     expectSum([mustRed, mustWhite], stocks.values[7], `${stockTable}, must`);
   }
   if (
@@ -299,9 +382,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
   let productionRows = sheet(workbook, CAMPAIGN_PRODUCTION_SHEET);
   let productionTable = `Table 2.2 of ${label}`;
   if (productionRows) {
-    if (!/^cuadro 2\.2\b.* del? 1 de agosto\b/.test(title(productionRows))) {
-      throw new Error(`${productionTable} is titled "${title(productionRows)}"`);
-    }
+    expectTitle(productionRows, /^cuadro 2\.2\b.* del? 1 de agosto\b/, productionTable);
   } else if (month === 8) {
     productionRows = sheet(workbook, MONTH_PRODUCTION_SHEET);
     productionTable = `Table 2.1 of ${label}`;
@@ -337,7 +418,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
     presentation: Figure["presentation"],
     volume_hl: number,
   ): Figure => ({ period, measure, product, colour, presentation, volume_hl });
-  return [
+  const stocksAndProduction = [
     figure("closing-stocks", "wine", "red-rose", "bulk", redBulk),
     figure("closing-stocks", "wine", "red-rose", "packaged", redPackaged),
     figure("closing-stocks", "wine", "white", "bulk", whiteBulk),
@@ -346,5 +427,111 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
     figure("closing-stocks", "must", "white", "all", mustWhite),
     figure("production-to-date", "wine", "red-rose", "all", redWine),
     figure("production-to-date", "wine", "white", "all", whiteWine),
+  ];
+  if (INCONSISTENT_FLOWS.has(period.slice(0, 7))) return stocksAndProduction;
+
+  // Table 3.1: wine that came in from other operators in Spain, by colour
+  // and presentation, then the total.
+  const domesticTable = `Table 3.1 of ${label}`;
+  const domestic = flowTotals(
+    workbook,
+    DOMESTIC_ENTRIES_SHEET,
+    /^cuadro 3\.1 entradas de vino procedentes de espana\b/,
+    [...BY_COLOUR_AND_PRESENTATION, [5, /^total vino$/]],
+    domesticTable,
+    month,
+    year,
+  );
+  if (!domestic) throw new Error(`The ${label} workbook has no table 3.1`);
+  const domesticEntries = domestic.values[4];
+  expectSum(domestic.values.slice(0, 4), domesticEntries, domesticTable);
+
+  // Table 3.2: wine that came in from other countries, by colour and
+  // presentation, then from the rest of the EU and from third countries,
+  // then the total.
+  const foreignTable = `Table 3.2 of ${label}`;
+  const foreign = flowTotals(
+    workbook,
+    FOREIGN_ENTRIES_SHEET,
+    /^cuadro 3\.2 entradas de vino procedentes de otros paises\b/,
+    [
+      ...BY_COLOUR_AND_PRESENTATION,
+      [5, /^total del resto de la ue$/],
+      [6, /^total de terceros paises$/],
+      [7, /^total entradas de vino$/],
+    ],
+    foreignTable,
+    month,
+    year,
+  );
+  if (!foreign) throw new Error(`The ${label} workbook has no table 3.2`);
+  const [, , , , euEntries, thirdCountryEntries, foreignEntries] = foreign.values;
+  expectSum(foreign.values.slice(0, 4), foreignEntries, `${foreignTable}, by colour`);
+  expectSum([euEntries, thirdCountryEntries], foreignEntries, `${foreignTable}, by origin`);
+
+  // Table 4.0: wine that went out within Spain, to other uses than
+  // distilleries and vinegar makers, to distilleries and to vinegar makers,
+  // with their total; then to the rest of the EU and to third countries,
+  // with their total; then, except in March 2019, the grand total.
+  const exitsTable = `Table 4.0 of ${label}`;
+  const exits = flowTotals(
+    workbook,
+    EXITS_SHEET,
+    /^cuadro 4\.0? salidas de vino por ccaa y destino\b/,
+    [
+      [1, /^salidas interiores$/],
+      [1, /^distintas de destileria\s*\/\s*vinagreria$/],
+      [2, /^destileria$/],
+      [3, /^vinagreria$/],
+      [4, /^total$/],
+      [5, /^salidas exteriores\b/],
+      [5, /^ue$/],
+      [6, /^terceros paises$/],
+      [7, /^total$/],
+    ],
+    exitsTable,
+    month,
+    year,
+  );
+  if (!exits) throw new Error(`The ${label} workbook has no table 4.0`);
+  const [domesticExits, distillation, vinegar, withinSpain, euExits, thirdCountryExits, abroad] =
+    exits.values;
+  expectSum([domesticExits, distillation, vinegar], withinSpain, `${exitsTable}, within Spain`);
+  expectSum([euExits, thirdCountryExits], abroad, `${exitsTable}, abroad`);
+  if (hasHeading(exits, 8, /^total salidas$/)) {
+    expectSum([withinSpain, abroad], exits.values[7], exitsTable);
+  }
+
+  // Table 4.6: wine taken out for the declarants' own operations, red and
+  // rosé, white, then the total. Published since July 2021, and missing
+  // from some workbooks since.
+  const ownTable = `Table 4.6 of ${label}`;
+  const own = flowTotals(
+    workbook,
+    OWN_OPERATIONS_SHEET,
+    /^cuadro 4\.6\.? salidas operaciones propias\b/,
+    [
+      [1, /^salidas operaciones propias$/],
+      [1, RED],
+      [2, /^blanco$/],
+      [3, /^total vino$/],
+    ],
+    ownTable,
+    month,
+    year,
+  );
+  if (own) expectSum(own.values.slice(0, 2), own.values[2], ownTable);
+
+  return [
+    ...stocksAndProduction,
+    figure("entries-domestic", "wine", "all", "all", domesticEntries),
+    figure("entries-eu", "wine", "all", "all", euEntries),
+    figure("entries-third-countries", "wine", "all", "all", thirdCountryEntries),
+    figure("exits-domestic", "wine", "all", "all", domesticExits),
+    figure("exits-distillation", "wine", "all", "all", distillation),
+    figure("exits-vinegar", "wine", "all", "all", vinegar),
+    figure("exits-eu", "wine", "all", "all", euExits),
+    figure("exits-third-countries", "wine", "all", "all", thirdCountryExits),
+    ...(own ? [figure("exits-own-operations", "wine", "all", "all", own.values[2])] : []),
   ];
 }

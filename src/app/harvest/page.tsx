@@ -6,8 +6,10 @@ import { HarvestTimelineList } from "@/components/harvest/HarvestTimelineList";
 import { RegionalStatusTable } from "@/components/harvest/RegionalStatusTable";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
+import { CountryLabel } from "@/components/ui/CountryLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
+import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getHarvestService } from "@/services/harvest/service";
 import { getSource } from "@/services/markets/sources";
@@ -15,7 +17,7 @@ import { getSource } from "@/services/markets/sources";
 export const metadata: Metadata = {
   title: "Harvest",
   description:
-    "The 2026 European harvest: regional stages, progress, weather, yield expectations and production forecasts for Spain, Portugal, France and Italy.",
+    "The 2026 European harvest: official production forecasts for Spain, Portugal, France and Italy, with regional stages, progress, weather and yield expectations.",
 };
 
 export default async function HarvestPage() {
@@ -38,30 +40,57 @@ export default async function HarvestPage() {
         ]}
         kicker="Crop & Supply"
         title="Harvest monitor"
-        description="The 2026 campaign across representative regions of Spain, Portugal, France and Italy: stages, progress, weather, yield expectations and forecasts. Progress figures are approximate by design; development content is an illustrative sample."
+        description="The 2026 campaign in Spain, Portugal, France and Italy. Production forecasts are the official ones, as each country's forecasters published them; the summary, regional reports and timeline are illustrative samples."
         activeHref="/harvest"
       />
 
-      <div className="mt-8">
-        <HarvestSummaryPanel summary={summary} />
-      </div>
-
-      <section className="mt-12">
+      <section className="mt-10">
         <SectionHeader
           kicker="Forecasts"
           title="Country production forecasts"
-          description="First estimates as ranges against the previous campaign. Point forecasts are not published at this stage of the season."
+          description="The latest official forecast for each country against the previous campaign, as the same source counts it. France revises its estimate every month until November; Spain estimates wine only once the harvest is in; Italy reports results only after it."
         />
         <div className="mt-5">
-          <ForecastRangeTable forecasts={forecasts} />
+          <ForecastRangeTable
+            forecasts={forecasts}
+            note="Each source counts its own scope: France all wine, including wine for brandy; Portugal wine; Spain wine and must. Forecasts are revised as the harvest goes on."
+          />
+        </div>
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {forecasts.map((forecast) => {
+            const source = getSource(forecast.sourceId);
+            return (
+              <article
+                key={forecast.country}
+                className="border-l-2 border-wine bg-wine-wash/30 py-3 pr-4 pl-5"
+              >
+                <CountryLabel code={forecast.country} withName />
+                <p className="mt-2 text-sm leading-relaxed text-ink">
+                  {forecast.commentary}
+                </p>
+                <p className="wt-label mt-2 text-ink-soft">
+                  {forecast.publishedAt
+                    ? `Published ${formatDate(forecast.publishedAt)}`
+                    : null}
+                </p>
+                <div className="mt-1">
+                  <SourceLine source={{ name: source.name, url: source.url }} />
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
+
+      <div className="mt-12">
+        <HarvestSummaryPanel summary={summary} />
+      </div>
 
       <section id="weather" className="mt-12 scroll-mt-6">
         <SectionHeader
           kicker="Regional status"
           title="Regions in detail"
-          description="Stage, start, approximate progress, weather, quality and yield outlook, region by region. Direction triangles compare the expected crop with the previous campaign."
+          description="Illustrative samples of field reporting: stage, start, approximate progress, weather, quality and yield outlook, region by region. Direction triangles compare the expected crop with the previous campaign."
           action={{ label: "Supply balance", href: "/supply" }}
         />
         <div className="mt-5">
@@ -75,30 +104,14 @@ export default async function HarvestPage() {
         </div>
       </section>
 
-      <section className="mt-12">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-          <div>
-            <SectionHeader kicker="Campaign diary" title="Timeline" />
-            <div className="mt-5">
-              <HarvestTimelineList events={timeline} />
-            </div>
-          </div>
-          <div>
-            <SectionHeader kicker="Desk" title="Regional commentary" />
-            <div className="mt-5 space-y-4">
-              {forecasts.map((forecast) => (
-                <article
-                  key={forecast.country}
-                  className="border-l-2 border-wine bg-wine-wash/30 py-3 pr-4 pl-5"
-                >
-                  <p className="wt-label text-wine">{forecast.country}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-ink">
-                    {forecast.commentary}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
+      <section className="mt-12 max-w-3xl">
+        <SectionHeader
+          kicker="Campaign diary"
+          title="Timeline"
+          description="Illustrative sample of the dated events the desk records through the season."
+        />
+        <div className="mt-5">
+          <HarvestTimelineList events={timeline} />
         </div>
       </section>
     </Container>

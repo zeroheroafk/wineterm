@@ -3,7 +3,7 @@
  *
  * Development-only sample records demonstrating the homepage sections.
  * Values are plausible orders of magnitude, not real observations, and
- * every record carries an illustrative or forecast status. No real or
+ * every record carries the illustrative status. No real or
  * invented companies, transactions or people appear. See
  * src/fixtures/README.md for the rules this file follows.
  */
@@ -278,7 +278,7 @@ export const supplySnapshot: SupplySnapshot = {
     },
   ],
   note: "Availability is opening stocks plus estimated production plus imports, matching the supply balance; the bars show production and opening stocks. First estimates are revised through the autumn.",
-  status: "forecast",
+  status: "illustrative",
   source: { name: "National harvest estimates (sample)" },
   updatedAt: HOME_UPDATED_AT,
 };

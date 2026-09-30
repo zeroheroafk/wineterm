@@ -49,18 +49,25 @@ export interface HarvestRegionReport {
   status: DataStatus;
 }
 
-/** Country-level production forecast expressed as a range. */
+/**
+ * Country-level production forecast: a range, or a single figure where
+ * the source publishes one (min equals max), against the previous
+ * campaign as the same source counts it.
+ */
 export interface CountryHarvestForecast {
   country: ProducerCountry;
-  /** Forecast range for the new campaign, Mhl. */
-  minMhl: number;
-  maxMhl: number;
-  /** Previous campaign production, Mhl, for comparison. */
-  previousMhl: number;
-  direction: CropDirection;
+  /** Forecast for the new campaign, Mhl; null while none is published. */
+  minMhl: number | null;
+  maxMhl: number | null;
+  /** Previous campaign's production, Mhl, for comparison; null when not available. */
+  previousMhl: number | null;
+  /** Null while no forecast is published. */
+  direction: CropDirection | null;
   commentary: string;
   status: DataStatus;
   sourceId: SourceId;
+  /** When the source published the figures; absent for samples. */
+  publishedAt?: string;
   updatedAt: string;
 }
 
@@ -76,6 +83,7 @@ export interface HarvestTimelineEvent {
 
 /** The desk's executive summary for the harvest page. */
 export interface HarvestSummary {
+  status: DataStatus;
   updatedAt: string;
   paragraphs: string[];
   keyPoints: { id: string; text: string; direction: CropDirection }[];

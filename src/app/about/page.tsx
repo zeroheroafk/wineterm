@@ -43,9 +43,10 @@ export default function AboutPage() {
             </p>
             <p>
               WineTerm is currently in development. Trade figures credited to
-              Eurostat, and Spain&apos;s national bulk wine prices and wine
-              stocks credited to the Ministry of Agriculture (MAPA), are
-              official statistics;
+              Eurostat, Spain&apos;s national bulk wine prices and its
+              declared wine stocks, production, entries and exits credited to
+              the Ministry of Agriculture (MAPA), and the harvest forecasts
+              credited to Agreste, the IVV and MAPA are official figures;
               every other figure shown today is an illustrative sample,
               marked as such. The{" "}
               <Link
