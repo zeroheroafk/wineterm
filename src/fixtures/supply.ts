@@ -38,7 +38,6 @@ const b = (
   domesticUseMhl: number,
   exportsMhl: number,
   vineyardKha: number,
-  status: SupplyBalance["status"],
 ): SupplyBalance => ({
   campaign,
   country,
@@ -48,7 +47,7 @@ const b = (
   domesticUseMhl,
   exportsMhl,
   vineyardKha,
-  status,
+  status: "illustrative",
   sourceId: "sample-supply-stats",
   updatedAt: SUPPLY_UPDATED_AT,
 });
@@ -59,21 +58,21 @@ const b = (
  * next campaign's declared opening stocks.
  */
 export const supplyBalances: SupplyBalance[] = [
-  // 2024/25, final
-  b("2024/25", "ES", 31.4, 31.2, 0.6, 12.9, 20.6, 935, "final"),
-  b("2024/25", "PT", 7.7, 6.9, 1.3, 5.4, 3.0, 191, "final"),
-  b("2024/25", "FR", 41.0, 36.1, 0.9, 27.0, 12.5, 755, "final"),
-  b("2024/25", "IT", 40.0, 41.1, 0.4, 25.2, 17.0, 672, "final"),
-  // 2025/26, provisional
-  b("2025/26", "ES", 28.9, 32.0, 0.7, 12.0, 20.9, 932, "provisional"),
-  b("2025/26", "PT", 7.5, 7.0, 1.4, 5.6, 3.1, 190, "provisional"),
-  b("2025/26", "FR", 38.6, 44.0, 0.8, 30.6, 13.0, 752, "provisional"),
-  b("2025/26", "IT", 39.5, 44.0, 0.3, 26.0, 17.3, 671, "provisional"),
-  // 2026/27, first estimates
-  b("2026/27", "ES", 30.2, 34.5, 0.8, 12.1, 21.0, 930, "forecast"),
-  b("2026/27", "PT", 7.4, 6.9, 1.5, 5.5, 3.0, 190, "forecast"),
-  b("2026/27", "FR", 37.5, 42.0, 0.7, 30.0, 12.8, 750, "forecast"),
-  b("2026/27", "IT", 38.9, 47.3, 0.3, 25.6, 17.5, 670, "forecast"),
+  // 2024/25, standing in for final figures
+  b("2024/25", "ES", 31.4, 31.2, 0.6, 12.9, 20.6, 935),
+  b("2024/25", "PT", 7.7, 6.9, 1.3, 5.4, 3.0, 191),
+  b("2024/25", "FR", 41.0, 36.1, 0.9, 27.0, 12.5, 755),
+  b("2024/25", "IT", 40.0, 41.1, 0.4, 25.2, 17.0, 672),
+  // 2025/26, standing in for provisional figures
+  b("2025/26", "ES", 28.9, 32.0, 0.7, 12.0, 20.9, 932),
+  b("2025/26", "PT", 7.5, 7.0, 1.4, 5.6, 3.1, 190),
+  b("2025/26", "FR", 38.6, 44.0, 0.8, 30.6, 13.0, 752),
+  b("2025/26", "IT", 39.5, 44.0, 0.3, 26.0, 17.3, 671),
+  // 2026/27, standing in for first estimates
+  b("2026/27", "ES", 30.2, 34.5, 0.8, 12.1, 21.0, 930),
+  b("2026/27", "PT", 7.4, 6.9, 1.5, 5.5, 3.0, 190),
+  b("2026/27", "FR", 37.5, 42.0, 0.7, 30.0, 12.8, 750),
+  b("2026/27", "IT", 38.9, 47.3, 0.3, 25.6, 17.5, 670),
 ];
 
 const p = (

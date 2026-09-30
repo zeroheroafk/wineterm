@@ -275,7 +275,9 @@ export default function MethodologyPage() {
             not exact: domestic use bundles industrial uses, distillation
             and losses; reference dates differ by country; and figures are
             revised. Residuals against declared stocks are shown, never
-            smoothed away.
+            smoothed away. Spain&apos;s balance instead adds up the monthly
+            declarations to the Ministry of Agriculture, and shows what they
+            leave unaccounted.
           </p>
           <p>
             Stock declarations are compared within a country against the
@@ -324,7 +326,7 @@ export default function MethodologyPage() {
         <SectionHeader
           kicker="Registry"
           title="Source registry"
-          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and wine stocks, are added as their data is licensed and connected."
+          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and the monthly wine declarations, are added as their data is licensed and connected."
         />
         <div className="mt-5 overflow-x-auto border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
@@ -381,9 +383,10 @@ export default function MethodologyPage() {
           <p>
             WineTerm is in development. Trade figures credited to Eurostat
             Comext are official statistics, refreshed every month, and
-            Spain&apos;s national average bulk wine prices and month-end wine
-            stocks credited to MAPA are official statistics, refreshed every
-            week. Every other
+            Spain&apos;s national average bulk wine prices and its monthly
+            declarations of wine stocks, production, entries and exits
+            credited to MAPA are official statistics, refreshed every week.
+            Every other
             figure currently shown is an illustrative sample carrying the
             Illustrative, Forecast or Estimate status, every other named
             source is a stand-in, and nothing on the platform is investment

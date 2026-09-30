@@ -162,6 +162,77 @@ export interface CampaignProduction {
 }
 
 /**
+ * Spain's wine balance from 1 August to the end of one month of a
+ * campaign, as declared to the Ministry of Agriculture (INFOVI), Mhl.
+ * Entries and exits are summed over the months; stocks are those declared
+ * at 31 July before the campaign and at the end of the last month.
+ */
+export interface SpainCampaignBalance {
+  campaign: string;
+  /** Last month covered, e.g. "2026-07": July for a whole campaign. */
+  throughMonth: string;
+  /** Held at 31 July before the campaign. */
+  openingMhl: number;
+  /** Made since 1 August. */
+  madeMhl: number;
+  /** Came in from other operators in Spain. */
+  entriesDomesticMhl: number;
+  entriesEuMhl: number;
+  entriesThirdCountriesMhl: number;
+  /** Opening stocks, wine made and every entry. */
+  availabilityMhl: number;
+  /** Went out within Spain, other than to distilleries and vinegar makers. */
+  exitsDomesticMhl: number;
+  exitsDistillationMhl: number;
+  exitsVinegarMhl: number;
+  exitsEuMhl: number;
+  exitsThirdCountriesMhl: number;
+  /**
+   * Taken out for the declarants' own operations. Null when a month of
+   * the period has no such table: the ministry publishes it since July
+   * 2021, and it is missing for March 2022.
+   */
+  exitsOwnOperationsMhl: number | null;
+  /** Every exit, own operations included where declared. */
+  exitsMhl: number;
+  /** Availability minus exits. */
+  computedClosingMhl: number;
+  /** Held at the end of the last month, as declared. */
+  closingMhl: number;
+  /**
+   * Declared minus computed closing stocks: losses, uses not declared as
+   * exits, and later revisions of the monthly declarations.
+   */
+  unaccountedMhl: number;
+  /**
+   * Exits within Spain less entries from other operators in Spain. Trade
+   * between declarants is counted both ways, so this is roughly the wine
+   * that reached the Spanish market; it also nets off wine bought from
+   * producers too small to declare monthly.
+   */
+  netDomesticExitsMhl: number;
+}
+
+/**
+ * Spain's declared wine balance: the latest campaign to date against the
+ * one before to the same month, and the campaigns completed before.
+ */
+export interface SpainBalance {
+  /** Latest month with declared entries and exits, e.g. "2026-07". */
+  latestMonth: string;
+  latest: SpainCampaignBalance;
+  /** The campaign before, to the same month; null when not fully declared. */
+  previous: SpainCampaignBalance | null;
+  /** Completed campaigns with every month's entries and exits, latest first. */
+  history: SpainCampaignBalance[];
+  sourceId: SourceId;
+  /** When the ministry published the latest month. */
+  publishedAt: string;
+  /** When WineTerm last updated the figures. */
+  updatedAt: string;
+}
+
+/**
  * Spain's wine production as declared to the Ministry of Agriculture
  * (INFOVI) by producers of 1,000 hl or more: wine made since 1 August,
  * month by month, and the totals of completed campaigns. Must is not
