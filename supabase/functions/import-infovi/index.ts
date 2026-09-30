@@ -1,8 +1,10 @@
 /**
- * Imports Spain's monthly wine stocks and production from the Ministry of
- * Agriculture's INFOVI summaries into public.supply_figures: stocks of
- * wine and must at the end of each month, and wine made since 1 August,
- * national totals in hectolitres, from the monthly workbooks of one year.
+ * Imports Spain's monthly wine stocks, production, entries and exits from
+ * the Ministry of Agriculture's INFOVI summaries into
+ * public.supply_figures: stocks of wine and must at the end of each month,
+ * wine made since 1 August, and wine that came in or went out during the
+ * month by origin and destination, national totals in hectolitres, from
+ * the monthly workbooks of one year.
  *
  * The database decides what runs: private.start_infovi_imports() queues
  * one run per year in public.import_runs and posts its id here. This
