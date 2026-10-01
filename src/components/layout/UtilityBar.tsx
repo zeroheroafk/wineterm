@@ -1,7 +1,14 @@
 import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
-import { EditionDate } from "@/components/layout/EditionDate";
+import { CurrentDate } from "@/components/ui/CurrentDate";
+
+const EDITION_FORMAT: Intl.DateTimeFormatOptions = {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+};
 
 /**
  * Compact institutional strip above the masthead: edition date, coverage
@@ -13,7 +20,7 @@ export function UtilityBar() {
     <div className="wt-on-dark bg-wine-deep text-xs text-wine-wash">
       <Container className="flex h-7 items-center justify-between gap-4">
         <p className="truncate">
-          <EditionDate />
+          <CurrentDate options={EDITION_FORMAT} />
           <span className="hidden md:inline">
             <span aria-hidden="true" className="mx-2.5 opacity-50">
               |

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
 import { WordmarkInverted } from "@/components/layout/Wordmark";
+import { CurrentDate } from "@/components/ui/CurrentDate";
 import { footerNavigation } from "@/lib/navigation";
 
 /**
@@ -10,8 +11,6 @@ import { footerNavigation } from "@/lib/navigation";
  * The newsletter signup lives on the pages themselves, not here.
  */
 export function SiteFooter() {
-  const year = new Date().getFullYear();
-
   return (
     <footer className="wt-on-dark mt-16 bg-wine-deep text-wine-wash">
       <Container className="py-9">
@@ -49,7 +48,8 @@ export function SiteFooter() {
 
         <div className="mt-8 border-t border-wine-wash/20 pt-4">
           <p className="max-w-4xl text-xs leading-relaxed text-wine-wash/85">
-            &copy; {year} WineTerm. All rights reserved. Content is provided
+            &copy; <CurrentDate options={{ year: "numeric" }} unit="year" />{" "}
+            WineTerm. All rights reserved. Content is provided
             for professional information purposes and is not investment
             advice. Figures shown during development are illustrative samples,
             not live market data.
