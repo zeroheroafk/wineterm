@@ -197,6 +197,7 @@ export type ArticleKind =
   | "monthly-report";
 
 export interface Article {
+  /** Stable identifier, which is also the article's URL slug. */
   id: string;
   kind: ArticleKind;
   /** Section label shown above the headline, e.g. "Bulk Market". */
@@ -206,6 +207,51 @@ export interface Article {
   publishedAt: string;
   readingMinutes: number;
   href: string;
+}
+
+/** A run of citation text: plain, or the title of a work, set in italics. */
+export type CitationText = string | { title: string };
+
+/** One paragraph of an article, with the sources it cites at its end. */
+export interface ArticleParagraph {
+  text: string;
+  /** Numbers of the sources cited, counting from 1. */
+  cites?: number[];
+}
+
+/** One numbered source in an article's source list. */
+export interface ArticleSource {
+  /** The citation as printed, linked to its address. */
+  citation: CitationText[];
+  url: string;
+  /** A caveat printed after the citation, outside the link. */
+  note?: string;
+}
+
+/**
+ * A chart of figures an article cites: one part's share of one or more
+ * wholes, e.g. bulk wine's share of export volume and of export value.
+ */
+export interface ArticleChart {
+  title: string;
+  /** What the part and the wholes cover. */
+  description: string;
+  /** The part, e.g. "Bulk wine". */
+  part: string;
+  /** The rest of each whole, e.g. "All other wine". */
+  rest: string;
+  /** One bar per whole, with the part's share of it in percent. */
+  bars: { label: string; percent: number }[];
+  source: DataSource;
+  /** The paragraph the chart follows in the article, counting from 0. */
+  afterParagraph: number;
+}
+
+/** A published article: its preview fields, full text and sources. */
+export interface ArticleDetail extends Article {
+  body: ArticleParagraph[];
+  sources: ArticleSource[];
+  chart?: ArticleChart;
 }
 
 /** A short dated commentary block attached to a market table. */

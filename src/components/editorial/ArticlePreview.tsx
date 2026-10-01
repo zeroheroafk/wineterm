@@ -21,7 +21,10 @@ export function ArticlePreview({
 }: {
   article: Article;
   variant?: "lead" | "list" | "feature" | "compact";
-  /** Feature only: a chart built from data shown on the same page. */
+  /**
+   * Feature only: the article's own chart, or one built from data shown
+   * on the same page.
+   */
   visual?: ReactNode;
   /**
    * 3 (default) under a section heading; 2 when the previews sit directly

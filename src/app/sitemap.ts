@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { publishedArticles } from "@/content/articles";
 import { seriesFixtures } from "@/fixtures/markets/series";
 import { SITE_URL } from "@/lib/site";
 
@@ -13,6 +14,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${base}/markets/series/${f.series.code}`,
     changeFrequency: "weekly",
     priority: 0.5,
+  }));
+  const articleEntries: MetadataRoute.Sitemap = publishedArticles.map((a) => ({
+    url: `${base}${a.href}`,
+    changeFrequency: "monthly",
+    priority: 0.6,
   }));
   return [
     { url: `${base}/`, changeFrequency: "daily", priority: 1 },
@@ -42,6 +48,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.7,
     },
+    ...articleEntries,
     {
       url: `${base}/insights/weekly-briefing`,
       changeFrequency: "weekly",

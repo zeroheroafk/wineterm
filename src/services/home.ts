@@ -6,8 +6,9 @@
  * service and never copied: the key prices are series of the markets
  * catalogue, the market strip repeats the key prices, the harvest
  * monitor shows the Harvest page's region reports, the supply snapshot
- * is the current campaign's supply balance and the trade snapshot comes
- * from the trade service. Sections with a connected source read it:
+ * is the current campaign's supply balance, the trade snapshot comes
+ * from the trade service and the analysis is the latest published by the
+ * editorial service. Sections with a connected source read it:
  * trade from Eurostat, and the key prices and the market strip from the
  * imported price series, listed before the illustrative series that
  * complete them.
@@ -17,8 +18,6 @@ import {
   HOME_UPDATED_AT,
   ILLUSTRATIVE_PRICE_SOURCE,
   harvestMonitorRegions,
-  homeLeadAnalysis,
-  homeSecondaryAnalysis,
   industryDigest,
   keyPriceCodes,
   leadBriefing,
@@ -26,6 +25,7 @@ import {
   stripPriceCodes,
   supplySnapshotText,
 } from "@/fixtures/home";
+import { getEditorialService } from "@/services/editorial";
 import { getHarvestService } from "@/services/harvest/service";
 import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import { getSource, type SourceId } from "@/services/markets/sources";
@@ -38,6 +38,7 @@ import {
 } from "@/services/trade/service";
 import type {
   Article,
+  ArticleDetail,
   DataSource,
   DataStatus,
   HarvestRegion,
@@ -57,7 +58,8 @@ export interface HomeService {
   getSupplySnapshot(): Promise<SupplySnapshot>;
   getHarvestRegions(): Promise<HarvestRegion[]>;
   getTradeOverview(): Promise<TradeOverview>;
-  getLeadAnalysis(): Promise<Article>;
+  /** The latest analysis with its full text, when one is published. */
+  getLeadAnalysis(): Promise<ArticleDetail | null>;
   getSecondaryAnalysis(): Promise<Article[]>;
   getIndustryDigest(): Promise<IndustryDigest>;
   /** When the key prices were last updated. */
@@ -268,12 +270,15 @@ class FixtureHomeService implements HomeService {
     return getIllustrativeTradeService().getOverview();
   }
 
-  async getLeadAnalysis(): Promise<Article> {
-    return homeLeadAnalysis;
+  async getLeadAnalysis(): Promise<ArticleDetail | null> {
+    const editorial = getEditorialService();
+    const [lead] = await editorial.getArticlesByKind("analysis", 1);
+    return lead ? editorial.getArticle(lead.id) : null;
   }
 
   async getSecondaryAnalysis(): Promise<Article[]> {
-    return homeSecondaryAnalysis;
+    const latest = await getEditorialService().getArticlesByKind("analysis", 3);
+    return latest.slice(1);
   }
 
   async getIndustryDigest(): Promise<IndustryDigest> {

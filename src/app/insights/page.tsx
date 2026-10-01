@@ -42,7 +42,7 @@ export default async function InsightsPage() {
       />
 
       <div className="mt-8">
-        <DevContentNotice />
+        <DevContentNotice text="Development content: the Market Outlook and Weekly Briefing editions below are illustrative placeholders demonstrating the editorial format, not published reporting." />
       </div>
 
       <section className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -96,12 +96,16 @@ export default async function InsightsPage() {
               action={{ label: "All analysis", href: "/insights/analysis" }}
             />
             <div className="mt-5">
-              <ArticlePreview article={analysis[0]} variant="lead" />
-              <div className="mt-6 border-t-2 border-ink pt-4">
-                {analysis.slice(1).map((article) => (
-                  <ArticlePreview key={article.id} article={article} />
-                ))}
-              </div>
+              {analysis[0] ? (
+                <ArticlePreview article={analysis[0]} variant="lead" />
+              ) : null}
+              {analysis.length > 1 ? (
+                <div className="mt-6 border-t-2 border-ink pt-4">
+                  {analysis.slice(1).map((article) => (
+                    <ArticlePreview key={article.id} article={article} />
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -112,25 +116,33 @@ export default async function InsightsPage() {
                 title="News"
                 action={{ label: "All news", href: "/insights/news" }}
               />
-              <ul className="mt-5">
-                {news.map((article) => (
-                  <li
-                    key={article.id}
-                    className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
-                  >
-                    <p className="wt-label text-wine">{article.section}</p>
-                    <p className="mt-0.5 text-sm leading-snug font-medium text-ink">
-                      {article.headline}
-                    </p>
-                    <time
-                      dateTime={article.publishedAt}
-                      className="wt-label mt-1 block text-ink-soft"
+              {news.length > 0 ? (
+                <ul className="mt-5">
+                  {news.map((article) => (
+                    <li
+                      key={article.id}
+                      className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
                     >
-                      {formatDate(article.publishedAt)}
-                    </time>
-                  </li>
-                ))}
-              </ul>
+                      <p className="wt-label text-wine">{article.section}</p>
+                      <p className="mt-0.5 text-sm leading-snug font-medium text-ink">
+                        <Link href={article.href} className="hover:text-wine-deep">
+                          {article.headline}
+                        </Link>
+                      </p>
+                      <time
+                        dateTime={article.publishedAt}
+                        className="wt-label mt-1 block text-ink-soft"
+                      >
+                        {formatDate(article.publishedAt)}
+                      </time>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-5 text-sm text-ink-soft">
+                  No news published yet. Reporting starts at launch.
+                </p>
+              )}
             </div>
 
             <div>
