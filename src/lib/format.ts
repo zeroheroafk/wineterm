@@ -97,6 +97,16 @@ export function formatDateTime(iso: string): string {
   return `${formatted} UTC`;
 }
 
+/** Month and year for period labels, e.g. "Jun 2026" from "2026-06". */
+export function formatMonthYear(isoMonth: string): string {
+  const [year, month] = isoMonth.split("-").map(Number);
+  return new Intl.DateTimeFormat(EN_GB, {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, 1)));
+}
+
 /** Month label for compact chart ticks, e.g. "Jun 26" from "2026-06". */
 export function formatMonth(isoMonth: string): string {
   const [year, month] = isoMonth.split("-").map(Number);

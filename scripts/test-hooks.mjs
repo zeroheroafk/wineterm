@@ -1,8 +1,9 @@
 /**
  * Module resolution for `node --test`, which runs the TypeScript sources
  * directly with Node's type stripping. Resolves the "@/" path alias from
- * tsconfig.json to src/, and extensionless relative imports to their .ts
- * file, as the bundler does. No dependencies.
+ * tsconfig.json to src/, extensionless relative imports to their .ts
+ * file, and package subpaths without an exports map, such as
+ * "next/cache", to their .js file, as the bundler does. No dependencies.
  */
 
 import { existsSync } from "node:fs";
@@ -19,6 +20,11 @@ function locate(base) {
   return null;
 }
 
+/** "next/cache" but not "next", "node:fs" or "@scope/package". */
+function isPackageSubpath(specifier) {
+  return /^(@[^/]+\/)?[^./@][^/]*\/.+/.test(specifier) && !specifier.endsWith(".js");
+}
+
 registerHooks({
   resolve(specifier, context, nextResolve) {
     let base = null;
@@ -32,6 +38,13 @@ registerHooks({
       base = new URL(specifier, context.parentURL);
     }
     const found = base ? locate(base) : null;
-    return nextResolve(found ?? specifier, context);
+    try {
+      return nextResolve(found ?? specifier, context);
+    } catch (error) {
+      if (error?.code === "ERR_MODULE_NOT_FOUND" && isPackageSubpath(specifier)) {
+        return nextResolve(`${specifier}.js`, context);
+      }
+      throw error;
+    }
   },
 });

@@ -3,7 +3,7 @@ import { sharedStatusNote } from "@/components/ui/DataStatusLabel";
 import { DataNote } from "@/components/ui/SourceLine";
 import { formatPrice } from "@/lib/format";
 import {
-  COUNTRY_NAMES,
+  countryName,
   type TradeOverview,
   type TradeRankRow,
   type TradeSplitSegment,
@@ -61,13 +61,17 @@ function RankedList({
             <tr key={row.country} className="border-b border-rule">
               <td className={`${TD} tnum text-ink-soft`}>{row.rank}</td>
               <th scope="row" className={`${TD} font-medium text-ink`}>
-                {COUNTRY_NAMES[row.country]}
+                {countryName(row.country)}
               </th>
               <td className={`${TD} tnum text-right font-semibold text-ink`}>
                 {formatPrice(row.volumeMhl, 1)}
               </td>
               <td className={`${TD} text-right`}>
-                <InlinePercentChange value={row.yoyPercent} />
+                {row.yoyPercent === null ? (
+                  <span className="text-ink-soft">n/a</span>
+                ) : (
+                  <InlinePercentChange value={row.yoyPercent} />
+                )}
               </td>
             </tr>
           ))}
@@ -150,7 +154,7 @@ export function TradeFlowsPanel({ overview }: { overview: TradeOverview }) {
       <div className="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
         <RankedList
           title="Leading exporters"
-          scope="Bulk, bottled and sparkling wine"
+          scope={overview.exportersLabel}
           rows={overview.exporters}
           period={overview.period}
         />

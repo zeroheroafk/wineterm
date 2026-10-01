@@ -13,13 +13,13 @@ export default function PrivacyPage() {
     <LegalPage
       title="Privacy"
       description="How WineTerm handles personal data."
-      updatedAt="2026-08-21"
+      updatedAt="2026-09-26"
       sections={[
         {
           heading: "What we collect",
           paragraphs: [
             "WineTerm collects the data you give us directly: an email address when you sign up for the briefing, and the details you include when you contact us. The platform itself can be read without an account.",
-            "During the development period, signup and contact forms are not connected to processing systems; submissions are not stored.",
+            "Signups and contact messages are stored in a database in the European Union (Paris region), operated for WineTerm by Supabase as data processor. They are never exposed through the site; only WineTerm can read them.",
           ],
         },
         {

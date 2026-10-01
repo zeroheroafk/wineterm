@@ -9,43 +9,38 @@ import { TradePartnersTable } from "@/components/trade/TradePartnersTable";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { primaryNavigation } from "@/lib/navigation";
-import { getSource } from "@/services/markets/sources";
 import { getTradeService } from "@/services/trade/service";
 import {
+  TRADE_CATEGORIES,
   TRADE_CATEGORY_LABELS,
-  type TradeCategory,
-  type TradeMonthlyPoint,
 } from "@/services/trade/types";
 
 export const metadata: Metadata = {
   title: "Trade",
   description:
-    "Wine trade flows by customs category: bulk, bottled still, sparkling, and must and concentrates. Volumes, values, unit values and partners.",
+    "Wine trade of Spain, Portugal, France and Italy by customs category: bulk, bottled and bag-in-box still wine, sparkling wine and grape must. Volumes, values, unit values and partners.",
 };
 
-const CATEGORY_ORDER: TradeCategory[] = ["bulk", "bottled", "sparkling", "must"];
+// Eurostat publishes monthly; regenerate at most hourly so a new month
+// shows up soon after the import.
+export const revalidate = 3600;
 
 export default async function TradePage() {
   const trade = getTradeService();
-  const [period, summaries, details] = await Promise.all([
-    trade.getPeriod(),
-    trade.getCategorySummaries(),
-    trade.getAllCategoryDetails(),
-  ]);
-  const monthly = await Promise.all(
-    CATEGORY_ORDER.map((category) => trade.getMonthlyExportVolumes(category)),
-  );
-  const customsSource = getSource("sample-customs");
-
-  const monthlyPoints = monthly[0].map((point: TradeMonthlyPoint, index) => {
-    const row: { month: string; [key: string]: string | number } = {
-      month: point.month,
-    };
-    CATEGORY_ORDER.forEach((category, categoryIndex) => {
-      row[category] = monthly[categoryIndex][index].volumeMhl;
-    });
-    return row;
-  });
+  const [period, source, updatedAt, summaries, details, monthly] =
+    await Promise.all([
+      trade.getPeriod(),
+      trade.getSource(),
+      trade.getUpdatedAt(),
+      trade.getCategorySummaries(),
+      trade.getAllCategoryDetails(),
+      Promise.all(
+        TRADE_CATEGORIES.map((category) =>
+          trade.getMonthlyExportVolumes(category),
+        ),
+      ),
+    ]);
+  const attribution = { name: source.name, url: source.url };
 
   return (
     <Container className="pb-16">
@@ -54,7 +49,11 @@ export default async function TradePage() {
         crumbs={[{ label: "Trade" }]}
         kicker="Trade"
         title="Imports and exports"
-        description="External trade of Spain, Portugal, France and Italy by customs category. Bulk, bottled still, sparkling, and must and concentrates are separate headings and are never combined. Development figures are illustrative samples."
+        description={
+          source.isSample
+            ? "Trade of Spain, Portugal, France and Italy by customs category. Bulk, bottled and bag-in-box still wine, sparkling wine and grape must are separate subheadings and are never combined. Development figures are illustrative samples."
+            : "Trade of Spain, Portugal, France and Italy with every partner, by customs category. Bulk, bottled and bag-in-box still wine, sparkling wine and grape must are separate subheadings and are never combined. Official Eurostat statistics; volumes are the litres declared for each shipment."
+        }
         activeHref="/trade"
       />
 
@@ -73,29 +72,37 @@ export default async function TradePage() {
         <SectionHeader
           kicker="Evolution"
           title="Monthly export volumes"
-          description="Combined exports of the four countries, by category, over the last 24 months. Sparkling shows its usual year-end seasonality; each line is a separate customs heading."
+          description="Combined exports of the four countries over the last 24 months, one chart per category. Each chart has its own scale, to show the shape of the year; the table above compares sizes."
         />
-        <figure className="mt-5 border border-rule bg-paper">
-          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-rule px-4 py-3">
-            <h3 className="text-sm font-semibold text-ink">
-              Exports by category
-            </h3>
-            <p className="wt-label text-ink-soft">Mhl per month</p>
-          </div>
-          <div className="px-2 py-3">
-            <MonthlyLinesChart
-              points={monthlyPoints}
-              series={CATEGORY_ORDER.map((category) => ({
-                key: category,
-                name: TRADE_CATEGORY_LABELS[category],
-              }))}
-              unit="Mhl"
-            />
-          </div>
-          <figcaption className="border-t border-rule px-4 py-2.5">
-            <SourceLine source={{ name: customsSource.name }} />
-          </figcaption>
-        </figure>
+        <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {TRADE_CATEGORIES.map((category, index) => (
+            <figure key={category} className="min-w-0 border border-rule bg-paper">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-rule px-4 py-3">
+                <h3 className="text-sm font-semibold text-ink">
+                  {TRADE_CATEGORY_LABELS[category]}
+                </h3>
+                <p className="wt-label text-ink-soft">Mhl per month</p>
+              </div>
+              <div className="px-2 py-3">
+                <MonthlyLinesChart
+                  points={monthly[index].map((point) => ({
+                    month: point.month,
+                    volume: point.volumeMhl,
+                  }))}
+                  series={[
+                    { key: "volume", name: TRADE_CATEGORY_LABELS[category] },
+                  ]}
+                  unit="Mhl"
+                  decimals={2}
+                  height={180}
+                />
+              </div>
+            </figure>
+          ))}
+        </div>
+        <div className="mt-3">
+          <SourceLine source={attribution} updatedAt={updatedAt} />
+        </div>
       </section>
 
       {details.map((detail) => (
@@ -134,10 +141,13 @@ export default async function TradePage() {
       ))}
 
       <p className="wt-label mt-10 max-w-3xl leading-relaxed text-ink-soft">
-        Source: {customsSource.name}, {customsSource.cadence.toLowerCase()}.
+        Source: {source.name}, {source.cadence.toLowerCase()}.
+        {source.isSample
+          ? ""
+          : " The period ends at the latest month all four countries have published."}{" "}
         Shares are within each category and direction. Monthly changes
-        compare the latest available month with the month before; annual
-        changes compare rolling 12-month periods.
+        compare the latest month with the month before; annual changes
+        compare rolling 12-month periods.
       </p>
     </Container>
   );

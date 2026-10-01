@@ -9,13 +9,22 @@ import {
   type FilterFieldConfig,
 } from "@/components/markets/MarketFilterPanel";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
-import { UpdatedAt } from "@/components/ui/SourceLine";
-import { getMarketsService } from "@/services/markets/service";
+import { SourceLine, UpdatedAt } from "@/components/ui/SourceLine";
+import {
+  getMarketsService,
+  hasRealSeries,
+  isIllustrative,
+} from "@/services/markets/service";
 import {
   filterFromParams,
   type SearchParams,
 } from "@/services/markets/params";
-import { COUNTRY_NAMES, type CountryCode } from "@/services/types";
+import { getSource } from "@/services/markets/sources";
+import {
+  COUNTRY_NAMES,
+  type CountryCode,
+  type DataSource,
+} from "@/services/types";
 
 export const metadata: Metadata = {
   title: "Bulk Wine Prices",
@@ -32,13 +41,28 @@ export default async function BulkWinePage({
   const markets = getMarketsService();
   const filter = filterFromParams(params);
 
-  const [rows, options, commentary] = await Promise.all([
+  const [rows, options, commentary, hasReal] = await Promise.all([
     markets.getRows("bulk-wine", filter),
     markets.getFilterOptions("bulk-wine"),
     markets.getCommentary("bulk-wine"),
+    hasRealSeries("bulk-wine"),
   ]);
 
-  const updatedAt = rows[0]?.latest.updatedAt;
+  const updatedAt = rows
+    .map((row) => row.latest.updatedAt)
+    .sort()
+    .at(-1);
+  // The publishers of the real prices shown, cited under the table.
+  const realSources = [
+    ...new Map(
+      rows
+        .filter((row) => !isIllustrative(row))
+        .map((row): [string, DataSource] => {
+          const source = getSource(row.series.sourceId);
+          return [source.id, { name: source.name, url: source.url }];
+        }),
+    ).values(),
+  ];
 
   const fields: FilterFieldConfig[] = [
     {
@@ -138,7 +162,11 @@ export default async function BulkWinePage({
       <MarketsPageHeader
         crumb="Bulk Wine Prices"
         title="Bulk Wine Prices"
-        description="Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit; EUR/hl normalisations are labelled, never substituted. Development figures are illustrative samples."
+        description={
+          hasReal
+            ? "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit; EUR/hl normalisations are labelled, never substituted. Spain's national averages are official MAPA statistics, listed first; the other series are illustrative samples, marked as such."
+            : "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit; EUR/hl normalisations are labelled, never substituted. Development figures are illustrative samples."
+        }
         activeHref="/markets/bulk-wine"
       />
 
@@ -154,10 +182,18 @@ export default async function BulkWinePage({
 
       <div className="mt-5">
         <BulkPricesTable rows={rows} />
+        {realSources.length > 0 ? (
+          <div className="mt-2">
+            <SourceLine source={realSources} />
+          </div>
+        ) : null}
         <p className="wt-label mt-2 text-ink-soft">
           <sup className="text-ochre-deep">n</sup> Normalised to EUR/hl from the
           original unit for comparability. The original observation is always
           shown first and is never replaced.
+          {rows.some(isIllustrative)
+            ? " Rows marked Illustrative are development samples, not market prices; their EUR/hl values are shown as recorded, a unit not verified against a published price series."
+            : null}
         </p>
       </div>
 

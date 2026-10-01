@@ -5,9 +5,10 @@
  * Figures that exist in another domain are read from that domain's
  * service and never copied: the market strip repeats the key price
  * records, the supply snapshot is the current campaign's supply balance
- * and the trade snapshot is built from the trade categories. The
- * fixture-backed implementation is development-only; a production
- * implementation composes real sources without any component changes.
+ * and the trade snapshot comes from the trade service. Sections with a
+ * connected source read it: trade from Eurostat, and the key prices and
+ * the market strip from the imported price series, listed before the
+ * illustrative records that complete them.
  */
 
 import {
@@ -22,27 +23,26 @@ import {
   stripPriceCodes,
   supplySnapshotText,
 } from "@/fixtures/home";
+import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import { getSource, type SourceId } from "@/services/markets/sources";
+import type { MarketRow, SeriesObservation } from "@/services/markets/types";
 import { getSupplyService } from "@/services/supply/service";
 import type { SupplyBalanceComputed } from "@/services/supply/types";
-import { getTradeService } from "@/services/trade/service";
 import {
-  TRADE_CATEGORY_LABELS,
-  type TradeCategoryDetail,
-  type TradePeriod,
-} from "@/services/trade/types";
+  getIllustrativeTradeService,
+  getTradeService,
+} from "@/services/trade/service";
 import type {
   Article,
-  CountryCode,
   DataStatus,
   HarvestRegion,
   IndustryDigest,
   MarketBriefing,
   PriceQuote,
+  PriceUnit,
   StripQuote,
   SupplySnapshot,
   TradeOverview,
-  TradeRankRow,
 } from "@/services/types";
 
 export interface HomeService {
@@ -55,6 +55,7 @@ export interface HomeService {
   getLeadAnalysis(): Promise<Article>;
   getSecondaryAnalysis(): Promise<Article[]>;
   getIndustryDigest(): Promise<IndustryDigest>;
+  /** When the key prices were last updated. */
   getLastUpdated(): Promise<string>;
 }
 
@@ -84,8 +85,6 @@ export function buildMarketStrip(
   });
   return [...fromKeyPrices, ...others];
 }
-
-const round1 = (value: number) => Math.round(value * 10) / 10;
 
 /** Sample sources stand in for real ones, so their figures are illustrative. */
 function statusFor(sourceId: SourceId, status: DataStatus): DataStatus {
@@ -131,103 +130,6 @@ export function buildSupplySnapshot(
   };
 }
 
-/**
- * The customs categories that are wine. Their volumes are hectolitres of
- * wine and add up; must and concentrates are shipped at very different
- * concentrations and are never added to them.
- */
-export const WINE_TRADE_CATEGORIES = ["bulk", "bottled", "sparkling"] as const;
-
-type WineTradeCategory = (typeof WINE_TRADE_CATEGORIES)[number];
-
-/** Product form names for the composition list. */
-const FORM_LABELS: Record<WineTradeCategory, string> = {
-  bulk: "Bulk",
-  bottled: "Bottled",
-  sparkling: "Sparkling",
-};
-
-/** The category whose leading destinations the snapshot lists. */
-const DESTINATIONS_CATEGORY: WineTradeCategory = "bottled";
-
-/**
- * The trade snapshot, built from the trade categories:
- *
- * - exporters: each country's wine exports, summed across the three wine
- *   categories; the year-on-year change compares that sum with the sum
- *   of the same rows' volumes a year earlier;
- * - destinations: one category's ranked list as published, because the
- *   destination lists are top-five rankings and cannot be summed across
- *   categories without missing partners;
- * - split: each wine category's share of their combined volume. Still
- *   wine in containers of 2 to 10 litres belongs to none of the sample
- *   categories, so the shares cover only the forms shown.
- */
-export function buildTradeOverview(
-  period: TradePeriod,
-  details: TradeCategoryDetail[],
-): TradeOverview {
-  const wine = WINE_TRADE_CATEGORIES.map((category) => {
-    const detail = details.find((d) => d.category === category);
-    if (!detail) throw new Error(`No trade data for ${category}`);
-    return { category, detail };
-  });
-
-  const totals = new Map<CountryCode, { current: number; previous: number }>();
-  for (const { detail } of wine) {
-    for (const row of detail.exporters) {
-      const total = totals.get(row.country) ?? { current: 0, previous: 0 };
-      total.current += row.volumeMhl;
-      total.previous += row.volumeMhl / (1 + row.yoyPercent / 100);
-      totals.set(row.country, total);
-    }
-  }
-  const exporters: TradeRankRow[] = [...totals.entries()]
-    .map(([country, total]) => ({
-      country,
-      volumeMhl: round1(total.current),
-      yoyPercent: (total.current / total.previous - 1) * 100,
-    }))
-    .sort((a, b) => b.volumeMhl - a.volumeMhl)
-    .map((row, index) => ({ rank: index + 1, ...row }));
-
-  const destinations: TradeRankRow[] = wine
-    .find(({ category }) => category === DESTINATIONS_CATEGORY)!
-    .detail.destinations.map((row) => ({
-      rank: row.rank,
-      country: row.country,
-      volumeMhl: row.volumeMhl,
-      yoyPercent: row.yoyPercent,
-    }));
-
-  const splitTotalMhl = round1(
-    wine.reduce((sum, { detail }) => sum + detail.summary.exportVolumeMhl, 0),
-  );
-  const split = wine.map(({ category, detail }) => ({
-    label: FORM_LABELS[category],
-    volumeMhl: detail.summary.exportVolumeMhl,
-    sharePercent: (detail.summary.exportVolumeMhl / splitTotalMhl) * 100,
-  }));
-
-  const { detail: first } = wine[0];
-  return {
-    period: period.label,
-    exporters,
-    destinations,
-    destinationsLabel: TRADE_CATEGORY_LABELS[DESTINATIONS_CATEGORY],
-    split,
-    splitTotalMhl,
-    scopeNote:
-      "Wine adds the bulk, bottled and sparkling categories; grape must is a separate heading and is not included. Still wine in containers of 2 to 10 litres, such as bag-in-box, is not covered by these categories.",
-    status: statusFor(first.sourceId, first.summary.status),
-    source: { name: getSource(first.sourceId).name },
-    updatedAt: wine
-      .map(({ detail }) => detail.updatedAt)
-      .sort()
-      .at(-1)!,
-  };
-}
-
 class FixtureHomeService implements HomeService {
   async getMarketStrip(): Promise<StripQuote[]> {
     return buildMarketStrip(keyPrices, stripPriceCodes, stripOtherQuotes);
@@ -260,12 +162,7 @@ class FixtureHomeService implements HomeService {
   }
 
   async getTradeOverview(): Promise<TradeOverview> {
-    const trade = getTradeService();
-    const [period, details] = await Promise.all([
-      trade.getPeriod(),
-      trade.getAllCategoryDetails(),
-    ]);
-    return buildTradeOverview(period, details);
+    return getIllustrativeTradeService().getOverview();
   }
 
   async getLeadAnalysis(): Promise<Article> {
@@ -285,9 +182,115 @@ class FixtureHomeService implements HomeService {
   }
 }
 
-let service: HomeService | null = null;
+const PRICE_UNITS: PriceUnit[] = ["EUR/hl", "EUR/kg", "EUR/tonne"];
 
+interface ImportedPrice {
+  row: MarketRow;
+  previous: SeriesObservation;
+}
+
+/** Real bulk wine prices, each with its previous observation. */
+async function importedPrices(): Promise<ImportedPrice[]> {
+  const markets = getMarketsService();
+  const rows = (await markets.getRows("bulk-wine")).filter(
+    (row) => !isIllustrative(row),
+  );
+  const prices = await Promise.all(
+    rows.map(async (row) => {
+      const history = await markets.getHistory(row.series.code, "3m");
+      return { row, previous: history.at(-2) };
+    }),
+  );
+  return prices.filter(
+    (price): price is ImportedPrice => price.previous !== undefined,
+  );
+}
+
+function priceUnit(row: MarketRow): PriceUnit | null {
+  const unit = row.series.unit as PriceUnit;
+  return PRICE_UNITS.includes(unit) ? unit : null;
+}
+
+function marketName(row: MarketRow): string {
+  return row.series.appellation ?? row.series.region;
+}
+
+/** Real prices first, then the illustrative records. */
+class LiveHomeService extends FixtureHomeService {
+  async getMarketStrip(): Promise<StripQuote[]> {
+    const imported = (await importedPrices()).flatMap(({ row, previous }) => {
+      const unit = priceUnit(row);
+      if (!unit) return [];
+      const source = getSource(row.series.sourceId);
+      return [
+        {
+          id: `st-${row.series.code.toLowerCase()}`,
+          name: [marketName(row), row.series.colour].filter(Boolean).join(" "),
+          country: row.series.country,
+          value: row.latest.value,
+          unit,
+          changePercent: (row.latest.value / previous.value - 1) * 100,
+          observedAt: row.latest.date,
+          status: row.latest.status,
+          source: { name: source.name, url: source.url },
+        },
+      ];
+    });
+    return [...imported, ...(await super.getMarketStrip())];
+  }
+
+  async getKeyPrices(): Promise<PriceQuote[]> {
+    const imported = (await importedPrices()).flatMap(({ row, previous }) => {
+      const unit = priceUnit(row);
+      if (!unit) return [];
+      const source = getSource(row.series.sourceId);
+      return [
+        {
+          id: `kp-${row.series.code.toLowerCase()}`,
+          code: row.series.code,
+          market: marketName(row),
+          country: row.series.country,
+          colour: row.series.colour,
+          product: row.series.product,
+          price: row.latest.value,
+          unit,
+          change: Math.round((row.latest.value - previous.value) * 100) / 100,
+          changePercent: (row.latest.value / previous.value - 1) * 100,
+          yoyPercent: row.changes.yoyPercent ?? undefined,
+          observedAt: row.latest.date,
+          status: row.latest.status,
+          source: { name: source.name, url: source.url },
+        },
+      ];
+    });
+    return [...imported, ...(await super.getKeyPrices())];
+  }
+
+  async getTradeOverview(): Promise<TradeOverview> {
+    // Eurostat when Supabase is configured.
+    return getTradeService().getOverview();
+  }
+
+  async getLastUpdated(): Promise<string> {
+    const updates = (await importedPrices()).map(({ row }) => row.latest.updatedAt);
+    return [HOME_UPDATED_AT, ...updates].sort().at(-1)!;
+  }
+}
+
+let service: HomeService | null = null;
+let illustrative: HomeService | null = null;
+
+/** The homepage as published: real sources where connected. */
 export function getHomeService(): HomeService {
-  service ??= new FixtureHomeService();
+  service ??= new LiveHomeService();
   return service;
+}
+
+/**
+ * Always the illustrative records, for sample publications such as the
+ * Market Outlook, whose text was written against them.
+ */
+export function getIllustrativeHomeService(): HomeService {
+  illustrative ??= new FixtureHomeService();
+  return illustrative;
 }

@@ -49,10 +49,11 @@ export function SiteFooter() {
         <div className="mt-8 border-t border-wine-wash/20 pt-4">
           <p className="text-[0.8125rem] leading-normal text-wine-wash">
             &copy; <CurrentDate options={{ year: "numeric" }} unit="year" />{" "}
-            WineTerm. All rights reserved. Content is provided
-            for professional information purposes and is not investment
-            advice. Figures shown during development are illustrative samples,
-            not live market data.
+            WineTerm. All rights reserved. Content is provided for
+            professional information purposes and is not investment advice.
+            During development, figures are illustrative samples, not live
+            market data, unless credited to an official source such as
+            Eurostat or MAPA.
           </p>
         </div>
       </Container>
