@@ -8,25 +8,27 @@
  * src/fixtures/README.md for the rules this file follows.
  */
 
-import type {
-  Article,
-  HarvestRegion,
-  IndustryDigest,
-  MarketBriefing,
-  PriceQuote,
-  StripQuote,
+import {
+  quoteFromPerDegree,
+  type Article,
+  type DataSource,
+  type HarvestRegion,
+  type IndustryDigest,
+  type MarketBriefing,
+  type PriceQuote,
+  type StripQuote,
 } from "@/services/types";
 
 /**
- * The samples record EUR/hl, but values of 4 to 8 are the usual size of
- * bulk quotes per hectolitre-degree rather than per hectolitre. Nothing
- * in the records says which, and converting would need each record's own
- * alcohol strength, so the values are shown exactly as recorded and the
- * doubt is stated wherever they are cited.
+ * The sample bulk prices are recorded per hectolitre-degree, the usual
+ * basis of bulk quotations, and shown in EUR/hl so that they read in the
+ * unit of the official prices beside them. Each record keeps its
+ * recorded figures and the strength they were converted at; the note
+ * travels with every citation of the source.
  */
-const ILLUSTRATIVE_SOURCE = {
+export const ILLUSTRATIVE_PRICE_SOURCE: DataSource = {
   name: "Regional market bulletin (sample)",
-  note: "The sample prices are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+  note: "The sample prices are recorded per hectolitre-degree and shown in EUR/hl at each wine's strength: as stated, the midpoint of a stated range, or an assumed 12% vol where none is stated.",
 };
 
 export const HOME_UPDATED_AT = "2026-08-21T09:30:00Z";
@@ -88,14 +90,17 @@ export const keyPrices: PriceQuote[] = [
     country: "ES",
     colour: "red",
     product: "Generic red, 12 to 13 percent vol",
-    price: 4.1,
-    unit: "EUR/hl",
-    change: 0.1,
+    ...quoteFromPerDegree({
+      price: 4.1,
+      change: 0.1,
+      alcoholPercent: 12.5,
+      strengthBasis: "range-midpoint",
+    }),
     changePercent: 2.5,
     yoyPercent: 7.9,
     observedAt: "2026-08-20",
     status: "illustrative",
-    source: ILLUSTRATIVE_SOURCE,
+    source: ILLUSTRATIVE_PRICE_SOURCE,
   },
   {
     id: "kp-es-clm-white",
@@ -104,14 +109,17 @@ export const keyPrices: PriceQuote[] = [
     country: "ES",
     colour: "white",
     product: "Generic white, 11 to 12 percent vol",
-    price: 3.85,
-    unit: "EUR/hl",
-    change: -0.05,
+    ...quoteFromPerDegree({
+      price: 3.85,
+      change: -0.05,
+      alcoholPercent: 11.5,
+      strengthBasis: "range-midpoint",
+    }),
     changePercent: -1.3,
     yoyPercent: -3.8,
     observedAt: "2026-08-20",
     status: "illustrative",
-    source: ILLUSTRATIVE_SOURCE,
+    source: ILLUSTRATIVE_PRICE_SOURCE,
   },
   {
     id: "kp-es-ext-red",
@@ -120,14 +128,17 @@ export const keyPrices: PriceQuote[] = [
     country: "ES",
     colour: "red",
     product: "Generic red, 12 percent vol",
-    price: 3.95,
-    unit: "EUR/hl",
-    change: 0,
+    ...quoteFromPerDegree({
+      price: 3.95,
+      change: 0,
+      alcoholPercent: 12,
+      strengthBasis: "stated",
+    }),
     changePercent: 0,
     yoyPercent: 5.3,
     observedAt: "2026-08-19",
     status: "illustrative",
-    source: ILLUSTRATIVE_SOURCE,
+    source: ILLUSTRATIVE_PRICE_SOURCE,
   },
   {
     id: "kp-pt-ale-red",
@@ -136,14 +147,17 @@ export const keyPrices: PriceQuote[] = [
     country: "PT",
     colour: "red",
     product: "Generic red, 13 percent vol",
-    price: 5.4,
-    unit: "EUR/hl",
-    change: 0.15,
+    ...quoteFromPerDegree({
+      price: 5.4,
+      change: 0.15,
+      alcoholPercent: 13,
+      strengthBasis: "stated",
+    }),
     changePercent: 2.9,
     yoyPercent: 6.1,
     observedAt: "2026-08-20",
     status: "illustrative",
-    source: ILLUSTRATIVE_SOURCE,
+    source: ILLUSTRATIVE_PRICE_SOURCE,
   },
   {
     id: "kp-pt-lis-white",
@@ -152,14 +166,17 @@ export const keyPrices: PriceQuote[] = [
     country: "PT",
     colour: "white",
     product: "Generic white, 11.5 percent vol",
-    price: 4.6,
-    unit: "EUR/hl",
-    change: -0.2,
+    ...quoteFromPerDegree({
+      price: 4.6,
+      change: -0.2,
+      alcoholPercent: 11.5,
+      strengthBasis: "stated",
+    }),
     changePercent: -4.2,
     yoyPercent: -2.4,
     observedAt: "2026-08-20",
     status: "illustrative",
-    source: ILLUSTRATIVE_SOURCE,
+    source: ILLUSTRATIVE_PRICE_SOURCE,
   },
   {
     id: "kp-fr-lan-red",
@@ -168,14 +185,17 @@ export const keyPrices: PriceQuote[] = [
     country: "FR",
     colour: "red",
     product: "Vin de France red, without GI",
-    price: 7.8,
-    unit: "EUR/hl",
-    change: 0.05,
+    ...quoteFromPerDegree({
+      price: 7.8,
+      change: 0.05,
+      alcoholPercent: 12,
+      strengthBasis: "assumed",
+    }),
     changePercent: 0.6,
     yoyPercent: -1.2,
     observedAt: "2026-08-18",
     status: "illustrative",
-    source: ILLUSTRATIVE_SOURCE,
+    source: ILLUSTRATIVE_PRICE_SOURCE,
   },
   {
     id: "kp-it-pug-red",
@@ -184,14 +204,17 @@ export const keyPrices: PriceQuote[] = [
     country: "IT",
     colour: "red",
     product: "Generic red, 12.5 percent vol",
-    price: 5.9,
-    unit: "EUR/hl",
-    change: -0.1,
+    ...quoteFromPerDegree({
+      price: 5.9,
+      change: -0.1,
+      alcoholPercent: 12.5,
+      strengthBasis: "stated",
+    }),
     changePercent: -1.7,
     yoyPercent: 2.8,
     observedAt: "2026-08-19",
     status: "illustrative",
-    source: ILLUSTRATIVE_SOURCE,
+    source: ILLUSTRATIVE_PRICE_SOURCE,
   },
 ];
 

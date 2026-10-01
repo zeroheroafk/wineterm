@@ -212,7 +212,7 @@ export default function MethodologyPage() {
         <SectionHeader
           kicker="Units"
           title="Units and normalisation"
-          description="Observations keep the unit their source publishes. Nothing is converted silently."
+          description="Observations keep the unit their source publishes, apart from prices per hectolitre-degree. Nothing is converted silently."
         />
         <Prose>
           <p>
@@ -223,6 +223,16 @@ export default function MethodologyPage() {
             marker and shown alongside the original observation, never
             instead of it. Volume and mass quotations are never converted
             into each other.
+          </p>
+          <p>
+            Bulk wine and must are often quoted per hectolitre-degree: euros
+            per hectolitre for each percent of alcohol by volume. Those
+            prices are shown in EUR/hl, so that every bulk price reads in one
+            unit: the price per degree multiplied by the wine&apos;s strength,
+            or the must&apos;s potential strength. The strength is the one
+            the product states, the midpoint of a stated range, or, for the
+            illustrative samples that state none, an assumed 12% vol. Each
+            series page gives the value as recorded and the strength used.
           </p>
         </Prose>
         <ScrollRegion className="mt-5 max-w-xl border border-rule bg-paper">

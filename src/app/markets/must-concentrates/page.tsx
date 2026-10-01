@@ -113,6 +113,9 @@ export default async function MustConcentratesPage({
           Prices refer to the stated specification (potential alcohol for
           must, Brix for concentrates). Quotations with different
           specifications are separate series and are not averaged together.
+          {rows.some((row) => row.series.perDegree)
+            ? " Must samples recorded per hectolitre-degree are shown in EUR/hl at the stated potential alcohol, or the midpoint of a stated range; each series page gives the recorded value and the strength used."
+            : null}
         </p>
       </div>
 
