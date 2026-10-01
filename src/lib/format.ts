@@ -32,6 +32,11 @@ export function formatPercent(value: number, decimals = 1): string {
   return `${formatted}%`;
 }
 
+/** Unsigned share of a whole, e.g. "34%" / "7.3%". */
+export function formatShare(value: number): string {
+  return `${new Intl.NumberFormat(EN_GB, { maximumFractionDigits: 1 }).format(value)}%`;
+}
+
 /** Signed absolute change in the series unit, e.g. "+0.15" / "−0.05". */
 export function formatChange(value: number, decimals = 2): string {
   const formatted = formatPrice(Math.abs(value), decimals);

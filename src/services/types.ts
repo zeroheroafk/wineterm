@@ -228,10 +228,30 @@ export interface ArticleSource {
   note?: string;
 }
 
+/**
+ * A chart of figures an article cites: one part's share of one or more
+ * wholes, e.g. bulk wine's share of export volume and of export value.
+ */
+export interface ArticleChart {
+  title: string;
+  /** What the part and the wholes cover. */
+  description: string;
+  /** The part, e.g. "Bulk wine". */
+  part: string;
+  /** The rest of each whole, e.g. "All other wine". */
+  rest: string;
+  /** One bar per whole, with the part's share of it in percent. */
+  bars: { label: string; percent: number }[];
+  source: DataSource;
+  /** The paragraph the chart follows in the article, counting from 0. */
+  afterParagraph: number;
+}
+
 /** A published article: its preview fields, full text and sources. */
 export interface ArticleDetail extends Article {
   body: ArticleParagraph[];
   sources: ArticleSource[];
+  chart?: ArticleChart;
 }
 
 /** A short dated commentary block attached to a market table. */

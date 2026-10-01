@@ -38,6 +38,7 @@ import {
 } from "@/services/trade/service";
 import type {
   Article,
+  ArticleDetail,
   DataSource,
   DataStatus,
   HarvestRegion,
@@ -57,8 +58,8 @@ export interface HomeService {
   getSupplySnapshot(): Promise<SupplySnapshot>;
   getHarvestRegions(): Promise<HarvestRegion[]>;
   getTradeOverview(): Promise<TradeOverview>;
-  /** The latest analysis, when one is published. */
-  getLeadAnalysis(): Promise<Article | null>;
+  /** The latest analysis with its full text, when one is published. */
+  getLeadAnalysis(): Promise<ArticleDetail | null>;
   getSecondaryAnalysis(): Promise<Article[]>;
   getIndustryDigest(): Promise<IndustryDigest>;
   /** When the key prices were last updated. */
@@ -269,9 +270,10 @@ class FixtureHomeService implements HomeService {
     return getIllustrativeTradeService().getOverview();
   }
 
-  async getLeadAnalysis(): Promise<Article | null> {
-    const [lead] = await getEditorialService().getArticlesByKind("analysis", 1);
-    return lead ?? null;
+  async getLeadAnalysis(): Promise<ArticleDetail | null> {
+    const editorial = getEditorialService();
+    const [lead] = await editorial.getArticlesByKind("analysis", 1);
+    return lead ? editorial.getArticle(lead.id) : null;
   }
 
   async getSecondaryAnalysis(): Promise<Article[]> {

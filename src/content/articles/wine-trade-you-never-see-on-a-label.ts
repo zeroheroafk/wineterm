@@ -2,6 +2,9 @@ import type { ArticleDetail } from "@/services/types";
 
 const id = "wine-trade-you-never-see-on-a-label";
 
+const oivReport =
+  "https://www.oiv.int/sites/default/files/2026-05/OIV-State_of_the_World_Wine_Sector_in_2025.pdf";
+
 export const wineTradeYouNeverSeeOnALabel: ArticleDetail = {
   id,
   kind: "analysis",
@@ -73,7 +76,7 @@ export const wineTradeYouNeverSeeOnALabel: ArticleDetail = {
         { title: "State of the World Wine Sector in 2025" },
         ", May 2026, international trade section",
       ],
-      url: "https://www.oiv.int/sites/default/files/2026-05/OIV-State_of_the_World_Wine_Sector_in_2025.pdf",
+      url: oivReport,
       note: "Figures are OIV estimates and may be revised.",
     },
     {
@@ -105,4 +108,21 @@ export const wineTradeYouNeverSeeOnALabel: ArticleDetail = {
       url: "https://www.wineaustralia.com/research_and_innovation/projects/maximising-quality-during-bulk-wine-transport",
     },
   ],
+  chart: {
+    title: "Bulk wine's share of world wine exports, 2025",
+    description:
+      "Wine shipped in containers of more than ten litres, as a percent of all wine exported",
+    part: "Bulk wine",
+    rest: "All other wine",
+    bars: [
+      { label: "Volume", percent: 34 },
+      { label: "Value", percent: 7.3 },
+    ],
+    source: {
+      name: "OIV, State of the World Wine Sector in 2025",
+      url: oivReport,
+      note: "Figures are OIV estimates and may be revised.",
+    },
+    afterParagraph: 1,
+  },
 };

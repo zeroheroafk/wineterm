@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Fragment } from "react";
 
+import { ShareChart } from "@/components/charts/ShareChart";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
@@ -105,15 +107,21 @@ export default async function AnalysisArticlePage({
 
           <div className="mt-8 max-w-2xl space-y-5">
             {article.body.map((paragraph, index) => (
-              <p
-                key={index}
-                className="text-[1.0625rem] leading-[1.7] text-pretty text-ink"
-              >
-                {paragraph.text}
-                {paragraph.cites ? (
-                  <Citations numbers={paragraph.cites} />
+              <Fragment key={index}>
+                <p className="text-[1.0625rem] leading-[1.7] text-pretty text-ink">
+                  {paragraph.text}
+                  {paragraph.cites ? (
+                    <Citations numbers={paragraph.cites} />
+                  ) : null}
+                </p>
+                {article.chart?.afterParagraph === index ? (
+                  <ShareChart
+                    chart={article.chart}
+                    titleId={`${article.id}-chart`}
+                    className="border-y border-rule py-5"
+                  />
                 ) : null}
-              </p>
+              </Fragment>
             ))}
           </div>
 

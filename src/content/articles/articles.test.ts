@@ -1,0 +1,50 @@
+/**
+ * Consistency checks for the published articles: each is served at the
+ * address its preview links to, every citation names a listed source and
+ * every source is cited, and a chart shows the figures the paragraph it
+ * follows states.
+ */
+
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+
+import { publishedArticles } from "@/content/articles";
+import { formatShare } from "@/lib/format";
+
+describe("published articles", () => {
+  it("have unique ids and link to their own page", () => {
+    const ids = publishedArticles.map((article) => article.id);
+    assert.equal(new Set(ids).size, ids.length);
+    for (const article of publishedArticles) {
+      assert.equal(article.kind, "analysis", article.id);
+      assert.equal(article.href, `/insights/analysis/${article.id}`);
+    }
+  });
+
+  it("cite only listed sources, and cite each of them", () => {
+    for (const article of publishedArticles) {
+      const cited = new Set(article.body.flatMap((p) => p.cites ?? []));
+      for (const number of cited) {
+        assert.ok(
+          number >= 1 && number <= article.sources.length,
+          `${article.id} cites [${number}]`,
+        );
+      }
+      assert.equal(cited.size, article.sources.length, article.id);
+    }
+  });
+
+  it("chart the figures stated in the paragraph before the chart", () => {
+    for (const article of publishedArticles) {
+      if (!article.chart) continue;
+      const paragraph = article.body[article.chart.afterParagraph];
+      assert.ok(paragraph, `${article.id} chart position`);
+      for (const bar of article.chart.bars) {
+        assert.ok(
+          paragraph.text.includes(formatShare(bar.percent)),
+          `${article.id}: ${bar.label} ${formatShare(bar.percent)}`,
+        );
+      }
+    }
+  });
+});
