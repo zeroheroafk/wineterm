@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { keyPriceCodes } from "@/fixtures/home";
+import { getHarvestService } from "@/services/harvest/service";
 import { getHomeService, getIllustrativeHomeService } from "@/services/home";
 import { getMarketsService } from "@/services/markets/service";
 import { getSupplyService } from "@/services/supply/service";
@@ -91,6 +92,41 @@ describe("key prices", () => {
       const [week, year] = expected[quote.code];
       assert.equal(Math.round(quote.changePercent * 10) / 10, week, quote.code);
       assert.equal(Math.round(quote.yoyPercent! * 10) / 10, year, quote.code);
+    }
+  });
+});
+
+describe("lead briefing", () => {
+  it("places the first estimates where its summary does", async () => {
+    // "first estimates put the new crop above the five-year average in
+    // Spain and below it in Portugal"
+    const comparisons = await getSupplyService().getProductionComparisons();
+    const spain = comparisons.find((row) => row.country === "ES")!;
+    const portugal = comparisons.find((row) => row.country === "PT")!;
+    assert.ok(spain.vsFiveYearPercent > 0, `Spain ${spain.vsFiveYearPercent}`);
+    assert.ok(
+      portugal.vsFiveYearPercent < 0,
+      `Portugal ${portugal.vsFiveYearPercent}`,
+    );
+  });
+});
+
+describe("harvest monitor", () => {
+  it("shows the Harvest page's report for each region", async () => {
+    const reports = await getHarvestService().getRegionReports();
+    const regions = await home.getHarvestRegions();
+    assert.deepEqual(
+      regions.map((region) => region.country),
+      ["ES", "PT", "FR", "IT"],
+    );
+    for (const region of regions) {
+      const report = reports.find((candidate) => candidate.id === region.id);
+      assert.ok(report, region.id);
+      assert.equal(region.region, report.region, region.id);
+      assert.equal(region.stage, report.stage, region.id);
+      assert.equal(region.conditionNote, report.weather, region.id);
+      assert.equal(region.expected, report.direction, region.id);
+      assert.equal(region.updatedAt, report.updatedAt.slice(0, 10), region.id);
     }
   });
 });
