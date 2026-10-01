@@ -7,7 +7,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { keyPrices } from "@/fixtures/home";
+import { getIllustrativeHomeService } from "@/services/home";
 import { getMarketsService } from "@/services/markets/service";
 import {
   describeDegreeBasis,
@@ -70,8 +70,8 @@ describe("per-degree conversion", () => {
 });
 
 describe("sample key prices", () => {
-  it("keep the recorded figures beside their EUR/hl conversion", () => {
-    const samples = keyPrices.filter((quote) => quote.status === "illustrative");
+  it("keep the recorded figures beside their EUR/hl conversion", async () => {
+    const samples = await getIllustrativeHomeService().getKeyPrices();
     assert.ok(samples.length > 0);
     for (const quote of samples) {
       const recorded = quote.perDegree;
@@ -82,9 +82,12 @@ describe("sample key prices", () => {
         perHectolitre(recorded.price, recorded.alcoholPercent),
         quote.code,
       );
-      assert.equal(
-        quote.change,
-        perHectolitre(recorded.change, recorded.alcoholPercent),
+      // The change is between the converted prices, so it can differ by
+      // a cent from the converted recorded change.
+      assert.ok(
+        Math.abs(
+          quote.change - perHectolitre(recorded.change, recorded.alcoholPercent),
+        ) <= 0.01 + 1e-9,
         quote.code,
       );
       assertStrengthFollows(quote.product, recorded, quote.code);

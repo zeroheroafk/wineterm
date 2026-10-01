@@ -3,21 +3,23 @@
  *
  * Aggregates everything the homepage needs behind one typed interface.
  * Figures that exist in another domain are read from that domain's
- * service and never copied: the market strip repeats the key price
- * records, the supply snapshot is the current campaign's supply balance
- * and the trade snapshot comes from the trade service. Sections with a
- * connected source read it: trade from Eurostat, and the key prices and
- * the market strip from the imported price series, listed before the
- * illustrative records that complete them.
+ * service and never copied: the key prices are series of the markets
+ * catalogue, the market strip repeats the key prices, the supply
+ * snapshot is the current campaign's supply balance and the trade
+ * snapshot comes from the trade service. Sections with a connected
+ * source read it: trade from Eurostat, and the key prices and the market
+ * strip from the imported price series, listed before the illustrative
+ * series that complete them.
  */
 
 import {
   HOME_UPDATED_AT,
+  ILLUSTRATIVE_PRICE_SOURCE,
   harvestRegions,
   homeLeadAnalysis,
   homeSecondaryAnalysis,
   industryDigest,
-  keyPrices,
+  keyPriceCodes,
   leadBriefing,
   stripOtherQuotes,
   stripPriceCodes,
@@ -34,6 +36,7 @@ import {
 } from "@/services/trade/service";
 import type {
   Article,
+  DataSource,
   DataStatus,
   HarvestRegion,
   IndustryDigest,
@@ -130,9 +133,92 @@ export function buildSupplySnapshot(
   };
 }
 
+const PRICE_UNITS: PriceUnit[] = ["EUR/hl", "EUR/kg", "EUR/tonne"];
+
+/** A catalogue price series with the observation before its latest. */
+interface CataloguePrice {
+  row: MarketRow;
+  previous: SeriesObservation;
+}
+
+function priceUnit(row: MarketRow): PriceUnit | null {
+  const unit = row.series.unit as PriceUnit;
+  return PRICE_UNITS.includes(unit) ? unit : null;
+}
+
+function marketName(row: MarketRow): string {
+  return row.series.appellation ?? row.series.region;
+}
+
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+/**
+ * A key price from a catalogue series: the latest observation with its
+ * change on the previous one and on a year earlier, and the recorded
+ * figures of a series recorded per hectolitre-degree. Null when the
+ * series is priced in a unit the key prices do not show.
+ */
+function keyPrice(
+  { row, previous }: CataloguePrice,
+  source: DataSource,
+): PriceQuote | null {
+  const unit = priceUnit(row);
+  if (!unit) return null;
+  const { series, latest } = row;
+  const recorded =
+    series.perDegree &&
+    latest.perDegreeValue !== undefined &&
+    previous.perDegreeValue !== undefined
+      ? {
+          ...series.perDegree,
+          price: latest.perDegreeValue,
+          change: round2(latest.perDegreeValue - previous.perDegreeValue),
+        }
+      : undefined;
+  return {
+    id: `kp-${series.code.toLowerCase()}`,
+    code: series.code,
+    market: marketName(row),
+    country: series.country,
+    colour: series.colour,
+    product: series.product,
+    price: latest.value,
+    unit,
+    change: round2(latest.value - previous.value),
+    changePercent: (latest.value / previous.value - 1) * 100,
+    yoyPercent: row.changes.yoyPercent ?? undefined,
+    observedAt: latest.date,
+    status: latest.status,
+    source,
+    perDegree: recorded,
+  };
+}
+
+/** The sample series shown as key prices, read from the catalogue by code. */
+async function sampleKeyPrices(): Promise<PriceQuote[]> {
+  const markets = getMarketsService();
+  const prices = await Promise.all(
+    keyPriceCodes.map(async (code) => {
+      const row = await markets.getRow(code);
+      const previous = (await markets.getHistory(code, "3m")).at(-2);
+      if (!row || !isIllustrative(row) || !previous) {
+        throw new Error(`No sample series ${code} for the key prices`);
+      }
+      return { row, previous };
+    }),
+  );
+  return prices.flatMap((price) => keyPrice(price, ILLUSTRATIVE_PRICE_SOURCE) ?? []);
+}
+
 class FixtureHomeService implements HomeService {
   async getMarketStrip(): Promise<StripQuote[]> {
-    return buildMarketStrip(keyPrices, stripPriceCodes, stripOtherQuotes);
+    return buildMarketStrip(
+      await sampleKeyPrices(),
+      stripPriceCodes,
+      stripOtherQuotes,
+    );
   }
 
   async getLeadBriefing(): Promise<MarketBriefing> {
@@ -140,7 +226,7 @@ class FixtureHomeService implements HomeService {
   }
 
   async getKeyPrices(): Promise<PriceQuote[]> {
-    return keyPrices;
+    return sampleKeyPrices();
   }
 
   async getSupplySnapshot(): Promise<SupplySnapshot> {
@@ -182,15 +268,8 @@ class FixtureHomeService implements HomeService {
   }
 }
 
-const PRICE_UNITS: PriceUnit[] = ["EUR/hl", "EUR/kg", "EUR/tonne"];
-
-interface ImportedPrice {
-  row: MarketRow;
-  previous: SeriesObservation;
-}
-
 /** Real bulk wine prices, each with its previous observation. */
-async function importedPrices(): Promise<ImportedPrice[]> {
+async function importedPrices(): Promise<CataloguePrice[]> {
   const markets = getMarketsService();
   const rows = (await markets.getRows("bulk-wine")).filter(
     (row) => !isIllustrative(row),
@@ -202,20 +281,11 @@ async function importedPrices(): Promise<ImportedPrice[]> {
     }),
   );
   return prices.filter(
-    (price): price is ImportedPrice => price.previous !== undefined,
+    (price): price is CataloguePrice => price.previous !== undefined,
   );
 }
 
-function priceUnit(row: MarketRow): PriceUnit | null {
-  const unit = row.series.unit as PriceUnit;
-  return PRICE_UNITS.includes(unit) ? unit : null;
-}
-
-function marketName(row: MarketRow): string {
-  return row.series.appellation ?? row.series.region;
-}
-
-/** Real prices first, then the illustrative records. */
+/** Real prices first, then the illustrative series. */
 class LiveHomeService extends FixtureHomeService {
   async getMarketStrip(): Promise<StripQuote[]> {
     const imported = (await importedPrices()).flatMap(({ row, previous }) => {
@@ -240,28 +310,9 @@ class LiveHomeService extends FixtureHomeService {
   }
 
   async getKeyPrices(): Promise<PriceQuote[]> {
-    const imported = (await importedPrices()).flatMap(({ row, previous }) => {
-      const unit = priceUnit(row);
-      if (!unit) return [];
-      const source = getSource(row.series.sourceId);
-      return [
-        {
-          id: `kp-${row.series.code.toLowerCase()}`,
-          code: row.series.code,
-          market: marketName(row),
-          country: row.series.country,
-          colour: row.series.colour,
-          product: row.series.product,
-          price: row.latest.value,
-          unit,
-          change: Math.round((row.latest.value - previous.value) * 100) / 100,
-          changePercent: (row.latest.value / previous.value - 1) * 100,
-          yoyPercent: row.changes.yoyPercent ?? undefined,
-          observedAt: row.latest.date,
-          status: row.latest.status,
-          source: { name: source.name, url: source.url },
-        },
-      ];
+    const imported = (await importedPrices()).flatMap((price) => {
+      const source = getSource(price.row.series.sourceId);
+      return keyPrice(price, { name: source.name, url: source.url }) ?? [];
     });
     return [...imported, ...(await super.getKeyPrices())];
   }
@@ -287,7 +338,7 @@ export function getHomeService(): HomeService {
 }
 
 /**
- * Always the illustrative records, for sample publications such as the
+ * Always the illustrative series, for sample publications such as the
  * Market Outlook, whose text was written against them.
  */
 export function getIllustrativeHomeService(): HomeService {
