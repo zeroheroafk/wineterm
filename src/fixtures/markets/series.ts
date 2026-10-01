@@ -3,8 +3,10 @@
  *
  * Development stand-ins for the series catalogue. Codes, regions and
  * product descriptions are realistic in shape; values and sources are
- * illustrative. Anchor prices for the shared bulk series match the
- * homepage fixtures so figures agree across the site.
+ * illustrative. The homepage key prices are read from these series; the
+ * ones it shows pin their previous and year-ago observations, so their
+ * weekly and annual changes carry the market story the sample text
+ * tells.
  *
  * Series that set perDegree are recorded per hectolitre-degree, the
  * usual basis of bulk wine and must quotations, and shown in EUR/hl at
@@ -51,6 +53,8 @@ export const seriesFixtures: SeriesFixture[] = [
     },
     history: {
       latestValue: 4.1,
+      previousValue: 4.0,
+      yearAgoValue: 3.8,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.012,
@@ -82,6 +86,8 @@ export const seriesFixtures: SeriesFixture[] = [
     },
     history: {
       latestValue: 3.85,
+      previousValue: 3.9,
+      yearAgoValue: 4.0,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -175,6 +181,8 @@ export const seriesFixtures: SeriesFixture[] = [
     },
     history: {
       latestValue: 3.95,
+      previousValue: 3.95,
+      yearAgoValue: 3.75,
       points: WEEKLY_3Y,
       stepDays: 7,
       volatility: 0.012,
@@ -237,6 +245,8 @@ export const seriesFixtures: SeriesFixture[] = [
     },
     history: {
       latestValue: 5.4,
+      previousValue: 5.25,
+      yearAgoValue: 5.09,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -268,6 +278,8 @@ export const seriesFixtures: SeriesFixture[] = [
     },
     history: {
       latestValue: 4.6,
+      previousValue: 4.8,
+      yearAgoValue: 4.71,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.015,
@@ -330,6 +342,8 @@ export const seriesFixtures: SeriesFixture[] = [
     },
     history: {
       latestValue: 7.8,
+      previousValue: 7.75,
+      yearAgoValue: 7.89,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.011,
@@ -391,6 +405,8 @@ export const seriesFixtures: SeriesFixture[] = [
     },
     history: {
       latestValue: 5.9,
+      previousValue: 6.0,
+      yearAgoValue: 5.74,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
