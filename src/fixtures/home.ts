@@ -11,7 +11,7 @@
 import type {
   Article,
   DataSource,
-  HarvestRegion,
+  HarvestCondition,
   IndustryDigest,
   MarketBriefing,
   StripQuote,
@@ -67,10 +67,15 @@ export const stripOtherQuotes: StripQuote[] = [
   },
 ];
 
+/**
+ * Written against the sample data: the key prices' weekly changes and the
+ * first production estimates (src/fixtures/supply.ts), which put Spain
+ * above its five-year average and Portugal below it.
+ */
 export const leadBriefing: MarketBriefing = {
-  headline: "Old-vintage cover tightens as a short Iberian crop comes into view",
+  headline: "Old-vintage cover tightens as the new Iberian crop comes into view",
   summary:
-    "Buyers moved earlier than usual this week to cover generic red positions ahead of the harvest, while first estimates for the new campaign point below the five-year average in Spain and Portugal.",
+    "Buyers moved earlier than usual this week to cover generic red positions ahead of the harvest, while first estimates put the new crop above the five-year average in Spain and below it in Portugal.",
   development:
     "White availability stays comfortable for now; Lisboa whites eased on quiet export demand.",
   updatedAt: HOME_UPDATED_AT,
@@ -104,84 +109,21 @@ export const supplySnapshotText = {
   note: "Availability is opening stocks plus production plus imports, each as stated in the country's supply balance. First estimates are revised through the autumn.",
 };
 
-export const harvestRegions: HarvestRegion[] = [
-  {
-    id: "hv-clm",
-    region: "Castilla-La Mancha",
-    country: "ES",
-    stage: "Early picking in whites",
-    condition: "stressed",
-    conditionNote: "Dry; heat stress in unirrigated plots",
-    expected: "down",
-    updatedAt: "2026-08-20",
-    status: "illustrative",
-  },
-  {
-    id: "hv-rioja",
-    region: "Rioja",
-    country: "ES",
-    stage: "Veraison complete",
-    condition: "good",
-    conditionNote: "Healthy canopy, moderate temperatures",
-    expected: "flat",
-    updatedAt: "2026-08-19",
-    status: "illustrative",
-  },
-  {
-    id: "hv-alentejo",
-    region: "Alentejo",
-    country: "PT",
-    stage: "Whites being picked",
-    condition: "good",
-    conditionNote: "Clean fruit, good acidity retention",
-    expected: "up",
-    updatedAt: "2026-08-20",
-    status: "illustrative",
-  },
-  {
-    id: "hv-douro",
-    region: "Douro",
-    country: "PT",
-    stage: "Final ripening",
-    condition: "mixed",
-    conditionNote: "Sound, but rain needed in upper valley",
-    expected: "down",
-    updatedAt: "2026-08-18",
-    status: "illustrative",
-  },
-  {
-    id: "hv-languedoc",
-    region: "Languedoc",
-    country: "FR",
-    stage: "Harvest starting in early zones",
-    condition: "mixed",
-    conditionNote: "Uneven ripening after summer heat spikes",
-    expected: "down",
-    updatedAt: "2026-08-19",
-    status: "illustrative",
-  },
-  {
-    id: "hv-puglia",
-    region: "Puglia",
-    country: "IT",
-    stage: "Harvest under way",
-    condition: "good",
-    conditionNote: "Good sanitary state, average yields",
-    expected: "up",
-    updatedAt: "2026-08-20",
-    status: "illustrative",
-  },
-  {
-    id: "hv-veneto",
-    region: "Veneto",
-    country: "IT",
-    stage: "Pre-harvest sampling",
-    condition: "good",
-    conditionNote: "Regular season, normal disease pressure",
-    expected: "flat",
-    updatedAt: "2026-08-17",
-    status: "illustrative",
-  },
+/**
+ * The harvest monitor: one representative region per producer country,
+ * by its report on the Harvest page (src/fixtures/harvest.ts), with the
+ * desk's rating of the vineyard's condition. Stage, field note,
+ * expected crop and date are read from the report, so the two pages
+ * cannot disagree.
+ */
+export const harvestMonitorRegions: {
+  reportId: string;
+  condition: HarvestCondition;
+}[] = [
+  { reportId: "hr-clm", condition: "stressed" },
+  { reportId: "hr-ale", condition: "good" },
+  { reportId: "hr-lan", condition: "mixed" },
+  { reportId: "hr-pug", condition: "good" },
 ];
 
 /** Homepage editorial: one lead analysis and secondary stories. */

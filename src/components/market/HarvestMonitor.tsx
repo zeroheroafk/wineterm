@@ -36,6 +36,8 @@ export function representativeRegions(
  * Regional harvest snapshot: for each region its stage, vineyard
  * condition with the field note, and the expected crop against the last
  * vintage. Four across on wide screens, two on tablets, a list on phones.
+ * Each card spans the same five rows of a subgrid, so stage, condition
+ * and expected crop line up across cards however their text wraps.
  */
 export function HarvestMonitor({ regions }: { regions: HarvestRegion[] }) {
   return (
@@ -46,7 +48,7 @@ export function HarvestMonitor({ regions }: { regions: HarvestRegion[] }) {
         return (
           <li
             key={region.id}
-            className="border-t border-rule py-4 sm:max-lg:odd:pr-5 sm:max-lg:even:border-l sm:max-lg:even:pl-5 lg:px-5 lg:first:pl-0 lg:last:pr-0 lg:not-first:border-l"
+            className="row-span-5 grid grid-rows-subgrid gap-y-0 border-t border-rule py-4 sm:max-lg:odd:pr-5 sm:max-lg:even:border-l sm:max-lg:even:pl-5 lg:px-5 lg:first:pl-0 lg:last:pr-0 lg:not-first:border-l"
           >
             <h4 className="text-[0.9375rem] leading-snug font-semibold text-ink">
               {region.region}
@@ -54,7 +56,7 @@ export function HarvestMonitor({ regions }: { regions: HarvestRegion[] }) {
             <p className="text-xs text-ink-soft">
               {COUNTRY_NAMES[region.country]}
             </p>
-            <dl className="mt-3 space-y-2.5 text-sm">
+            <dl className="row-span-3 mt-3 grid grid-rows-subgrid gap-y-2.5 text-sm">
               <div>
                 <dt className="sr-only">Stage</dt>
                 <dd className="text-ink">{region.stage}</dd>
