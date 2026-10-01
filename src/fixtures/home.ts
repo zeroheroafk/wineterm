@@ -9,7 +9,6 @@
  */
 
 import type {
-  Article,
   DataSource,
   HarvestCondition,
   IndustryDigest,
@@ -124,44 +123,6 @@ export const harvestMonitorRegions: {
   { reportId: "hr-ale", condition: "good" },
   { reportId: "hr-lan", condition: "mixed" },
   { reportId: "hr-pug", condition: "good" },
-];
-
-/** Homepage editorial: one lead analysis and secondary stories. */
-export const homeLeadAnalysis: Article = {
-  id: "ha-lead",
-  kind: "analysis",
-  section: "Analysis",
-  headline: "What a short Iberian crop would mean for generic red prices",
-  standfirst:
-    "Illustrative analysis preview. A below-average vintage against thin opening stocks would leave the generic red market unusually exposed to early-campaign demand.",
-  publishedAt: "2026-08-21T07:00:00Z",
-  readingMinutes: 6,
-  href: "/insights/analysis",
-};
-
-export const homeSecondaryAnalysis: Article[] = [
-  {
-    id: "ha-2",
-    kind: "analysis",
-    section: "Trade",
-    headline: "Bulk shipments keep sliding while bottled trade holds its value",
-    standfirst:
-      "Illustrative analysis preview on the widening gap between bulk volumes and bottled values across the main export markets.",
-    publishedAt: "2026-08-19T07:00:00Z",
-    readingMinutes: 5,
-    href: "/insights/analysis",
-  },
-  {
-    id: "ha-3",
-    kind: "analysis",
-    section: "Crop & Supply",
-    headline: "Reading the first harvest estimates, and how far to trust them",
-    standfirst:
-      "Illustrative analysis preview on how early estimates are built and how much they typically move before final declarations.",
-    publishedAt: "2026-08-18T07:00:00Z",
-    readingMinutes: 4,
-    href: "/insights/analysis",
-  },
 ];
 
 export const industryDigest: IndustryDigest = {

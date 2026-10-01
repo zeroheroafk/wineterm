@@ -28,6 +28,7 @@ src/
   lib/               Navigation, formatting, Supabase client and form actions
   services/          Typed service layer: Supabase for trade and imported
                      prices, fixtures elsewhere
+  content/           Published editorial content: the Insights articles
   fixtures/          Illustrative sample data only; see fixtures/README.md
 ```
 
@@ -36,7 +37,9 @@ sources; components depend only on those interfaces. Trade reads Eurostat
 figures from the database, Markets reads the Spanish Ministry of
 Agriculture's weekly national wine prices from it, listed before the
 illustrative series, and the stocks and production pages read Spain's
-month-end wine stocks and wine made since 1 August. Everything else
+month-end wine stocks and wine made since 1 August. Insights articles
+are published content in `src/content/articles`, one file per article,
+each read at `/insights/analysis/<id>`. Everything else
 still uses the fixtures, and nothing
 in `src/fixtures` is real market data: every fixture observation carries
 the Illustrative status, which is how the site tells samples from real

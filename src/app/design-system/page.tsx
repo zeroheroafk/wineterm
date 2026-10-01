@@ -92,12 +92,12 @@ export default async function DesignSystemPage() {
   const marketData = getMarketDataService();
   const editorial = getEditorialService();
 
-  const [quotes, series, commentary, updatedAt, articles] = await Promise.all([
+  const [quotes, series, commentary, updatedAt, [article]] = await Promise.all([
     marketData.getBulkWineQuotes(),
     marketData.getPriceSeries("ES-CLM-RED-GEN"),
     marketData.getMarketCommentary("bulk"),
     marketData.getLastUpdated(),
-    editorial.getLatestArticles(3),
+    editorial.getLatestArticles(1),
   ]);
 
   const markets = primaryNavigation[0];
@@ -391,14 +391,14 @@ export default async function DesignSystemPage() {
           Lead and list densities. Kicker in the mono label style, headline in
           the serif, meta line with date and reading time.
         </Spec>
-        <div className="grid gap-8 border border-rule bg-paper p-6 lg:grid-cols-2">
-          <ArticlePreview article={articles[0]} variant="lead" />
-          <div>
-            {articles.slice(1).map((article) => (
-              <ArticlePreview key={article.id} article={article} />
-            ))}
+        {article ? (
+          <div className="grid gap-8 border border-rule bg-paper p-6 lg:grid-cols-2">
+            <ArticlePreview article={article} variant="lead" />
+            <div>
+              <ArticlePreview article={article} />
+            </div>
           </div>
-        </div>
+        ) : null}
       </Block>
 
       <Block title="Empty, loading and error states">

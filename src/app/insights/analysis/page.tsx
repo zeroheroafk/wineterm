@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
-import { DevContentNotice } from "@/components/editorial/DevContentNotice";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { primaryNavigation } from "@/lib/navigation";
@@ -36,24 +35,22 @@ export default async function AnalysisPage() {
         activeHref="/insights/analysis"
       />
 
-      <div className="mt-8">
-        <DevContentNotice />
-      </div>
-
       <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <div>
           {lead ? (
             <ArticlePreview article={lead} variant="lead" headingLevel={2} />
           ) : null}
-          <div className="mt-6 border-t-2 border-ink pt-4">
-            {rest.map((article) => (
-              <ArticlePreview
-                key={article.id}
-                article={article}
-                headingLevel={2}
-              />
-            ))}
-          </div>
+          {rest.length > 0 ? (
+            <div className="mt-6 border-t-2 border-ink pt-4">
+              {rest.map((article) => (
+                <ArticlePreview
+                  key={article.id}
+                  article={article}
+                  headingLevel={2}
+                />
+              ))}
+            </div>
+          ) : null}
         </div>
         <aside>
           <Link

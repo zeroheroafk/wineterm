@@ -1,4 +1,4 @@
-import { AnnualChangeChart } from "@/components/charts/AnnualChangeChart";
+import { ShareChart } from "@/components/charts/ShareChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
 import {
@@ -55,14 +55,6 @@ export default async function Home() {
     home.getIndustryDigest(),
     home.getLastUpdated(),
   ]);
-
-  // The lead analysis is an illustrative preview about generic red prices:
-  // its chart shows the illustrative generic red rows of the key prices
-  // table, so chart and table share one record and real prices are never
-  // charted beside samples.
-  const genericReds = keyPrices.filter(
-    (quote) => quote.colour === "red" && quote.status === "illustrative",
-  );
 
   const regions = representativeRegions(harvest);
   const reportDates = regions.map((region) => region.updatedAt).sort();
@@ -134,17 +126,20 @@ export default async function Home() {
           />
           <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-0">
             <div className="min-w-0 lg:pr-10">
-              <ArticlePreview
-                article={leadAnalysis}
-                variant="feature"
-                visual={
-                  <AnnualChangeChart
-                    title="Generic red, change on a year earlier"
-                    titleId="lead-analysis-chart"
-                    quotes={genericReds}
-                  />
-                }
-              />
+              {leadAnalysis ? (
+                <ArticlePreview
+                  article={leadAnalysis}
+                  variant="feature"
+                  visual={
+                    leadAnalysis.chart ? (
+                      <ShareChart
+                        chart={leadAnalysis.chart}
+                        titleId="lead-analysis-chart"
+                      />
+                    ) : undefined
+                  }
+                />
+              ) : null}
               {secondaryAnalysis.length > 0 ? (
                 <div className="mt-8 grid grid-cols-1 gap-7 border-t border-rule pt-6 sm:grid-cols-2 sm:gap-8">
                   {secondaryAnalysis.map((article) => (
@@ -170,9 +165,9 @@ export default async function Home() {
             </aside>
           </div>
           <p className="mt-6 text-[0.8125rem] leading-relaxed text-ink-soft">
-            Development content: the articles and headlines above are
-            illustrative placeholders demonstrating the editorial format, not
-            published reporting.
+            Development content: the industry headlines above are illustrative
+            placeholders demonstrating the editorial format, not published
+            reporting.
           </p>
         </section>
 
