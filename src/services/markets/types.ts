@@ -7,7 +7,7 @@
  * providers can replace the fixture implementations series by series.
  */
 
-import type { CountryCode, DataStatus } from "@/services/types";
+import type { CountryCode, DataStatus, DegreeBasis } from "@/services/types";
 import type { SourceId } from "@/services/markets/sources";
 
 export type MarketKind = "bulk-wine" | "grape" | "must";
@@ -124,6 +124,12 @@ export interface MarketSeries {
   /** Product description shown in tables. */
   product: string;
   unit: SeriesUnit;
+  /**
+   * Set when the series is recorded per hectolitre-degree: observations
+   * are given in EUR/hl at this strength, and each keeps its recorded
+   * value.
+   */
+  perDegree?: DegreeBasis;
   currency: Currency;
   /** Marketing campaign of the current observations, e.g. "2026/27". */
   campaign: string;
@@ -141,6 +147,8 @@ export interface SeriesObservation {
   /** Reported range, when the source publishes one. */
   min?: number;
   max?: number;
+  /** The value as recorded per hectolitre-degree, when the series converts it. */
+  perDegreeValue?: number;
   status: DataStatus;
   /** When the source published the observation. */
   publishedAt: string;

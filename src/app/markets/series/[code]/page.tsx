@@ -29,7 +29,7 @@ import {
   type MarketKind,
   type TimeRangeKey,
 } from "@/services/markets/types";
-import { COUNTRY_NAMES } from "@/services/types";
+import { COUNTRY_NAMES, describeDegreeBasis } from "@/services/types";
 
 const KIND_META: Record<MarketKind, { label: string; href: string }> = {
   "bulk-wine": { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
@@ -232,6 +232,16 @@ export default async function MarketDetailPage({
                 <p className="tnum mt-1 font-mono text-xs text-ink-soft">
                   Normalised {formatPrice(normalised)} {reference}
                   <span className="wt-label ml-1.5 text-ochre-deep">labelled</span>
+                </p>
+              ) : null}
+              {series.perDegree && latest.perDegreeValue !== undefined ? (
+                <p className="mt-2 text-xs leading-relaxed text-pretty text-ink-soft">
+                  Recorded at{" "}
+                  <span className="tnum font-mono">
+                    {formatPrice(latest.perDegreeValue)}
+                  </span>{" "}
+                  EUR per hectolitre-degree, converted at{" "}
+                  {describeDegreeBasis(series.perDegree)}.
                 </p>
               ) : null}
               <dl className="mt-4 space-y-1.5 border-t border-rule pt-3">

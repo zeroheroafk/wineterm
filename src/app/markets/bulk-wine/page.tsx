@@ -164,8 +164,8 @@ export default async function BulkWinePage({
         title="Bulk Wine Prices"
         description={
           hasReal
-            ? "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit; EUR/hl normalisations are labelled, never substituted. Spain's national averages are official MAPA statistics, listed first; the other series are illustrative samples, marked as such."
-            : "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit; EUR/hl normalisations are labelled, never substituted. Development figures are illustrative samples."
+            ? "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Spain's national averages are official MAPA statistics, listed first; the other series are illustrative samples, marked as such."
+            : "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Development figures are illustrative samples."
         }
         activeHref="/markets/bulk-wine"
       />
@@ -190,9 +190,12 @@ export default async function BulkWinePage({
         <p className="wt-label mt-2 text-ink-soft">
           <sup className="text-ochre-deep">n</sup> Normalised to EUR/hl from the
           original unit for comparability. The original observation is always
-          shown first and is never replaced.
+          shown first; the normalisation never replaces it.
           {rows.some(isIllustrative)
-            ? " Rows marked Illustrative are development samples, not market prices; their EUR/hl values are shown as recorded, a unit not verified against a published price series."
+            ? " Rows marked Illustrative are development samples, not market prices."
+            : null}
+          {rows.some((row) => row.series.perDegree)
+            ? " Samples recorded per hectolitre-degree are shown in EUR/hl at the wine's strength: as stated, the midpoint of a stated range, or an assumed strength where none is stated. Each series page gives the recorded value and the strength used."
             : null}
         </p>
       </div>
