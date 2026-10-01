@@ -217,7 +217,7 @@ export default async function ProductionPage() {
                     <td className={`${TD} tnum font-mono text-sm text-ink`}>
                       {campaign.code}
                       {campaign.isEstimate ? (
-                        <span className="wt-label ml-2 text-ochre">est</span>
+                        <span className="wt-label ml-2 text-ochre-deep">est</span>
                       ) : null}
                     </td>
                     {values.map((value, index) => (

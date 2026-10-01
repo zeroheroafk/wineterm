@@ -47,7 +47,7 @@ export default async function MonthlyReportsPage() {
             <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
               {report.summary}
             </p>
-            <p className="wt-label mt-2.5 text-ochre">
+            <p className="wt-label mt-2.5 text-ochre-deep">
               {report.status === "available"
                 ? "Available"
                 : "Publishes at launch"}

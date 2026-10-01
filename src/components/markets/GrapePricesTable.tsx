@@ -121,7 +121,7 @@ export function GrapePricesTable({ rows }: { rows: MarketRow[] }) {
                     title={`Normalised from ${row.series.unit} to ${referenceUnit(row.series.unit)}`}
                   >
                     {formatPrice(row.normalisedValue)}
-                    <sup className="ml-0.5 text-[0.6rem] text-ochre">n</sup>
+                    <sup className="ml-0.5 text-[0.6rem] text-ochre-deep">n</sup>
                   </span>
                 ) : (
                   <span className="wt-label text-ink-soft">&middot;</span>

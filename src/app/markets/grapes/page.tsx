@@ -130,7 +130,7 @@ export default async function GrapePricesPage({
           individual observations with their provenance and does not
           aggregate them into a national index; no average across these rows
           represents a national market price.
-          <sup className="ml-1 text-ochre">n</sup> marks values normalised to
+          <sup className="ml-1 text-ochre-deep">n</sup> marks values normalised to
           EUR/kg from the original unit.
         </p>
       </div>

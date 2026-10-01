@@ -155,7 +155,7 @@ export default async function BulkWinePage({
       <div className="mt-5">
         <BulkPricesTable rows={rows} />
         <p className="wt-label mt-2 text-ink-soft">
-          <sup className="text-ochre">n</sup> Normalised to EUR/hl from the
+          <sup className="text-ochre-deep">n</sup> Normalised to EUR/hl from the
           original unit for comparability. The original observation is always
           shown first and is never replaced.
         </p>

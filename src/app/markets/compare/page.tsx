@@ -148,7 +148,7 @@ export default async function ComparePage({
 
       {dropped.length > 0 ? (
         <p className="mt-4 border border-ochre bg-ochre/10 px-4 py-2.5 text-sm text-ink">
-          <span className="wt-label mr-2 text-ochre">Not comparable</span>
+          <span className="wt-label mr-2 text-ochre-deep">Not comparable</span>
           {dropped.join(", ")}{" "}
           {dropped.length === 1 ? "was" : "were"} removed: series must share
           the same market type, unit family and currency as the first
@@ -158,7 +158,7 @@ export default async function ComparePage({
 
       {selected.length > 0 && mixedUnits && chartUnit ? (
         <p className="mt-4 border border-ochre bg-ochre/10 px-4 py-2.5 text-sm text-ink">
-          <span className="wt-label mr-2 text-ochre">
+          <span className="wt-label mr-2 text-ochre-deep">
             Normalisation applied
           </span>
           The selected series are published in different units. For this
@@ -208,7 +208,7 @@ export default async function ComparePage({
               <p className="wt-label text-ink-soft">
                 {chartUnit}
                 {mixedUnits ? (
-                  <span className="ml-1.5 text-ochre">normalised</span>
+                  <span className="ml-1.5 text-ochre-deep">normalised</span>
                 ) : null}
               </p>
             </div>
@@ -277,7 +277,7 @@ export default async function ComparePage({
                             row.latest.value *
                               UNIT_TO_REFERENCE[row.series.unit],
                           )}
-                          <sup className="ml-0.5 text-[0.6rem] text-ochre">
+                          <sup className="ml-0.5 text-[0.6rem] text-ochre-deep">
                             n
                           </sup>
                         </td>

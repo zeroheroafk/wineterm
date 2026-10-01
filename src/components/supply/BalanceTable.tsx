@@ -87,7 +87,7 @@ export function BalanceTable({
       >
         {line.label}
         {line.marker ? (
-          <sup className="ml-1 text-[0.6rem] text-ochre">{line.marker}</sup>
+          <sup className="ml-1 text-[0.6rem] text-ochre-deep">{line.marker}</sup>
         ) : null}
       </th>
       {rows.map((row) => {
@@ -159,9 +159,9 @@ export function BalanceTable({
         </table>
       </div>
       <figcaption className="wt-label mt-2 max-w-3xl leading-relaxed text-ink-soft">
-        <sup className="text-ochre">a</sup> Domestic use includes industrial
+        <sup className="text-ochre-deep">a</sup> Domestic use includes industrial
         uses, distillation and losses.{" "}
-        <sup className="text-ochre">b</sup> Closing stocks are derived from
+        <sup className="text-ochre-deep">b</sup> Closing stocks are derived from
         the balance identity, which is indicative only: source definitions,
         reference dates and revisions differ, so the residual against the
         next campaign&apos;s declared opening stocks is shown rather than

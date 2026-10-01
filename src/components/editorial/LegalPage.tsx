@@ -25,7 +25,7 @@ export function LegalPage({
       <Breadcrumbs items={[{ label: title }]} />
       <PageHeader kicker="WineTerm" title={title} description={description} />
       <p className="wt-label mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-y border-rule bg-paper px-3 py-2 text-ink-soft">
-        <span className="text-ochre">Draft</span>
+        <span className="text-ochre-deep">Draft</span>
         This document is a development draft and is finalised before launch.
         Last updated {formatDate(updatedAt)}.
       </p>

@@ -47,6 +47,7 @@ const SWATCHES = [
   { name: "up", varName: "--wt-up", className: "bg-up", hex: "#3F6B4B" },
   { name: "down", varName: "--wt-down", className: "bg-down", hex: "#A8443A" },
   { name: "ochre", varName: "--wt-ochre", className: "bg-ochre", hex: "#A67C3D" },
+  { name: "ochre-deep", varName: "--wt-ochre-deep", className: "bg-ochre-deep", hex: "#77592C" },
 ];
 
 const SPACING_STEPS = [

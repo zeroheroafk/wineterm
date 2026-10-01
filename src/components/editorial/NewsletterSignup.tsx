@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/Button";
  */
 export function NewsletterSignup({
   variant = "panel",
+  titleAs: Title = "h3",
 }: {
   variant?: "panel" | "inline";
+  /** Panel only: the title's heading level, "h1" when the panel is the page. */
+  titleAs?: "h1" | "h2" | "h3";
 }) {
   const inputId = `briefing-email-${variant}`;
 
@@ -43,9 +46,9 @@ export function NewsletterSignup({
       className="border border-rule border-t-2 border-t-wine bg-paper p-6"
     >
       <p className="wt-label text-wine">The Weekly Briefing</p>
-      <h3 className="wt-headline mt-2 text-2xl font-semibold text-ink">
+      <Title className="wt-headline mt-2 text-2xl font-semibold text-ink">
         The week in wine markets, every Friday
-      </h3>
+      </Title>
       <p className="mt-2 text-sm leading-relaxed text-ink-soft">
         Prices, supply signals and trade developments across Europe, written
         for professionals. Free during the launch period.

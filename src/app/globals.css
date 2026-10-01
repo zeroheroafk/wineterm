@@ -30,7 +30,8 @@
   --wt-down: #a8443a; /* negative movement */
 
   /* Accent */
-  --wt-ochre: #a67c3d; /* restrained ochre accent */
+  --wt-ochre: #a67c3d; /* restrained ochre accent: rules, swatches, charts */
+  --wt-ochre-deep: #77592c; /* ochre for text: 4.5:1 or more on every surface */
 }
 
 @theme inline {
@@ -45,6 +46,7 @@
   --color-up: var(--wt-up);
   --color-down: var(--wt-down);
   --color-ochre: var(--wt-ochre);
+  --color-ochre-deep: var(--wt-ochre-deep);
 
   --font-serif: var(--font-editorial), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-interface), system-ui, "Helvetica Neue", Arial,
