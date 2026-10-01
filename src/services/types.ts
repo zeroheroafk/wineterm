@@ -56,6 +56,56 @@ export type WineColour = "red" | "white" | "rose";
 export type PriceUnit = "EUR/hl" | "EUR/kg" | "EUR/tonne";
 
 /**
+ * How the strength behind a per-degree conversion was chosen: stated by
+ * the product, the midpoint of a stated range, or assumed where the
+ * product states none.
+ */
+export type StrengthBasis = "stated" | "range-midpoint" | "assumed";
+
+/**
+ * The strength at which a price recorded per hectolitre-degree (euros per
+ * hectolitre for each % vol, the usual basis of bulk wine and must
+ * quotations) is expressed per hectolitre.
+ */
+export interface DegreeBasis {
+  /** % vol; for must, the potential strength. */
+  alcoholPercent: number;
+  strengthBasis: StrengthBasis;
+}
+
+/** A quote's price and change as recorded per hectolitre-degree. */
+export interface PerDegreeRecord extends DegreeBasis {
+  price: number;
+  change: number;
+}
+
+/**
+ * EUR/hl from a price per hectolitre-degree: the price times the
+ * strength, to the cent, with halves rounded away from zero so that a
+ * fall converts to the same figure as an equal rise.
+ */
+export function perHectolitre(perDegree: number, alcoholPercent: number): number {
+  const cents = Math.abs(perDegree) * alcoholPercent * 100;
+  // Clear binary noise, such as 57.49999… for 57.5, before rounding.
+  const rounded = Math.round(Math.round(cents * 1e6) / 1e6);
+  const value = (Math.sign(perDegree) * rounded) / 100;
+  return value === 0 ? 0 : value;
+}
+
+/** E.g. "12.5% vol, the midpoint of the stated range". */
+export function describeDegreeBasis(basis: DegreeBasis): string {
+  const strength = `${basis.alcoholPercent}% vol`;
+  switch (basis.strengthBasis) {
+    case "stated":
+      return `${strength}, the stated strength`;
+    case "range-midpoint":
+      return `${strength}, the midpoint of the stated range`;
+    case "assumed":
+      return `an assumed ${strength}, as none is stated`;
+  }
+}
+
+/**
  * Lifecycle status of a data series or a single observation.
  * Rendered by the DataStatus component.
  */
@@ -72,9 +122,9 @@ export interface DataSource {
   url?: string;
   /**
    * Caveat on how the source's figures are recorded, shown with the
-   * attribution wherever the source is cited, e.g. a unit basis that has
-   * not been verified. Worded to stand on its own, since one line may
-   * cite several sources.
+   * attribution wherever the source is cited, e.g. a conversion from the
+   * unit they were recorded in. Worded to stand on its own, since one
+   * line may cite several sources.
    */
   note?: string;
 }
@@ -100,6 +150,26 @@ export interface PriceQuote {
   observedAt: string;
   status: DataStatus;
   source: DataSource;
+  /**
+   * The price and change as recorded per hectolitre-degree, when price
+   * and change are their conversion to EUR/hl.
+   */
+  perDegree?: PerDegreeRecord;
+}
+
+/**
+ * Price, unit and change in EUR/hl for a quote recorded per
+ * hectolitre-degree, which keeps the recorded figures.
+ */
+export function quoteFromPerDegree(
+  recorded: PerDegreeRecord,
+): Pick<PriceQuote, "price" | "unit" | "change" | "perDegree"> {
+  return {
+    price: perHectolitre(recorded.price, recorded.alcoholPercent),
+    unit: "EUR/hl",
+    change: perHectolitre(recorded.change, recorded.alcoholPercent),
+    perDegree: recorded,
+  };
 }
 
 export interface PricePoint {

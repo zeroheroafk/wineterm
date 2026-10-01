@@ -5,6 +5,11 @@
  * product descriptions are realistic in shape; values and sources are
  * illustrative. Anchor prices for the shared bulk series match the
  * homepage fixtures so figures agree across the site.
+ *
+ * Series that set perDegree are recorded per hectolitre-degree, the
+ * usual basis of bulk wine and must quotations, and shown in EUR/hl at
+ * the strength they give: the product's own, the midpoint of its range,
+ * or an assumed 12% vol where the product states none.
  */
 
 import type { HistoryConfig } from "@/fixtures/markets/history";
@@ -12,6 +17,7 @@ import type { MarketSeries } from "@/services/markets/types";
 
 export interface SeriesFixture {
   series: MarketSeries;
+  /** In the unit recorded: per hectolitre-degree when series.perDegree is set. */
   history: HistoryConfig;
 }
 
@@ -34,13 +40,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "generic",
       product: "Generic red, 12 to 13 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 12.5, strengthBasis: "range-midpoint" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-es",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative.",
     },
     history: {
       latestValue: 4.1,
@@ -64,13 +71,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "generic",
       product: "Generic white, 11 to 12 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 11.5, strengthBasis: "range-midpoint" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-es",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative.",
     },
     history: {
       latestValue: 3.85,
@@ -94,13 +102,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "varietal",
       product: "Tempranillo varietal, PGI, 13 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 13, strengthBasis: "stated" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-regional-observatory",
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Mid-point of traded ranges reported by regional operators for PGI varietal reds. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Mid-point of traded ranges reported by regional operators for PGI varietal reds. Development values are illustrative.",
     },
     history: {
       latestValue: 4.9,
@@ -124,13 +133,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "organic",
       product: "Certified organic red, 12.5 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 12.5, strengthBasis: "stated" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-regional-observatory",
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Traded range mid-point for certified organic red where sufficient observations exist; weeks without observations are not interpolated. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Traded range mid-point for certified organic red where sufficient observations exist; weeks without observations are not interpolated. Development values are illustrative.",
     },
     history: {
       latestValue: 5.6,
@@ -154,13 +164,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "generic",
       product: "Generic red, 12 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 12, strengthBasis: "stated" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-es",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price for wine without GI in Extremadura trading centres. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly reference price for wine without GI in Extremadura trading centres. Development values are illustrative.",
     },
     history: {
       latestValue: 3.95,
@@ -215,13 +226,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "generic",
       product: "Generic red, 13 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 13, strengthBasis: "stated" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-pt",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly regional reference price for wine without GI. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly regional reference price for wine without GI. Development values are illustrative.",
     },
     history: {
       latestValue: 5.4,
@@ -245,13 +257,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "generic",
       product: "Generic white, 11.5 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 11.5, strengthBasis: "stated" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-pt",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly regional reference price for wine without GI. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly regional reference price for wine without GI. Development values are illustrative.",
     },
     history: {
       latestValue: 4.6,
@@ -306,13 +319,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "generic",
       product: "Vin de France red, without GI",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 12, strengthBasis: "assumed" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-fr",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly weighted average of registered bulk contracts for red wine without GI. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly weighted average of registered bulk contracts for red wine without GI. Development values are illustrative.",
     },
     history: {
       latestValue: 7.8,
@@ -366,13 +380,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "generic",
       product: "Generic red, 12.5 percent vol",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 12.5, strengthBasis: "stated" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-it",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative.",
     },
     history: {
       latestValue: 5.9,
@@ -396,13 +411,14 @@ export const seriesFixtures: SeriesFixture[] = [
       category: "varietal",
       product: "PGI varietal white, current vintage",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 12, strengthBasis: "assumed" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-official-bulletin-it",
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative.",
     },
     history: {
       latestValue: 7.4,
@@ -688,13 +704,14 @@ export const seriesFixtures: SeriesFixture[] = [
       spec: "10.5 to 11.5 potential vol",
       product: "White grape must for vinification",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 11, strengthBasis: "range-midpoint" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-trade-reports",
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative.",
     },
     history: {
       latestValue: 3.2,
@@ -718,13 +735,14 @@ export const seriesFixtures: SeriesFixture[] = [
       spec: "11 to 12 potential vol",
       product: "Red grape must for vinification",
       unit: "EUR/hl",
+      perDegree: { alcoholPercent: 11.5, strengthBasis: "range-midpoint" },
       currency: "EUR",
       campaign: "2026/27",
       sourceId: "sample-trade-reports",
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative.",
     },
     history: {
       latestValue: 3.5,

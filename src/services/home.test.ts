@@ -45,6 +45,18 @@ describe("key prices", () => {
       shared += 1;
       assert.equal(row.latest.value, quote.price, quote.code);
       assert.equal(row.series.unit, quote.unit, quote.code);
+      // Recorded per hectolitre-degree at the same strength in both.
+      assert.equal(row.latest.perDegreeValue, quote.perDegree?.price, quote.code);
+      assert.equal(
+        row.series.perDegree?.alcoholPercent,
+        quote.perDegree?.alcoholPercent,
+        quote.code,
+      );
+      assert.equal(
+        row.series.perDegree?.strengthBasis,
+        quote.perDegree?.strengthBasis,
+        quote.code,
+      );
     }
     assert.ok(shared >= 5, `only ${shared} key prices found in the catalogue`);
   });

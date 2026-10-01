@@ -6,13 +6,14 @@
  * src/fixtures/README.md for the rules this file follows.
  */
 
-import type {
-  MarketCommentary,
-  PriceQuote,
-  PriceSeries,
+import { ILLUSTRATIVE_PRICE_SOURCE as ILLUSTRATIVE_SOURCE } from "@/fixtures/home";
+import {
+  perHectolitre,
+  quoteFromPerDegree,
+  type MarketCommentary,
+  type PriceQuote,
+  type PriceSeries,
 } from "@/services/types";
-
-const ILLUSTRATIVE_SOURCE = { name: "Regional market bulletin (sample)" };
 
 export const FIXTURE_UPDATED_AT = "2026-08-21T09:30:00Z";
 
@@ -24,9 +25,12 @@ export const bulkWineQuotes: PriceQuote[] = [
     country: "ES",
     colour: "red",
     product: "Generic red, 12 to 13 percent vol",
-    price: 4.1,
-    unit: "EUR/hl",
-    change: 0.1,
+    ...quoteFromPerDegree({
+      price: 4.1,
+      change: 0.1,
+      alcoholPercent: 12.5,
+      strengthBasis: "range-midpoint",
+    }),
     changePercent: 2.5,
     observedAt: "2026-08-20",
     status: "illustrative",
@@ -39,9 +43,12 @@ export const bulkWineQuotes: PriceQuote[] = [
     country: "ES",
     colour: "white",
     product: "Generic white, 11 to 12 percent vol",
-    price: 3.85,
-    unit: "EUR/hl",
-    change: -0.05,
+    ...quoteFromPerDegree({
+      price: 3.85,
+      change: -0.05,
+      alcoholPercent: 11.5,
+      strengthBasis: "range-midpoint",
+    }),
     changePercent: -1.3,
     observedAt: "2026-08-20",
     status: "illustrative",
@@ -54,9 +61,12 @@ export const bulkWineQuotes: PriceQuote[] = [
     country: "ES",
     colour: "red",
     product: "Generic red, 12 percent vol",
-    price: 3.95,
-    unit: "EUR/hl",
-    change: 0,
+    ...quoteFromPerDegree({
+      price: 3.95,
+      change: 0,
+      alcoholPercent: 12,
+      strengthBasis: "stated",
+    }),
     changePercent: 0,
     observedAt: "2026-08-19",
     status: "illustrative",
@@ -69,9 +79,12 @@ export const bulkWineQuotes: PriceQuote[] = [
     country: "PT",
     colour: "red",
     product: "Generic red, 13 percent vol",
-    price: 5.4,
-    unit: "EUR/hl",
-    change: 0.15,
+    ...quoteFromPerDegree({
+      price: 5.4,
+      change: 0.15,
+      alcoholPercent: 13,
+      strengthBasis: "stated",
+    }),
     changePercent: 2.9,
     observedAt: "2026-08-20",
     status: "illustrative",
@@ -84,9 +97,12 @@ export const bulkWineQuotes: PriceQuote[] = [
     country: "PT",
     colour: "white",
     product: "Generic white, 11.5 percent vol",
-    price: 4.6,
-    unit: "EUR/hl",
-    change: -0.2,
+    ...quoteFromPerDegree({
+      price: 4.6,
+      change: -0.2,
+      alcoholPercent: 11.5,
+      strengthBasis: "stated",
+    }),
     changePercent: -4.2,
     observedAt: "2026-08-20",
     status: "illustrative",
@@ -99,9 +115,12 @@ export const bulkWineQuotes: PriceQuote[] = [
     country: "FR",
     colour: "red",
     product: "Vin de France red, without GI",
-    price: 7.8,
-    unit: "EUR/hl",
-    change: 0.05,
+    ...quoteFromPerDegree({
+      price: 7.8,
+      change: 0.05,
+      alcoholPercent: 12,
+      strengthBasis: "assumed",
+    }),
     changePercent: 0.6,
     observedAt: "2026-08-18",
     status: "illustrative",
@@ -114,9 +133,12 @@ export const bulkWineQuotes: PriceQuote[] = [
     country: "IT",
     colour: "red",
     product: "Generic red, 12.5 percent vol",
-    price: 5.9,
-    unit: "EUR/hl",
-    change: -0.1,
+    ...quoteFromPerDegree({
+      price: 5.9,
+      change: -0.1,
+      alcoholPercent: 12.5,
+      strengthBasis: "stated",
+    }),
     changePercent: -1.7,
     observedAt: "2026-08-19",
     status: "illustrative",
@@ -133,6 +155,8 @@ export const sampleSeries: PriceSeries = {
   status: "illustrative",
   source: ILLUSTRATIVE_SOURCE,
   updatedAt: FIXTURE_UPDATED_AT,
+  // Recorded per hectolitre-degree, shown in EUR/hl at 12.5% vol, the
+  // midpoint of the product's 12 to 13 percent, like the quote above.
   points: [
     { date: "2026-05-01", value: 3.7 },
     { date: "2026-05-15", value: 3.75 },
@@ -143,7 +167,7 @@ export const sampleSeries: PriceSeries = {
     { date: "2026-07-24", value: 3.95 },
     { date: "2026-08-07", value: 4.0 },
     { date: "2026-08-20", value: 4.1 },
-  ],
+  ].map(({ date, value }) => ({ date, value: perHectolitre(value, 12.5) })),
 };
 
 export const sampleCommentary: MarketCommentary = {

@@ -13,7 +13,7 @@ import { cache } from "react";
 
 import { marketCommentary } from "@/fixtures/markets/commentary";
 import { FIXTURES_UPDATED_AT, generateHistory } from "@/fixtures/markets/history";
-import { seriesFixtures } from "@/fixtures/markets/series";
+import { seriesFixtures, type SeriesFixture } from "@/fixtures/markets/series";
 import type { Database } from "@/lib/database.types";
 import { getSupabase } from "@/lib/supabase";
 import {
@@ -35,6 +35,7 @@ import {
 } from "@/services/markets/types";
 import {
   COUNTRY_NAMES,
+  perHectolitre,
   type CountryCode,
   type DataStatus,
   type MarketCommentary,
@@ -159,11 +160,30 @@ export function isIllustrative(row: MarketRow): boolean {
 
 let fixtureEntries: CatalogueEntry[] | null = null;
 
+/**
+ * A fixture's observations in its series unit. A series recorded per
+ * hectolitre-degree is converted to EUR/hl at its strength, and each
+ * observation keeps the value as recorded.
+ */
+function fixtureHistory({ series, history }: SeriesFixture): SeriesObservation[] {
+  const observations = generateHistory(series.code, history);
+  const basis = series.perDegree;
+  if (!basis) return observations;
+  const convert = (value: number) => perHectolitre(value, basis.alcoholPercent);
+  return observations.map((observation) => ({
+    ...observation,
+    value: convert(observation.value),
+    min: observation.min === undefined ? undefined : convert(observation.min),
+    max: observation.max === undefined ? undefined : convert(observation.max),
+    perDegreeValue: observation.value,
+  }));
+}
+
 /** The illustrative series, generated once per server. */
 function fixtureCatalogue(): CatalogueEntry[] {
   fixtureEntries ??= seriesFixtures.map((fixture) => ({
     series: fixture.series,
-    history: generateHistory(fixture.series.code, fixture.history),
+    history: fixtureHistory(fixture),
   }));
   return fixtureEntries;
 }
