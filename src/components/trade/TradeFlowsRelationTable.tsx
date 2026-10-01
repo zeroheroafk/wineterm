@@ -1,5 +1,6 @@
 import { MaybePercent, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { CountryLabel } from "@/components/ui/CountryLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatPrice } from "@/lib/format";
 import type { TradeFlowRow } from "@/services/trade/types";
 
@@ -7,20 +8,26 @@ import type { TradeFlowRow } from "@/services/trade/types";
 export function TradeFlowsRelationTable({
   rows,
   period,
+  category,
 }: {
   rows: TradeFlowRow[];
   period: string;
+  /** Customs category, e.g. "Bulk wine", named in the caption. */
+  category?: string;
 }) {
   return (
     <div className="min-w-0 border border-rule bg-paper">
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-ink px-3 py-2">
-        <h4 className="text-sm font-semibold text-ink">Largest flows</h4>
+        <h3 className="text-sm font-semibold text-ink">Largest flows</h3>
         <p className="wt-label text-ink-soft">{period}</p>
       </div>
-      <div className="overflow-x-auto">
+      <ScrollRegion>
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
-            Largest origin to destination flows in this category
+            {category
+              ? `${category}, largest origin to destination flows`
+              : "Largest origin to destination flows in this category"}
+            , {period}
           </caption>
           <thead>
             <tr className="border-b border-rule">
@@ -76,7 +83,7 @@ export function TradeFlowsRelationTable({
             ))}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
     </div>
   );
 }

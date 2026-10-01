@@ -16,7 +16,7 @@ export default function BriefingPage() {
     <Container className="pb-12">
       <Breadcrumbs items={[{ label: "Briefing" }]} />
       <div className="mx-auto max-w-xl py-8">
-        <NewsletterSignup />
+        <NewsletterSignup titleAs="h1" />
         <p className="mt-4 text-sm leading-relaxed text-ink-soft">
           Signup processing is not connected yet in this development build.
           The briefing launches together with the first market sections.

@@ -7,6 +7,7 @@ import { MaybePercent, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/c
 import { MethodologyNotes } from "@/components/supply/MethodologyNotes";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatPrice } from "@/lib/format";
@@ -61,7 +62,7 @@ export default async function StocksPage() {
           title="Reported stocks"
           description="Reference dates differ by country; the table shows each declaration as reported, without alignment."
         />
-        <div className="mt-5 overflow-x-auto border border-rule bg-paper">
+        <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               Latest declared stocks by country with direction, share and
@@ -137,7 +138,7 @@ export default async function StocksPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
         <p className="wt-label mt-2 max-w-3xl leading-relaxed text-ink-soft">
           Months of use divides the latest declared stocks by the previous
           campaign&apos;s average monthly disappearance (domestic use plus

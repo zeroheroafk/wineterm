@@ -70,7 +70,7 @@ export default function DirectoryPage() {
                 {category.description}
               </span>
             </span>
-            <span className="wt-label shrink-0 text-ochre">Opens at launch</span>
+            <span className="wt-label shrink-0 text-ochre-deep">Opens at launch</span>
           </li>
         ))}
       </ul>

@@ -50,6 +50,32 @@ export function formatDate(iso: string): string {
   }).format(new Date(iso));
 }
 
+/**
+ * Compact date range, e.g. "19–20 Aug 2026", "31 Jul – 2 Aug 2026", or a
+ * single date when both ends fall on the same day.
+ */
+export function formatDateRange(startIso: string, endIso: string): string {
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+  const part = (date: Date, options: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat(EN_GB, { ...options, timeZone: "UTC" }).format(
+      date,
+    );
+  const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
+  const sameMonth = sameYear && start.getUTCMonth() === end.getUTCMonth();
+
+  if (sameMonth && start.getUTCDate() === end.getUTCDate()) {
+    return formatDate(endIso);
+  }
+  if (sameMonth) {
+    return `${start.getUTCDate()}–${formatDate(endIso)}`;
+  }
+  if (sameYear) {
+    return `${part(start, { day: "numeric", month: "short" })} – ${formatDate(endIso)}`;
+  }
+  return `${formatDate(startIso)} – ${formatDate(endIso)}`;
+}
+
 /** Timestamp for update lines, e.g. "21 Aug 2026, 09:30 UTC". */
 export function formatDateTime(iso: string): string {
   const formatted = new Intl.DateTimeFormat(EN_GB, {

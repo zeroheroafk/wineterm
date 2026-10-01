@@ -6,6 +6,16 @@ import { useEffect, useRef, useState } from "react";
 
 import { primaryNavigation } from "@/lib/navigation";
 
+const ITEM_BASE =
+  "flex h-11 items-center gap-1.5 border-b-2 px-3 text-[0.9375rem] font-medium transition-colors";
+
+/** Current section: solid burgundy rule. */
+const ITEM_CURRENT = "border-wine text-wine-deep";
+/** Open panel or pointer hover: a lighter rule in the same colour. */
+const ITEM_OPEN = "border-wine/40 text-wine-deep";
+const ITEM_IDLE =
+  "border-transparent text-ink hover:border-wine/40 hover:text-wine-deep";
+
 /**
  * Desktop primary navigation with dropdown panels.
  *
@@ -66,15 +76,14 @@ export function MainNav() {
                 <button
                   type="button"
                   aria-expanded={expanded}
+                  aria-current={active ? "true" : undefined}
                   onClick={() =>
                     setOpen((current) =>
                       current === section.label ? null : section.label,
                     )
                   }
-                  className={`flex h-11 items-center gap-1.5 border-b-2 px-3 text-sm font-medium tracking-wide transition-colors ${
-                    active || expanded
-                      ? "border-wine text-wine-deep"
-                      : "border-transparent text-ink hover:border-rule hover:text-wine-deep"
+                  className={`${ITEM_BASE} ${
+                    active ? ITEM_CURRENT : expanded ? ITEM_OPEN : ITEM_IDLE
                   }`}
                 >
                   {section.label}
@@ -89,35 +98,30 @@ export function MainNav() {
               ) : (
                 <Link
                   href={section.href}
-                  className={`flex h-11 items-center border-b-2 px-3 text-sm font-medium tracking-wide transition-colors ${
-                    active
-                      ? "border-wine text-wine-deep"
-                      : "border-transparent text-ink hover:border-rule hover:text-wine-deep"
-                  }`}
+                  aria-current={active ? "page" : undefined}
+                  className={`${ITEM_BASE} ${active ? ITEM_CURRENT : ITEM_IDLE}`}
                 >
                   {section.label}
                 </Link>
               )}
 
               {hasItems && expanded ? (
-                <div className="absolute left-0 top-full z-40 w-80 border border-rule border-t-wine bg-paper shadow-[0_2px_0_rgba(29,26,24,0.06)]">
-                  <div className="flex items-baseline justify-between border-b border-rule px-4 py-2.5">
+                <div className="absolute left-0 top-full z-40 w-80 border border-rule border-t-2 border-t-wine bg-paper">
+                  <div className="border-b border-rule px-4 py-2.5">
                     <Link
                       href={section.href}
-                      className="wt-label text-wine hover:text-wine-deep"
+                      className="text-sm font-semibold text-wine underline-offset-4 hover:text-wine-deep hover:underline"
                     >
-                      {section.label} overview
+                      {section.label} overview{" "}
+                      <span aria-hidden="true">&rarr;</span>
                     </Link>
-                    <span className="wt-label text-ink-soft">
-                      {section.code}
-                    </span>
                   </div>
                   <ul className="py-1.5">
                     {section.items.map((item) => (
                       <li key={item.href}>
                         <Link
                           href={item.href}
-                          className="block px-4 py-2 hover:bg-wine-wash/40"
+                          className="block px-4 py-2 hover:bg-ground"
                         >
                           <span className="block text-sm font-medium text-ink">
                             {item.label}

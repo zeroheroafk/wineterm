@@ -12,7 +12,7 @@ const DIRECTION_VALUE = { up: 1, down: -1, flat: 0 } as const;
 const YIELD_STYLES: Record<YieldExpectation, string> = {
   "above-average": "border-up text-up",
   average: "border-rule text-ink-soft",
-  "below-average": "border-ochre text-ochre",
+  "below-average": "border-ochre text-ochre-deep",
   "well-below-average": "border-down text-down",
 };
 

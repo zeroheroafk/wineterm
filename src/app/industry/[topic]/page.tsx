@@ -76,7 +76,7 @@ export default async function IndustryTopicPage({
       </div>
 
       <div className="mt-8 max-w-3xl">
-        <StoryList stories={stories} />
+        <StoryList stories={stories} headingLevel={2} />
       </div>
 
       <p className="wt-label mt-8 max-w-3xl leading-relaxed text-ink-soft">

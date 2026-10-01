@@ -10,7 +10,7 @@ const KIND_LABELS: Record<HarvestTimelineEvent["kind"], string> = {
 
 const KIND_STYLES: Record<HarvestTimelineEvent["kind"], string> = {
   start: "text-wine",
-  weather: "text-ochre",
+  weather: "text-ochre-deep",
   estimate: "text-ink",
   progress: "text-ink-soft",
 };

@@ -39,7 +39,7 @@ const SWATCHES = [
   { name: "ground", varName: "--wt-ground", className: "bg-ground", hex: "#F6F2EB" },
   { name: "paper", varName: "--wt-paper", className: "bg-paper", hex: "#FCFAF5" },
   { name: "ink", varName: "--wt-ink", className: "bg-ink", hex: "#1D1A18" },
-  { name: "ink-soft", varName: "--wt-ink-soft", className: "bg-ink-soft", hex: "#706A63" },
+  { name: "ink-soft", varName: "--wt-ink-soft", className: "bg-ink-soft", hex: "#625C55" },
   { name: "wine", varName: "--wt-wine", className: "bg-wine", hex: "#6B2737" },
   { name: "wine-deep", varName: "--wt-wine-deep", className: "bg-wine-deep", hex: "#421724" },
   { name: "wine-wash", varName: "--wt-wine-wash", className: "bg-wine-wash", hex: "#E8DADD" },
@@ -47,6 +47,7 @@ const SWATCHES = [
   { name: "up", varName: "--wt-up", className: "bg-up", hex: "#3F6B4B" },
   { name: "down", varName: "--wt-down", className: "bg-down", hex: "#A8443A" },
   { name: "ochre", varName: "--wt-ochre", className: "bg-ochre", hex: "#A67C3D" },
+  { name: "ochre-deep", varName: "--wt-ochre-deep", className: "bg-ochre-deep", hex: "#77592C" },
 ];
 
 const SPACING_STEPS = [
@@ -151,6 +152,13 @@ export default async function DesignSystemPage() {
               descriptions and controls. It stays legible at small sizes and
               never competes with the serif display voice.
             </p>
+            <p className="wt-kicker mt-3 text-wine">Section kicker</p>
+            <p className="mt-1 max-w-xl text-sm leading-relaxed text-ink-soft">
+              Editorial layouts such as the homepage use the wt-kicker style:
+              Archivo, uppercase with modest tracking, for short section
+              labels only. Figures there use Archivo&apos;s tabular numerals;
+              sources, dates and notes stay in sentence case.
+            </p>
           </div>
           <div className="border-t border-rule pt-5">
             <p className="wt-label text-ink-soft">Data mono / IBM Plex Mono</p>
@@ -221,6 +229,7 @@ export default async function DesignSystemPage() {
         <SectionNav section={markets} activeHref="/markets/bulk-wine" />
         <div className="mt-4 border border-rule bg-paper px-3">
           <Breadcrumbs
+            label="Breadcrumb example"
             items={[
               { label: "Markets", href: "/markets" },
               { label: "Bulk Wine Prices" },
