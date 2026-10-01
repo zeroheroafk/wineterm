@@ -2,6 +2,7 @@ import { AbsoluteChange, PercentChange } from "@/components/market/ChangeCell";
 import { PriceCell } from "@/components/market/PriceCell";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate } from "@/lib/format";
 import type { DataSource, PriceQuote } from "@/services/types";
@@ -27,7 +28,7 @@ export function MarketTable({
 
   return (
     <figure>
-      <div className="overflow-x-auto border border-rule bg-paper">
+      <ScrollRegion className="border border-rule bg-paper">
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">{caption}</caption>
           <thead>
@@ -106,7 +107,7 @@ export function MarketTable({
             ))}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
       {tableSource ? (
         <figcaption className="mt-2">
           <SourceLine source={tableSource} updatedAt={updatedAt} />

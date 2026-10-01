@@ -5,6 +5,7 @@ import { MaybePercent, RangeCell } from "@/components/markets/cells";
 import { DataClassificationTag } from "@/components/markets/tags";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatDateTime, formatPrice } from "@/lib/format";
 import { getSource } from "@/services/markets/sources";
 import {
@@ -65,7 +66,7 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
   }
 
   return (
-    <div className="overflow-x-auto border border-rule bg-paper">
+    <ScrollRegion className="border border-rule bg-paper">
       <table className="w-full border-collapse text-left">
         <caption className="sr-only">
           Bulk wine reference prices with original units, labelled EUR/hl
@@ -156,7 +157,7 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
                       title={`Normalised from ${row.series.unit} to ${referenceUnit(row.series.unit)}`}
                     >
                       {formatPrice(row.normalisedValue)}
-                      <sup className="ml-0.5 text-[0.6rem] text-ochre">n</sup>
+                      <sup className="ml-0.5 text-[0.6rem] text-ochre-deep">n</sup>
                     </span>
                   ) : (
                     <span className="wt-label text-ink-soft">&middot;</span>
@@ -192,6 +193,6 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
           })}
         </tbody>
       </table>
-    </div>
+    </ScrollRegion>
   );
 }

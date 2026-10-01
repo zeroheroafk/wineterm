@@ -1,17 +1,38 @@
 import { countryName } from "@/services/types";
 
 /**
- * Country identifier: bordered monospace ISO code, optionally followed by
- * the country name. No flags; codes keep tables scannable and sortable.
+ * Country identifier: ISO code, optionally followed by the country name.
+ * No flags; codes keep tables scannable and sortable.
+ *
+ * "badge" (default) boxes the code in the monospace label style; "plain"
+ * sets it as quiet sans text for editorial tables where a box on every
+ * row would add noise.
  */
 export function CountryLabel({
   code,
   withName = false,
+  variant = "badge",
 }: {
   code: string;
   withName?: boolean;
+  variant?: "badge" | "plain";
 }) {
   const name = countryName(code);
+
+  if (variant === "plain") {
+    return (
+      <span className="inline-flex items-baseline gap-2">
+        <abbr
+          title={name}
+          className="text-xs font-medium tracking-wide text-ink-soft no-underline"
+        >
+          {code}
+        </abbr>
+        {withName ? <span className="text-sm text-ink">{name}</span> : null}
+      </span>
+    );
+  }
+
   return (
     <span className="inline-flex items-center gap-1.5">
       <abbr

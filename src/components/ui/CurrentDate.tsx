@@ -1,75 +1,69 @@
 "use client";
 
-const LOCALE = "en-GB";
+import { useId, useSyncExternalStore } from "react";
+
+import { InlineScript } from "@/components/ui/InlineScript";
+
+/** Today's date in UTC as an ISO day, e.g. "2026-10-01". */
+function utcDay(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 /**
- * Formats with fixed punctuation ("Friday, 25 September 2026"): engines
- * ship different CLDR versions and disagree on the comma after the
- * weekday. The inline script below repeats this logic; keep them in step.
+ * Pages are prerendered at build time, so the server knows no current
+ * date: its HTML carries an empty slot rather than a stale one.
  */
-function formatDate(date: Date, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat(LOCALE, options)
-    .formatToParts(date)
-    .filter((part) => part.type !== "literal")
-    .map((part) => (part.type === "weekday" ? `${part.value},` : part.value))
-    .join(" ");
+function prerenderedDay(): string {
+  return "";
 }
 
-/** Calendar day as YYYY-MM-DD, for the machine-readable dateTime. */
-function isoDay(date: Date, utc: boolean): string {
-  const year = utc ? date.getUTCFullYear() : date.getFullYear();
-  const month = utc ? date.getUTCMonth() : date.getMonth();
-  const day = utc ? date.getUTCDate() : date.getDate();
-  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+/** Check once a minute, so a page left open rolls over at midnight UTC. */
+function subscribe(onChange: () => void): () => void {
+  const timer = window.setInterval(onChange, 60_000);
+  return () => window.clearInterval(timer);
 }
 
 /**
- * Script that runs once, while the HTML is parsed. On the client it is
- * inert text, which also keeps React from warning about script tags.
- */
-function InlineScript({ html }: { html: string }) {
-  return (
-    <script
-      type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
-      suppressHydrationWarning
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
-}
-
-/**
- * Today's date on a prerendered page. Static HTML freezes whatever the
- * server computed at build time, so the server value is only a fallback:
- * on a full page load the inline script rewrites it in the reader's time
- * zone before first paint, and on client navigations the component
- * renders the date in the browser. suppressHydrationWarning lets React
- * keep the corrected DOM instead of the prerendered text.
+ * Today's date in UTC on statically prerendered pages, such as the edition
+ * date in the header or the copyright year in the footer.
+ *
+ * An inline script fills the empty prerendered slot while the HTML is
+ * parsed, so the date is there at first paint and nothing shifts;
+ * suppressHydrationWarning lets React keep that DOM. After hydration the
+ * store supplies the same day, also if the script was blocked, and moves
+ * it on at midnight. `unit` sets the machine-readable dateTime: the full
+ * day, or only the year.
  */
 export function CurrentDate({
-  id,
   options,
-  className,
+  unit = "day",
 }: {
-  /** Unique DOM id the inline script targets. */
-  id: string;
   options: Intl.DateTimeFormatOptions;
-  className?: string;
+  unit?: "day" | "year";
 }) {
-  const onServer = typeof window === "undefined";
-  const now = new Date();
+  const id = useId();
+  const day = useSyncExternalStore(subscribe, utcDay, prerenderedDay);
+  const format = { ...options, timeZone: "UTC" };
+  const isoLength = unit === "year" ? 4 : 10;
 
+  // Always a string child, even when empty: React then treats the
+  // script's text as a text-content difference, which
+  // suppressHydrationWarning covers, rather than an unexpected node.
   return (
     <>
       <time
         id={id}
-        dateTime={isoDay(now, onServer)}
-        className={className}
+        dateTime={day ? day.slice(0, isoLength) : undefined}
         suppressHydrationWarning
       >
-        {formatDate(now, onServer ? { ...options, timeZone: "UTC" } : options)}
+        {day
+          ? new Intl.DateTimeFormat("en-GB", format).format(
+              new Date(`${day}T00:00:00Z`),
+            )
+          : ""}
       </time>
       <InlineScript
-        html={`(function(){var n=document.getElementById(${JSON.stringify(id)});if(!n)return;var d=new Date();function p(v){return String(v).padStart(2,"0")}n.textContent=new Intl.DateTimeFormat(${JSON.stringify(LOCALE)},${JSON.stringify(options)}).formatToParts(d).filter(function(x){return x.type!=="literal"}).map(function(x){return x.type==="weekday"?x.value+",":x.value}).join(" ");n.setAttribute("datetime",d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()))})()`}
+        html={`(function(){var t=document.getElementById(${JSON.stringify(id)});if(!t)return;var d=new Date();t.dateTime=d.toISOString().slice(0,${isoLength});t.textContent=new Intl.DateTimeFormat("en-GB",${JSON.stringify(format)}).format(d)})()`}
       />
     </>
   );

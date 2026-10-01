@@ -341,7 +341,11 @@ function compareRows(a: MarketRow, b: MarketRow): number {
 }
 
 class CatalogueMarketsService implements MarketsService {
-  constructor(private readonly catalogue: () => Promise<CatalogueEntry[]>) {}
+  private readonly catalogue: () => Promise<CatalogueEntry[]>;
+
+  constructor(catalogue: () => Promise<CatalogueEntry[]>) {
+    this.catalogue = catalogue;
+  }
 
   private async entry(code: string): Promise<CatalogueEntry | undefined> {
     return (await this.catalogue()).find((entry) => entry.series.code === code);

@@ -3,9 +3,21 @@ import Link from "next/link";
 /**
  * Typographic WineTerm wordmark.
  *
- * A burgundy setting block carrying the monospace "WT" ticker, followed by
- * the name in the editorial serif. Deliberately built from type only.
+ * The publication name in the editorial serif leads; a small burgundy
+ * setting block carrying the monospace "WT" ticker sits before it as a
+ * secondary mark. Deliberately built from type only.
  */
+const SIZES = {
+  md: {
+    name: "text-[1.75rem] leading-none",
+    block: "h-[1.3rem] w-[1.3rem] text-[0.6rem]",
+  },
+  lg: {
+    name: "text-[2.25rem] leading-none",
+    block: "h-7 w-7 text-[0.8rem]",
+  },
+} as const;
+
 export function Wordmark({
   href = "/",
   size = "md",
@@ -13,26 +25,21 @@ export function Wordmark({
   href?: string;
   size?: "md" | "lg";
 }) {
-  const nameClass =
-    size === "lg"
-      ? "text-[2rem] leading-none"
-      : "text-[1.45rem] leading-none";
-  const blockClass =
-    size === "lg" ? "h-9 w-9 text-base" : "h-7 w-7 text-[0.8rem]";
+  const sizes = SIZES[size];
 
   return (
     <Link
       href={href}
-      className="group inline-flex items-center gap-2.5 no-underline"
+      className="group inline-flex items-center gap-2 no-underline"
       aria-label="WineTerm home"
     >
       <span
         aria-hidden="true"
-        className={`flex items-center justify-center bg-wine font-mono font-medium tracking-tight text-paper ${blockClass}`}
+        className={`flex shrink-0 items-center justify-center bg-wine font-mono font-medium tracking-tight text-paper ${sizes.block}`}
       >
         WT
       </span>
-      <span className={`wt-headline font-semibold text-ink ${nameClass}`}>
+      <span className={`wt-headline font-semibold text-ink ${sizes.name}`}>
         Wine<span className="font-normal italic text-wine">Term</span>
       </span>
     </Link>
@@ -41,20 +48,17 @@ export function Wordmark({
 
 /** Inverted variant for dark surfaces such as the footer. */
 export function WordmarkInverted({ size = "md" }: { size?: "md" | "lg" }) {
-  const nameClass =
-    size === "lg" ? "text-[2rem] leading-none" : "text-[1.45rem] leading-none";
-  const blockClass =
-    size === "lg" ? "h-9 w-9 text-base" : "h-7 w-7 text-[0.8rem]";
+  const sizes = SIZES[size];
 
   return (
-    <span className="inline-flex items-center gap-2.5">
+    <span className="inline-flex items-center gap-2">
       <span
         aria-hidden="true"
-        className={`flex items-center justify-center bg-paper font-mono font-medium tracking-tight text-wine-deep ${blockClass}`}
+        className={`flex shrink-0 items-center justify-center bg-paper font-mono font-medium tracking-tight text-wine-deep ${sizes.block}`}
       >
         WT
       </span>
-      <span className={`wt-headline font-semibold text-paper ${nameClass}`}>
+      <span className={`wt-headline font-semibold text-paper ${sizes.name}`}>
         Wine<span className="font-normal italic text-wine-wash">Term</span>
       </span>
     </span>

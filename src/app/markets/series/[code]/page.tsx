@@ -231,7 +231,7 @@ export default async function MarketDetailPage({
               {normalised !== null ? (
                 <p className="tnum mt-1 font-mono text-xs text-ink-soft">
                   Normalised {formatPrice(normalised)} {reference}
-                  <span className="wt-label ml-1.5 text-ochre">labelled</span>
+                  <span className="wt-label ml-1.5 text-ochre-deep">labelled</span>
                 </p>
               ) : null}
               <dl className="mt-4 space-y-1.5 border-t border-rule pt-3">

@@ -1,19 +1,34 @@
+import { AnnualChangeChart } from "@/components/charts/AnnualChangeChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
-import { IndustryHeadlineList } from "@/components/editorial/IndustryHeadlineList";
+import {
+  IndustryHeadlineList,
+  latestIndustryHeadlines,
+} from "@/components/editorial/IndustryHeadlineList";
 import { Container } from "@/components/layout/Container";
-import { HarvestMonitor } from "@/components/market/HarvestMonitor";
+import {
+  HarvestMonitor,
+  representativeRegions,
+} from "@/components/market/HarvestMonitor";
 import { KeyPricesTable } from "@/components/market/KeyPricesTable";
 import { LeadBriefing } from "@/components/market/LeadBriefing";
 import { MarketStatusStrip } from "@/components/market/MarketStatusStrip";
 import { SupplyComparison } from "@/components/market/SupplyComparison";
 import { TradeFlowsPanel } from "@/components/market/TradeFlowsPanel";
+import { ArrowLink } from "@/components/ui/ArrowLink";
 import { ButtonLink } from "@/components/ui/Button";
+import { sharedStatusNote } from "@/components/ui/DataStatusLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { DataNote } from "@/components/ui/SourceLine";
+import { formatDateRange } from "@/lib/format";
 import { getHomeService } from "@/services/home";
 
-// The trade panel reads Eurostat figures; regenerate at most hourly.
+// The prices and the trade panel read the database; regenerate at most
+// hourly.
 export const revalidate = 3600;
+
+/** Headlines in the industry rail; the Industry section carries the rest. */
+const INDUSTRY_HEADLINES = 5;
 
 export default async function Home() {
   const home = getHomeService();
@@ -41,37 +56,57 @@ export default async function Home() {
     home.getLastUpdated(),
   ]);
 
+  // The lead analysis is an illustrative preview about generic red prices:
+  // its chart shows the illustrative generic red rows of the key prices
+  // table, so chart and table share one record and real prices are never
+  // charted beside samples.
+  const genericReds = keyPrices.filter(
+    (quote) => quote.colour === "red" && quote.status === "illustrative",
+  );
+
+  const regions = representativeRegions(harvest);
+  const reportDates = regions.map((region) => region.updatedAt).sort();
+  const harvestStatus = regions.every(
+    (region) => region.status === regions[0]?.status,
+  )
+    ? regions[0]?.status
+    : undefined;
+
   return (
     <>
       <MarketStatusStrip quotes={strip} />
 
       <Container>
-        <section className="grid grid-cols-1 gap-8 py-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] lg:gap-12">
-          <div className="max-w-xl">
-            <p className="wt-label text-wine">European wine market desk</p>
-            <h1 className="wt-headline mt-3 text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+        <section
+          aria-labelledby="home-intro"
+          className="grid grid-cols-1 items-start gap-8 pt-7 pb-9 sm:pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-12 lg:pb-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] xl:gap-16"
+        >
+          {/* The top padding sets the headline's first line level with the
+              first line of the briefing beside it. */}
+          <div className="max-w-xl lg:pt-[1.0625rem]">
+            <h1
+              id="home-intro"
+              className="wt-headline text-[2.25rem] leading-[1.08] font-semibold tracking-[-0.02em] text-balance text-ink sm:text-[2.625rem] lg:text-[2.875rem]"
+            >
               Market intelligence for the wine industry.
             </h1>
-            <p className="mt-4 text-lg leading-relaxed text-ink-soft">
-              Prices, production, stocks, trade and crop intelligence for
-              wineries, growers and the global wine trade.
+            <p className="mt-4 max-w-lg text-[1.0625rem] leading-[1.6] text-pretty text-ink-soft sm:text-lg">
+              Prices, supply and trade intelligence for wineries, growers and
+              the international wine trade.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/markets">Explore markets</ButtonLink>
-              <ButtonLink href="/briefing" variant="secondary">
-                Get the weekly briefing
+            <div className="mt-6">
+              <ButtonLink href="/markets" className="h-10 px-5">
+                Explore markets
               </ButtonLink>
             </div>
-            <p className="wt-label mt-6 text-ink-soft">
-              Coverage: Spain and Portugal first, with comparative data for
-              France and Italy
-            </p>
           </div>
           <LeadBriefing briefing={briefing} />
         </section>
 
-        <section className="mt-2">
+        <section aria-labelledby="home-prices">
           <SectionHeader
+            variant="editorial"
+            id="home-prices"
             kicker="Markets"
             title="Key bulk wine prices"
             action={{
@@ -79,91 +114,151 @@ export default async function Home() {
               href: "/markets/bulk-wine",
             }}
           />
-          <div className="mt-5">
-            <KeyPricesTable quotes={keyPrices} updatedAt={updatedAt} />
+          <div className="mt-4">
+            <KeyPricesTable
+              variant="editorial"
+              quotes={keyPrices}
+              updatedAt={updatedAt}
+              methodologyHref="/insights/methodology"
+            />
           </div>
         </section>
 
-        <section className="mt-14">
+        <section aria-labelledby="home-analysis" className="mt-14">
           <SectionHeader
-            kicker="Crop & Supply"
-            title="European supply snapshot"
-            action={{ label: "Production and stocks", href: "/supply" }}
+            variant="editorial"
+            id="home-analysis"
+            kicker="Insights"
+            title="Analysis and industry"
+            action={{ label: "All analysis", href: "/insights/analysis" }}
           />
-          <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-10">
+          <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-0">
+            <div className="min-w-0 lg:pr-10">
+              <ArticlePreview
+                article={leadAnalysis}
+                variant="feature"
+                visual={
+                  <AnnualChangeChart
+                    title="Generic red, change on a year earlier"
+                    titleId="lead-analysis-chart"
+                    quotes={genericReds}
+                  />
+                }
+              />
+              {secondaryAnalysis.length > 0 ? (
+                <div className="mt-8 grid grid-cols-1 gap-7 border-t border-rule pt-6 sm:grid-cols-2 sm:gap-8">
+                  {secondaryAnalysis.map((article) => (
+                    <ArticlePreview
+                      key={article.id}
+                      article={article}
+                      variant="compact"
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            <aside
+              aria-labelledby="home-industry"
+              className="min-w-0 border-t border-rule pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8"
+            >
+              <IndustryHeadlineList
+                title="Industry news"
+                titleId="home-industry"
+                items={latestIndustryHeadlines(digest, INDUSTRY_HEADLINES)}
+                action={{ label: "All industry news", href: "/industry" }}
+              />
+            </aside>
+          </div>
+          <p className="mt-6 text-[0.8125rem] leading-relaxed text-ink-soft">
+            Development content: the articles and headlines above are
+            illustrative placeholders demonstrating the editorial format, not
+            published reporting.
+          </p>
+        </section>
+
+        <section aria-labelledby="home-supply" className="mt-14">
+          <SectionHeader
+            variant="editorial"
+            id="home-supply"
+            kicker="Crop & Supply"
+            title="Supply and harvest"
+          />
+
+          <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-14">
             <div>
-              <p className="wt-label text-ink">{supply.campaign}</p>
-              <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+              <h3 className="wt-headline text-[1.375rem] leading-tight font-semibold text-ink">
+                European supply snapshot
+              </h3>
+              <p className="mt-1 text-[0.8125rem] text-ink-soft">
+                {supply.campaign} campaign
+              </p>
+              <p className="wt-headline mt-3 text-lg leading-snug text-pretty text-ink">
+                {supply.takeaway}
+              </p>
+              <p className="mt-3 text-[0.9375rem] leading-[1.55] text-pretty text-ink-soft">
                 {supply.note}
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                France and Iberia carry the downside this season, while Italy
-                opens near its five-year norm.
-              </p>
+              <ul className="mt-4 space-y-1.5">
+                <li>
+                  <ArrowLink href="/supply">Full supply balance</ArrowLink>
+                </li>
+                <li>
+                  <ArrowLink href="/insights/methodology#supply-balance">
+                    How availability is calculated
+                  </ArrowLink>
+                </li>
+              </ul>
             </div>
             <SupplyComparison snapshot={supply} />
           </div>
-        </section>
 
-        <section className="mt-14">
-          <SectionHeader
-            kicker="Crop & Supply"
-            title="Harvest monitor"
-            description="Stage, vineyard condition and expected crop for representative regions, updated as campaigns progress."
-            action={{ label: "Harvest outlook", href: "/harvest" }}
-          />
-          <div className="mt-5">
-            <HarvestMonitor regions={harvest} />
+          <div className="mt-12">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <h3 className="wt-headline text-[1.375rem] leading-tight font-semibold text-ink">
+                Harvest monitor
+              </h3>
+              <ArrowLink href="/harvest">Full harvest monitor</ArrowLink>
+            </div>
+            <p className="mt-1 text-[0.8125rem] text-ink-soft">
+              One representative region per country: stage, vineyard condition
+              and expected crop.
+            </p>
+            <div className="mt-4">
+              <HarvestMonitor regions={regions} />
+            </div>
+            {reportDates.length > 0 ? (
+              <DataNote
+                className="mt-3"
+                lead={harvestStatus ? sharedStatusNote(harvestStatus) : null}
+              >
+                Field reports dated{" "}
+                <span className="whitespace-nowrap">
+                  {formatDateRange(
+                    reportDates[0],
+                    reportDates[reportDates.length - 1],
+                  )}
+                  .
+                </span>
+              </DataNote>
+            ) : null}
           </div>
         </section>
 
-        <section className="mt-14">
+        <section aria-labelledby="home-trade" className="mt-14">
           <SectionHeader
+            variant="editorial"
+            id="home-trade"
             kicker="Trade"
-            title="Trade flows"
-            action={{ label: "Full trade section", href: "/trade" }}
+            title="Trade snapshot"
+            description={`Exports from Spain, Portugal, France and Italy in million hectolitres, ${trade.period}. Year-on-year changes compare with the same period a year earlier.`}
+            action={{ label: "Explore trade data", href: "/trade" }}
           />
           <div className="mt-5">
             <TradeFlowsPanel overview={trade} />
           </div>
         </section>
 
-        <section className="mt-14">
-          <SectionHeader
-            kicker="Insights"
-            title="Analysis and industry"
-            action={{ label: "All insights", href: "/insights" }}
-          />
-          <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-            <div>
-              <ArticlePreview article={leadAnalysis} variant="lead" />
-              <div className="mt-6 border-t-2 border-ink pt-4">
-                {secondaryAnalysis.map((article) => (
-                  <ArticlePreview key={article.id} article={article} />
-                ))}
-              </div>
-            </div>
-            <div className="space-y-8">
-              <IndustryHeadlineList
-                title="Industry news"
-                href="/insights/news"
-                items={digest.news}
-              />
-              <IndustryHeadlineList
-                title="Companies and deals"
-                href="/industry/deals"
-                items={digest.deals}
-              />
-              <IndustryHeadlineList
-                title="Regulation"
-                href="/industry/regulation"
-                items={digest.regulation}
-              />
-            </div>
-          </div>
-        </section>
-
-        <div className="mt-14">
+        <div className="mt-16">
           <BriefingBand />
         </div>
       </Container>

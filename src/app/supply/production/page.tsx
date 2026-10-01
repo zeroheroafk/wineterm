@@ -8,6 +8,7 @@ import { CampaignLinesChart } from "@/components/supply/CampaignLinesChart";
 import { MethodologyNotes } from "@/components/supply/MethodologyNotes";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatMonthYear, formatPrice } from "@/lib/format";
@@ -256,7 +257,7 @@ export default async function ProductionPage() {
           </figcaption>
         </figure>
 
-        <div className="mt-6 overflow-x-auto border border-rule bg-paper">
+        <ScrollRegion className="mt-6 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               Production by country: current estimate, previous campaign,
@@ -336,7 +337,7 @@ export default async function ProductionPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
         <p className="wt-label mt-2 max-w-3xl leading-relaxed text-ink-soft">
           Colour shares are first estimates for the current campaign and can
           shift materially as declarations arrive. Rose is grouped with red
@@ -354,7 +355,7 @@ export default async function ProductionPage() {
               : "Six campaigns per country. The current campaign is an estimate; the five-year average covers completed campaigns only."
           }
         />
-        <div className="mt-5 overflow-x-auto border border-rule bg-paper">
+        <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               Production by campaign and country, million hectolitres
@@ -398,7 +399,7 @@ export default async function ProductionPage() {
                     <td className={`${TD} tnum font-mono text-sm text-ink`}>
                       {campaign.code}
                       {campaign.isEstimate ? (
-                        <span className="wt-label ml-2 text-ochre">est</span>
+                        <span className="wt-label ml-2 text-ochre-deep">est</span>
                       ) : null}
                     </td>
                     {values.map((value, index) => (
@@ -419,7 +420,7 @@ export default async function ProductionPage() {
               })}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
       </section>
 
       <div className="mt-10 max-w-3xl">

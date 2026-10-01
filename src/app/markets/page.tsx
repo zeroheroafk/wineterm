@@ -7,6 +7,7 @@ import { PriceCell } from "@/components/market/PriceCell";
 import { MaybePercent, SeriesCodeLink, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { getMarketsService, isIllustrative } from "@/services/markets/service";
@@ -164,7 +165,7 @@ export default async function MarketsPage() {
           kicker="Latest observations"
           title="Recently updated series"
         />
-        <div className="mt-5 overflow-x-auto border border-rule bg-paper">
+        <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               Most recently observed series across all market sections
@@ -227,7 +228,7 @@ export default async function MarketsPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
       </section>
 
       <section className="mt-12">

@@ -1,56 +1,58 @@
-import Link from "next/link";
-
-import { TrendIndicator } from "@/components/market/TrendIndicator";
-import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
-import { UpdatedAt } from "@/components/ui/SourceLine";
+import { ArrowLink } from "@/components/ui/ArrowLink";
+import { DATA_STATUS_LABELS } from "@/components/ui/DataStatusLabel";
+import { formatDate } from "@/lib/format";
 import type { MarketBriefing } from "@/services/types";
 
-const DIRECTION_VALUE = { up: 1, down: -1, flat: 0 } as const;
-
 /**
- * The editorial market briefing that leads the homepage: status phrase,
- * one headline, a short summary and the key observations of the week,
- * closed by the update time and a link to the full Market Outlook.
+ * The editorial market briefing beside the homepage introduction: a small
+ * label, one headline, a short summary and at most one further
+ * development, closed by the update date, the sample-data disclosure and
+ * a link to the full Market Outlook. One flat surface under a burgundy
+ * rule, no internal compartments.
  */
 export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
   return (
-    <article className="border border-rule border-t-2 border-t-wine bg-paper">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule px-5 py-2.5">
-        <p className="wt-label flex items-center gap-2 text-wine">
-          <span aria-hidden="true" className="h-2 w-2 bg-wine" />
-          Market status: {briefing.statusLabel}
-        </p>
-        <DataStatusLabel status={briefing.status} />
-      </div>
+    <article
+      aria-labelledby="market-briefing-headline"
+      className="border-t-2 border-wine bg-paper px-5 pt-4 pb-5 sm:px-6"
+    >
+      <p className="wt-kicker text-wine">Market briefing</p>
 
-      <div className="px-5 py-4">
-        <h2 className="wt-headline text-2xl font-semibold leading-snug text-ink">
-          {briefing.headline}
-        </h2>
-        <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">
-          {briefing.summary}
-        </p>
+      <h2
+        id="market-briefing-headline"
+        className="wt-headline mt-2 max-w-[34rem] text-[1.5rem] leading-[1.2] font-semibold text-balance text-ink"
+      >
+        {briefing.headline}
+      </h2>
+      <p className="mt-2.5 max-w-[36rem] text-base leading-[1.55] text-pretty text-ink-soft">
+        {briefing.summary}
+      </p>
 
-        <ul className="mt-4 space-y-2.5 border-t border-rule pt-4">
-          {briefing.observations.map((observation) => (
-            <li key={observation.id} className="flex gap-2.5 text-sm leading-snug text-ink">
-              <span className="mt-1 shrink-0">
-                <TrendIndicator value={DIRECTION_VALUE[observation.direction]} />
+      {briefing.development ? (
+        <div className="mt-3.5 border-t border-rule pt-3">
+          <p className="max-w-[36rem] text-[0.9375rem] leading-normal text-pretty text-ink">
+            {briefing.development}
+          </p>
+        </div>
+      ) : null}
+
+      <footer className="mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+        <p className="text-[0.8125rem] text-ink-soft">
+          <time dateTime={briefing.updatedAt}>
+            Updated {formatDate(briefing.updatedAt)}
+          </time>
+          {briefing.status !== "final" ? (
+            <>
+              <span aria-hidden="true" className="mx-1.5">
+                &middot;
               </span>
-              {observation.text}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-rule px-5 py-2.5">
-        <UpdatedAt iso={briefing.updatedAt} />
-        <Link
-          href={briefing.outlookHref}
-          className="wt-label text-wine transition-colors hover:text-wine-deep"
-        >
-          Full Market Outlook &rarr;
-        </Link>
+              {briefing.status === "illustrative"
+                ? "Illustrative sample"
+                : DATA_STATUS_LABELS[briefing.status]}
+            </>
+          ) : null}
+        </p>
+        <ArrowLink href={briefing.outlookHref}>Read the market outlook</ArrowLink>
       </footer>
     </article>
   );

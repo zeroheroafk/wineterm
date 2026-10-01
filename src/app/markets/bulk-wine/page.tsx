@@ -188,11 +188,11 @@ export default async function BulkWinePage({
           </div>
         ) : null}
         <p className="wt-label mt-2 text-ink-soft">
-          <sup className="text-ochre">n</sup> Normalised to EUR/hl from the
+          <sup className="text-ochre-deep">n</sup> Normalised to EUR/hl from the
           original unit for comparability. The original observation is always
           shown first and is never replaced.
           {rows.some(isIllustrative)
-            ? " Rows marked Illustrative are development samples, not market prices."
+            ? " Rows marked Illustrative are development samples, not market prices; their EUR/hl values are shown as recorded, a unit not verified against a published price series."
             : null}
         </p>
       </div>

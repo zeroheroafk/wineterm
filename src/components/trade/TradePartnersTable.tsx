@@ -1,5 +1,6 @@
 import { MaybePercent, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { CountryLabel } from "@/components/ui/CountryLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatPrice } from "@/lib/format";
 import type { TradePartnerRow } from "@/services/trade/types";
 
@@ -13,22 +14,29 @@ export function TradePartnersTable({
   title,
   rows,
   period,
+  category,
 }: {
   title: string;
   rows: TradePartnerRow[];
   period: string;
+  /**
+   * Customs category, e.g. "Bulk wine", named in the caption so tables
+   * repeated per category stay distinguishable.
+   */
+  category?: string;
 }) {
   return (
     <div className="min-w-0 border border-rule bg-paper">
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-ink px-3 py-2">
-        <h4 className="text-sm font-semibold text-ink">{title}</h4>
+        <h3 className="text-sm font-semibold text-ink">{title}</h3>
         <p className="wt-label text-ink-soft">{period}</p>
       </div>
-      <div className="overflow-x-auto">
+      <ScrollRegion>
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
-            {title}, {period}: volume, value, unit value, monthly and annual
-            change, and share of the category
+            {category ? `${category}, ${title.toLowerCase()}` : title},{" "}
+            {period}: volume, value, unit value, monthly and annual change,
+            and share of the category
           </caption>
           <thead>
             <tr className="border-b border-rule">
@@ -95,7 +103,7 @@ export function TradePartnersTable({
             ))}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
     </div>
   );
 }

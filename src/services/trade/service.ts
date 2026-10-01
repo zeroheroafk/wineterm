@@ -1,7 +1,8 @@
 /**
  * Trade service: category summaries, ranked partners, relationships and
  * monthly evolution. Categories are never combined, except that the
- * homepage overview adds up the wine categories; grape must stays apart.
+ * homepage overview adds up the wine categories, whose volumes are all
+ * litres of wine; grape must stays apart.
  *
  * With Supabase configured, figures are Eurostat Comext statistics read
  * through the trade aggregate functions in the database. Without it, they
@@ -10,7 +11,6 @@
 
 import { cache } from "react";
 
-import { tradeOverview } from "@/fixtures/home";
 import {
   monthlyExportVolumes,
   TRADE_UPDATED_AT,
@@ -24,6 +24,7 @@ import { getSource, type MarketSource } from "@/services/markets/sources";
 import {
   TRADE_CATEGORIES,
   TRADE_CATEGORY_CODES,
+  TRADE_CATEGORY_LABELS,
   type TradeCategory,
   type TradeCategoryDetail,
   type TradeCategorySummary,
@@ -86,7 +87,7 @@ class FixtureTradeService implements TradeService {
   }
 
   async getOverview(): Promise<TradeOverview> {
-    return tradeOverview;
+    return buildTradeOverview(tradePeriod, tradeCategoryDetails);
   }
 }
 
@@ -107,8 +108,11 @@ const LITRES_PER_MHL = 100_000_000;
 const EUR_PER_MEUR = 1_000_000;
 const MONTHS_CHARTED = 24;
 
-/** The categories that are wine, and are added up on the homepage. */
-const WINE_CATEGORIES: TradeCategory[] = [
+/**
+ * The categories that are wine, and are added up on the homepage: their
+ * volumes are all litres of wine. Grape must is never added to them.
+ */
+export const WINE_CATEGORIES: TradeCategory[] = [
   "bulk",
   "bottled",
   "bag-in-box",
@@ -122,6 +126,100 @@ const SPLIT_LABELS: Record<TradeCategory, string> = {
   sparkling: "Sparkling",
   must: "Grape must",
 };
+
+const round1 = (value: number) => Math.round(value * 10) / 10;
+
+/** "Bulk, bottled, bag-in-box and sparkling wine" for the given categories. */
+function wineLabel(categories: TradeCategory[]): string {
+  const names = categories.map((category) => SPLIT_LABELS[category].toLowerCase());
+  const list =
+    names.length > 1
+      ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
+      : (names[0] ?? "");
+  return `${list.charAt(0).toUpperCase()}${list.slice(1)} wine`;
+}
+
+/**
+ * The homepage overview from category details, for trade data without
+ * the database aggregates:
+ *
+ * - exporters: each country's exports summed across the wine categories;
+ *   the year-on-year change compares that sum with the same rows' volumes
+ *   a year earlier, and is unknown when any of them is;
+ * - destinations: the bottled-wine ranking as published, because the
+ *   destination lists are short rankings and cannot be summed across
+ *   categories without missing partners;
+ * - split: each wine category's share of their combined volume.
+ */
+export function buildTradeOverview(
+  period: TradePeriod,
+  details: TradeCategoryDetail[],
+): TradeOverview {
+  const wine = WINE_CATEGORIES.flatMap((category) => {
+    const detail = details.find((d) => d.category === category);
+    return detail ? [detail] : [];
+  });
+  const first = wine[0];
+  if (!first) throw new Error("No wine categories in the trade data");
+
+  const totals = new Map<string, { current: number; previous: number | null }>();
+  for (const detail of wine) {
+    for (const row of detail.exporters) {
+      const sum = totals.get(row.country) ?? { current: 0, previous: 0 };
+      sum.current += row.volumeMhl;
+      sum.previous =
+        sum.previous === null || row.yoyPercent === null
+          ? null
+          : sum.previous + row.volumeMhl / (1 + row.yoyPercent / 100);
+      totals.set(row.country, sum);
+    }
+  }
+  const exporters = [...totals.entries()]
+    .map(([country, sum]) => ({
+      country,
+      volumeMhl: round1(sum.current),
+      yoyPercent: change(sum.current, sum.previous),
+    }))
+    .sort((a, b) => b.volumeMhl - a.volumeMhl)
+    .map((row, index) => ({ rank: index + 1, ...row }));
+
+  const bottled = wine.find((detail) => detail.category === "bottled");
+  const destinations = (bottled?.destinations ?? []).map((row) => ({
+    rank: row.rank,
+    country: row.country,
+    volumeMhl: row.volumeMhl,
+    yoyPercent: row.yoyPercent,
+  }));
+
+  const wineMhl = wine.reduce(
+    (sum, detail) => sum + detail.summary.exportVolumeMhl,
+    0,
+  );
+  const split = wine.map((detail) => ({
+    label: SPLIT_LABELS[detail.category],
+    volumeMhl: detail.summary.exportVolumeMhl,
+    sharePercent: wineMhl > 0 ? (detail.summary.exportVolumeMhl / wineMhl) * 100 : 0,
+  }));
+
+  const source = getSource(first.sourceId);
+  return {
+    period: period.label,
+    exporters,
+    exportersLabel: wineLabel(wine.map((detail) => detail.category)),
+    destinations,
+    destinationsLabel: TRADE_CATEGORY_LABELS.bottled,
+    split,
+    splitTotalMhl: round1(wineMhl),
+    scopeNote:
+      "Wine adds the bulk, bottled, bag-in-box and sparkling categories; grape must is a separate subheading and is not included.",
+    status: source.isSample ? "illustrative" : first.summary.status,
+    source: { name: source.name, url: source.url },
+    updatedAt: wine
+      .map((detail) => detail.updatedAt)
+      .sort()
+      .at(-1)!,
+  };
+}
 
 const NOTES: Record<TradeCategory, string> = {
   bulk: "Still wine in containers of more than 10 litres (CN 2204 29), shipped in tankers and flexitanks. Unit values are not comparable with bottled trade.",
@@ -293,7 +391,7 @@ class SupabaseTradeService implements TradeService {
         yoyPercent: row.yoyPercent,
       }));
 
-    const importers = snapshot.destinations
+    const destinations = snapshot.destinations
       .filter((row) => row.product === "wine")
       .map((row, index) => ({
         rank: index + 1,
@@ -303,25 +401,29 @@ class SupabaseTradeService implements TradeService {
       }));
 
     const wineLitres = total(wineExports.map((row) => row.litres));
-    const split = WINE_CATEGORIES.map((category) => ({
-      label: SPLIT_LABELS[category],
-      sharePercent:
-        wineLitres > 0
-          ? (total(
-              wineExports
-                .filter((row) => row.product === TRADE_CATEGORY_CODES[category])
-                .map((row) => row.litres),
-            ) /
-              wineLitres) *
-            100
-          : 0,
-    }));
+    const split = WINE_CATEGORIES.map((category) => {
+      const litres = total(
+        wineExports
+          .filter((row) => row.product === TRADE_CATEGORY_CODES[category])
+          .map((row) => row.litres),
+      );
+      return {
+        label: SPLIT_LABELS[category],
+        volumeMhl: litres / LITRES_PER_MHL,
+        sharePercent: wineLitres > 0 ? (litres / wineLitres) * 100 : 0,
+      };
+    });
 
     return {
       period: period.label,
       exporters,
-      importers,
+      exportersLabel: wineLabel(WINE_CATEGORIES),
+      destinations,
+      destinationsLabel: "All wine",
       split,
+      splitTotalMhl: wineLitres / LITRES_PER_MHL,
+      scopeNote:
+        "Wine adds CN 2204 29 (bulk), 2204 21 (bottled), 2204 22 (bag-in-box) and 2204 10 (sparkling); grape must (CN 2204 30) is a separate subheading and is not included.",
       status: "provisional",
       source: { name: source.name, url: source.url },
       updatedAt: snapshot.updatedAt,

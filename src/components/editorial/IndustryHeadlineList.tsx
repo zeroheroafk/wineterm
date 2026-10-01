@@ -1,50 +1,80 @@
 import Link from "next/link";
 
+import { ArrowLink } from "@/components/ui/ArrowLink";
 import { formatDate } from "@/lib/format";
-import type { IndustryItem } from "@/services/types";
+import type { IndustryDigest, IndustryItem } from "@/services/types";
+
+export interface TopicIndustryItem extends IndustryItem {
+  /** Short topic name shown in the meta line, e.g. "Regulation". */
+  topic: string;
+}
+
+const DIGEST_TOPICS: { key: keyof IndustryDigest; topic: string }[] = [
+  { key: "news", topic: "News" },
+  { key: "deals", topic: "Deals" },
+  { key: "regulation", topic: "Regulation" },
+];
+
+/** The digest's groups merged into one list, newest first. */
+export function latestIndustryHeadlines(
+  digest: IndustryDigest,
+  limit: number,
+): TopicIndustryItem[] {
+  return DIGEST_TOPICS.flatMap(({ key, topic }) =>
+    digest[key].map((item) => ({ ...item, topic })),
+  )
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+    .slice(0, limit);
+}
 
 /**
- * Compact dated headline list for the industry rail: a labelled group of
- * two or three stories with a link to the full section. Deliberately
- * plainer than ArticlePreview so the rail reads as a digest, not cards.
+ * Compact dated headline list for the industry rail: one selective list
+ * with the topic and date under each headline, closed by a descriptive
+ * link to the full section. Plainer than ArticlePreview so the rail
+ * reads as a digest, not cards.
  */
 export function IndustryHeadlineList({
   title,
-  href,
+  titleId,
   items,
+  action,
 }: {
   title: string;
-  href: string;
-  items: IndustryItem[];
+  titleId: string;
+  items: TopicIndustryItem[];
+  action: { label: string; href: string };
 }) {
   return (
-    <section>
-      <div className="flex items-baseline justify-between gap-4 border-b-2 border-ink pb-1.5">
-        <h3 className="wt-label text-wine">{title}</h3>
-        <Link
-          href={href}
-          className="wt-label text-ink-soft transition-colors hover:text-wine"
-        >
-          All &rarr;
-        </Link>
-      </div>
-      <ul>
+    <div>
+      <h3 id={titleId} className="wt-kicker text-wine">
+        {title}
+      </h3>
+      <ul className="mt-2">
         {items.map((item) => (
-          <li key={item.id} className="border-b border-rule py-2.5 last:border-b-0">
+          <li
+            key={item.id}
+            className="border-t border-rule py-3 first:border-t-0 first:pt-1"
+          >
             <Link href={item.href} className="group block">
-              <p className="text-sm leading-snug font-medium text-ink group-hover:text-wine-deep">
+              <span className="wt-headline block text-[1.125rem] leading-[1.3] font-semibold text-balance text-ink underline-offset-4 group-hover:text-wine-deep group-hover:underline">
                 {item.headline}
-              </p>
-              <time
-                dateTime={item.publishedAt}
-                className="wt-label mt-1 block text-ink-soft"
-              >
-                {formatDate(item.publishedAt)}
-              </time>
+              </span>
+              <span className="mt-1 block text-[0.8125rem] text-ink-soft">
+                {item.topic}
+                <span aria-hidden="true" className="mx-1.5">
+                  &middot;
+                </span>
+                <time dateTime={item.publishedAt}>
+                  {formatDate(item.publishedAt)}
+                </time>
+              </span>
             </Link>
           </li>
         ))}
       </ul>
-    </section>
+      <div className="mt-2 border-t border-rule pt-3">
+        <ArrowLink href={action.href}>{action.label}</ArrowLink>
+      </div>
+    </div>
   );
 }

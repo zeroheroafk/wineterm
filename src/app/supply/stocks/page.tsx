@@ -8,6 +8,7 @@ import { CampaignLinesChart } from "@/components/supply/CampaignLinesChart";
 import { MethodologyNotes } from "@/components/supply/MethodologyNotes";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatMonthYear, formatPrice } from "@/lib/format";
@@ -104,7 +105,7 @@ export default async function StocksPage() {
           title="Reported stocks"
           description="Reference dates differ by country; the table shows each declaration as reported, without alignment."
         />
-        <div className="mt-5 overflow-x-auto border border-rule bg-paper">
+        <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               Latest declared stocks by country with direction, share and
@@ -182,7 +183,7 @@ export default async function StocksPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
         <div className="mt-2">
           <SourceLine source={sources} />
         </div>

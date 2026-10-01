@@ -4,26 +4,32 @@ import { subscribeToBriefing } from "@/lib/actions";
 
 /**
  * The main newsletter module. Submissions go to the briefing Server
- * Action; subscription handling arrives with the backend phase.
+ * Action; subscription handling arrives with the backend phase. Each form
+ * is named by its own visible heading, so a page showing both variants
+ * has two distinguishable form landmarks.
  */
 export function NewsletterSignup({
   variant = "panel",
+  titleAs: Title = "h3",
 }: {
   variant?: "panel" | "inline";
+  /** Panel only: the title's heading level, "h1" when the panel is the page. */
+  titleAs?: "h1" | "h2" | "h3";
 }) {
   const inputId = `briefing-email-${variant}`;
+  const nameId = `briefing-name-${variant}`;
 
   if (variant === "inline") {
     return (
       <ActionForm
         action={subscribeToBriefing}
-        aria-label="Newsletter signup"
+        aria-labelledby={nameId}
         className="border-y border-rule py-4"
         messageClassName="text-wine"
       >
         <div className="flex flex-wrap items-end gap-3">
           <div className="min-w-56 grow">
-            <label htmlFor={inputId} className="wt-label text-wine">
+            <label id={nameId} htmlFor={inputId} className="wt-label text-wine">
               The Weekly Briefing
             </label>
             <input
@@ -44,14 +50,17 @@ export function NewsletterSignup({
   return (
     <ActionForm
       action={subscribeToBriefing}
-      aria-label="Newsletter signup"
+      aria-labelledby={nameId}
       className="border border-rule border-t-2 border-t-wine bg-paper p-6"
       messageClassName="text-wine"
     >
       <p className="wt-label text-wine">The Weekly Briefing</p>
-      <h3 className="wt-headline mt-2 text-2xl font-semibold text-ink">
+      <Title
+        id={nameId}
+        className="wt-headline mt-2 text-2xl font-semibold text-ink"
+      >
         The week in wine markets, every Friday
-      </h3>
+      </Title>
       <p className="mt-2 text-sm leading-relaxed text-ink-soft">
         Prices, supply signals and trade developments across Europe, written
         for professionals. Free during the launch period.

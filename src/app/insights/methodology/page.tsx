@@ -10,6 +10,7 @@ import {
 } from "@/components/markets/tags";
 import { TD, TH } from "@/components/markets/cells";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { primaryNavigation } from "@/lib/navigation";
 import {
@@ -224,7 +225,7 @@ export default function MethodologyPage() {
             into each other.
           </p>
         </Prose>
-        <div className="mt-5 max-w-xl overflow-x-auto border border-rule bg-paper">
+        <ScrollRegion className="mt-5 max-w-xl border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               Units, their families and reference units
@@ -258,10 +259,10 @@ export default function MethodologyPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
       </section>
 
-      <section className="mt-12">
+      <section id="supply-balance" className="mt-12 scroll-mt-6">
         <SectionHeader
           kicker="Definitions"
           title="Campaigns and the supply balance"
@@ -328,7 +329,7 @@ export default function MethodologyPage() {
           title="Source registry"
           description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and the monthly wine declarations, are added as their data is licensed and connected."
         />
-        <div className="mt-5 overflow-x-auto border border-rule bg-paper">
+        <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               The source registry: name, classification, coverage and cadence
@@ -374,7 +375,7 @@ export default function MethodologyPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
       </section>
 
       <section className="mt-12">

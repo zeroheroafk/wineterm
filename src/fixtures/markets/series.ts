@@ -40,10 +40,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative.",
+        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 49.2,
+      latestValue: 4.1,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.012,
@@ -70,10 +70,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative.",
+        "Weekly reference price for wine without GI, reported by operators in the region's main trading centres. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 46.2,
+      latestValue: 3.85,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -100,10 +100,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Mid-point of traded ranges reported by regional operators for PGI varietal reds. Development values are illustrative.",
+        "Mid-point of traded ranges reported by regional operators for PGI varietal reds. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 58.8,
+      latestValue: 4.9,
       points: WEEKLY_3Y,
       stepDays: 7,
       volatility: 0.015,
@@ -130,10 +130,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Traded range mid-point for certified organic red where sufficient observations exist; weeks without observations are not interpolated. Development values are illustrative.",
+        "Traded range mid-point for certified organic red where sufficient observations exist; weeks without observations are not interpolated. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 67.2,
+      latestValue: 5.6,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.02,
@@ -160,10 +160,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price for wine without GI in Extremadura trading centres. Development values are illustrative.",
+        "Weekly reference price for wine without GI in Extremadura trading centres. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 47.4,
+      latestValue: 3.95,
       points: WEEKLY_3Y,
       stepDays: 7,
       volatility: 0.012,
@@ -221,10 +221,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly regional reference price for wine without GI. Development values are illustrative.",
+        "Weekly regional reference price for wine without GI. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 64.8,
+      latestValue: 5.4,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -251,10 +251,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly regional reference price for wine without GI. Development values are illustrative.",
+        "Weekly regional reference price for wine without GI. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 55.2,
+      latestValue: 4.6,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.015,
@@ -312,10 +312,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly weighted average of registered bulk contracts for red wine without GI. Development values are illustrative.",
+        "Weekly weighted average of registered bulk contracts for red wine without GI. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 93.6,
+      latestValue: 7.8,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.011,
@@ -372,10 +372,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative.",
+        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 70.8,
+      latestValue: 5.9,
       points: WEEKLY_5Y,
       stepDays: 7,
       volatility: 0.013,
@@ -402,10 +402,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "official",
       verification: "verified",
       methodology:
-        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative.",
+        "Weekly reference price list from the region's chamber-of-commerce style reporting. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 88.8,
+      latestValue: 7.4,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.014,
@@ -694,10 +694,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative.",
+        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 38.4,
+      latestValue: 3.2,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.018,
@@ -724,10 +724,10 @@ export const seriesFixtures: SeriesFixture[] = [
       sourceType: "reported-range",
       verification: "reported",
       methodology:
-        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative.",
+        "Weekly quotations reported by trade contacts for must sold for vinification. Development values are illustrative. Values are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
     },
     history: {
-      latestValue: 42,
+      latestValue: 3.5,
       points: WEEKLY_2Y,
       stepDays: 7,
       volatility: 0.018,

@@ -13,9 +13,9 @@ const TAG_BASE = "wt-label inline-flex items-center border px-1.5 py-0.5";
 const CLASSIFICATION_STYLES: Record<DataClassification, string> = {
   official: "border-wine text-wine",
   reported: "border-rule text-ink-soft",
-  indicative: "border-ochre text-ochre",
-  modelled: "border-ochre text-ochre",
-  estimated: "border-ochre text-ochre",
+  indicative: "border-ochre text-ochre-deep",
+  modelled: "border-ochre text-ochre-deep",
+  estimated: "border-ochre text-ochre-deep",
 };
 
 /** Data classification of a source: official, reported, indicative, ... */
@@ -35,9 +35,9 @@ const SOURCE_TYPE_STYLES: Record<ObservationSourceType, string> = {
   official: "border-wine text-wine",
   contract: "border-rule text-ink",
   "coop-settlement": "border-rule text-ink",
-  "buyer-announcement": "border-ochre text-ochre",
+  "buyer-announcement": "border-ochre text-ochre-deep",
   "reported-range": "border-rule text-ink-soft",
-  "wineterm-estimate": "border-ochre bg-ochre/10 text-ochre",
+  "wineterm-estimate": "border-ochre bg-ochre/10 text-ochre-deep",
 };
 
 /** How an observation was established (grape provenance in particular). */
@@ -52,7 +52,7 @@ export function SourceTypeTag({ type }: { type: ObservationSourceType }) {
 const VERIFICATION_STYLES: Record<VerificationStatus, string> = {
   verified: "border-rule text-ink",
   reported: "border-rule text-ink-soft",
-  unverified: "border-ochre text-ochre",
+  unverified: "border-ochre text-ochre-deep",
 };
 
 const VERIFICATION_LABELS: Record<VerificationStatus, string> = {

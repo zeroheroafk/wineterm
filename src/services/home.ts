@@ -2,10 +2,13 @@
  * Homepage data service.
  *
  * Aggregates everything the homepage needs behind one typed interface.
- * Sections with a connected source read it: trade from Eurostat, and the
- * key prices and the market strip from the imported price series, listed
- * before the illustrative fixtures that complete them. Everything else is
- * still illustrative.
+ * Figures that exist in another domain are read from that domain's
+ * service and never copied: the market strip repeats the key price
+ * records, the supply snapshot is the current campaign's supply balance
+ * and the trade snapshot comes from the trade service. Sections with a
+ * connected source read it: trade from Eurostat, and the key prices and
+ * the market strip from the imported price series, listed before the
+ * illustrative records that complete them.
  */
 
 import {
@@ -16,18 +19,22 @@ import {
   industryDigest,
   keyPrices,
   leadBriefing,
-  stripQuotes,
-  supplySnapshot,
+  stripOtherQuotes,
+  stripPriceCodes,
+  supplySnapshotText,
 } from "@/fixtures/home";
 import { getMarketsService, isIllustrative } from "@/services/markets/service";
-import { getSource } from "@/services/markets/sources";
+import { getSource, type SourceId } from "@/services/markets/sources";
 import type { MarketRow, SeriesObservation } from "@/services/markets/types";
+import { getSupplyService } from "@/services/supply/service";
+import type { SupplyBalanceComputed } from "@/services/supply/types";
 import {
   getIllustrativeTradeService,
   getTradeService,
 } from "@/services/trade/service";
 import type {
   Article,
+  DataStatus,
   HarvestRegion,
   IndustryDigest,
   MarketBriefing,
@@ -52,9 +59,80 @@ export interface HomeService {
   getLastUpdated(): Promise<string>;
 }
 
+/**
+ * Strip entries for key prices, read from the key price records by code
+ * and placed before the quotes the table does not carry. Values are
+ * passed through unconverted.
+ */
+export function buildMarketStrip(
+  quotes: PriceQuote[],
+  codes: { code: string; name: string }[],
+  others: StripQuote[],
+): StripQuote[] {
+  const fromKeyPrices = codes.map(({ code, name }) => {
+    const quote = quotes.find((candidate) => candidate.code === code);
+    if (!quote) throw new Error(`No key price record for strip code ${code}`);
+    return {
+      id: `st-${quote.id}`,
+      name,
+      country: quote.country,
+      value: quote.price,
+      unit: quote.unit,
+      changePercent: quote.changePercent,
+      observedAt: quote.observedAt,
+      status: quote.status,
+    };
+  });
+  return [...fromKeyPrices, ...others];
+}
+
+/** Sample sources stand in for real ones, so their figures are illustrative. */
+function statusFor(sourceId: SourceId, status: DataStatus): DataStatus {
+  return getSource(sourceId).isSample ? "illustrative" : status;
+}
+
+/**
+ * Supply snapshot rows: each country's balance for the campaign, compared
+ * with its balance for the previous campaign. Imports are the balance's
+ * own stated figure, never a residual.
+ */
+export function buildSupplySnapshot(
+  campaign: string,
+  previousCampaign: string,
+  current: SupplyBalanceComputed[],
+  previous: SupplyBalanceComputed[],
+): SupplySnapshot {
+  const first = current[0];
+  if (!first) throw new Error(`No supply balance for ${campaign}`);
+  return {
+    campaign,
+    previousCampaign,
+    rows: current.map((balance) => {
+      const before = previous.find((row) => row.country === balance.country);
+      if (!before) {
+        throw new Error(`No ${previousCampaign} balance for ${balance.country}`);
+      }
+      return {
+        country: balance.country,
+        productionMhl: balance.productionMhl,
+        openingStocksMhl: balance.openingStocksMhl,
+        importsMhl: balance.importsMhl,
+        availabilityMhl: balance.availabilityMhl,
+        vsPreviousPercent:
+          (balance.availabilityMhl / before.availabilityMhl - 1) * 100,
+      };
+    }),
+    takeaway: supplySnapshotText.takeaway,
+    note: supplySnapshotText.note,
+    status: statusFor(first.sourceId, first.status),
+    source: { name: getSource(first.sourceId).name },
+    updatedAt: first.updatedAt,
+  };
+}
+
 class FixtureHomeService implements HomeService {
   async getMarketStrip(): Promise<StripQuote[]> {
-    return stripQuotes;
+    return buildMarketStrip(keyPrices, stripPriceCodes, stripOtherQuotes);
   }
 
   async getLeadBriefing(): Promise<MarketBriefing> {
@@ -66,7 +144,17 @@ class FixtureHomeService implements HomeService {
   }
 
   async getSupplySnapshot(): Promise<SupplySnapshot> {
-    return supplySnapshot;
+    const supply = getSupplyService();
+    const campaigns = await supply.getCampaigns();
+    const campaign = await supply.getCurrentCampaign();
+    const index = campaigns.findIndex((c) => c.code === campaign);
+    const previousCampaign = campaigns[index - 1]?.code;
+    if (!previousCampaign) throw new Error(`No campaign before ${campaign}`);
+    const [current, previous] = await Promise.all([
+      supply.getBalances(campaign),
+      supply.getBalances(previousCampaign),
+    ]);
+    return buildSupplySnapshot(campaign, previousCampaign, current, previous);
   }
 
   async getHarvestRegions(): Promise<HarvestRegion[]> {
@@ -127,7 +215,7 @@ function marketName(row: MarketRow): string {
   return row.series.appellation ?? row.series.region;
 }
 
-/** Real prices first, then the illustrative fixtures. */
+/** Real prices first, then the illustrative records. */
 class LiveHomeService extends FixtureHomeService {
   async getMarketStrip(): Promise<StripQuote[]> {
     const imported = (await importedPrices()).flatMap(({ row, previous }) => {
@@ -199,7 +287,7 @@ export function getHomeService(): HomeService {
 }
 
 /**
- * Always the illustrative fixtures, for sample publications such as the
+ * Always the illustrative records, for sample publications such as the
  * Market Outlook, whose text was written against them.
  */
 export function getIllustrativeHomeService(): HomeService {

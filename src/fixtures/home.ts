@@ -15,66 +15,37 @@ import type {
   MarketBriefing,
   PriceQuote,
   StripQuote,
-  SupplySnapshot,
-  TradeOverview,
 } from "@/services/types";
 
-const ILLUSTRATIVE_SOURCE = { name: "Regional market bulletin (sample)" };
-const TRADE_SOURCE = { name: "Customs statistics (sample)" };
+/**
+ * The samples record EUR/hl, but values of 4 to 8 are the usual size of
+ * bulk quotes per hectolitre-degree rather than per hectolitre. Nothing
+ * in the records says which, and converting would need each record's own
+ * alcohol strength, so the values are shown exactly as recorded and the
+ * doubt is stated wherever they are cited.
+ */
+const ILLUSTRATIVE_SOURCE = {
+  name: "Regional market bulletin (sample)",
+  note: "The sample prices are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+};
 
 export const HOME_UPDATED_AT = "2026-08-21T09:30:00Z";
 
-export const stripQuotes: StripQuote[] = [
-  {
-    id: "st-clm-red",
-    name: "CLM bulk red",
-    country: "ES",
-    value: 49.2,
-    unit: "EUR/hl",
-    changePercent: 2.5,
-    observedAt: "2026-08-20",
-    status: "illustrative",
-  },
-  {
-    id: "st-clm-white",
-    name: "CLM bulk white",
-    country: "ES",
-    value: 46.2,
-    unit: "EUR/hl",
-    changePercent: -1.3,
-    observedAt: "2026-08-20",
-    status: "illustrative",
-  },
-  {
-    id: "st-ale-red",
-    name: "Alentejo bulk red",
-    country: "PT",
-    value: 64.8,
-    unit: "EUR/hl",
-    changePercent: 2.9,
-    observedAt: "2026-08-20",
-    status: "illustrative",
-  },
-  {
-    id: "st-lan-red",
-    name: "Languedoc bulk red",
-    country: "FR",
-    value: 93.6,
-    unit: "EUR/hl",
-    changePercent: 0.6,
-    observedAt: "2026-08-18",
-    status: "illustrative",
-  },
-  {
-    id: "st-pug-red",
-    name: "Puglia bulk red",
-    country: "IT",
-    value: 70.8,
-    unit: "EUR/hl",
-    changePercent: -1.7,
-    observedAt: "2026-08-19",
-    status: "illustrative",
-  },
+/**
+ * Key prices repeated in the market strip, in strip order, with their
+ * short strip names. The strip reads value, unit, change, date and status
+ * from the key price records, so the two displays cannot disagree.
+ */
+export const stripPriceCodes: { code: string; name: string }[] = [
+  { code: "ES-CLM-RED-GEN", name: "CLM bulk red" },
+  { code: "ES-CLM-WHT-GEN", name: "CLM bulk white" },
+  { code: "PT-ALE-RED-GEN", name: "Alentejo bulk red" },
+  { code: "FR-LAN-RED-NGI", name: "Languedoc bulk red" },
+  { code: "IT-PUG-RED-GEN", name: "Puglia bulk red" },
+];
+
+/** Strip quotes for markets outside the key prices table. */
+export const stripOtherQuotes: StripQuote[] = [
   {
     id: "st-clm-grape",
     name: "CLM white grapes",
@@ -98,32 +69,11 @@ export const stripQuotes: StripQuote[] = [
 ];
 
 export const leadBriefing: MarketBriefing = {
-  statusLabel: "Firm into the vintage",
   headline: "Old-vintage cover tightens as a short Iberian crop comes into view",
   summary:
-    "Buyers moved earlier than usual this week to cover generic red positions ahead of the harvest, while first estimates for the new campaign point below the five-year average in Spain and Portugal. Whites remain comfortable for now.",
-  observations: [
-    {
-      id: "ob-1",
-      text: "Generic red firmed in Castilla-La Mancha on pre-harvest cover buying against thin availability.",
-      direction: "up",
-    },
-    {
-      id: "ob-2",
-      text: "White availability stays comfortable; Lisboa whites eased on quiet export demand.",
-      direction: "down",
-    },
-    {
-      id: "ob-3",
-      text: "First 2026/27 estimates point to a below-average Iberian crop after a dry summer.",
-      direction: "down",
-    },
-    {
-      id: "ob-4",
-      text: "Bulk export volumes continue to run behind last season across the main origins.",
-      direction: "down",
-    },
-  ],
+    "Buyers moved earlier than usual this week to cover generic red positions ahead of the harvest, while first estimates for the new campaign point below the five-year average in Spain and Portugal.",
+  development:
+    "White availability stays comfortable for now; Lisboa whites eased on quiet export demand.",
   updatedAt: HOME_UPDATED_AT,
   status: "illustrative",
   outlookHref: "/outlook",
@@ -138,9 +88,9 @@ export const keyPrices: PriceQuote[] = [
     country: "ES",
     colour: "red",
     product: "Generic red, 12 to 13 percent vol",
-    price: 49.2,
+    price: 4.1,
     unit: "EUR/hl",
-    change: 1.2,
+    change: 0.1,
     changePercent: 2.5,
     yoyPercent: 7.9,
     observedAt: "2026-08-20",
@@ -154,9 +104,9 @@ export const keyPrices: PriceQuote[] = [
     country: "ES",
     colour: "white",
     product: "Generic white, 11 to 12 percent vol",
-    price: 46.2,
+    price: 3.85,
     unit: "EUR/hl",
-    change: -0.6,
+    change: -0.05,
     changePercent: -1.3,
     yoyPercent: -3.8,
     observedAt: "2026-08-20",
@@ -170,7 +120,7 @@ export const keyPrices: PriceQuote[] = [
     country: "ES",
     colour: "red",
     product: "Generic red, 12 percent vol",
-    price: 47.4,
+    price: 3.95,
     unit: "EUR/hl",
     change: 0,
     changePercent: 0,
@@ -186,9 +136,9 @@ export const keyPrices: PriceQuote[] = [
     country: "PT",
     colour: "red",
     product: "Generic red, 13 percent vol",
-    price: 64.8,
+    price: 5.4,
     unit: "EUR/hl",
-    change: 1.8,
+    change: 0.15,
     changePercent: 2.9,
     yoyPercent: 6.1,
     observedAt: "2026-08-20",
@@ -202,9 +152,9 @@ export const keyPrices: PriceQuote[] = [
     country: "PT",
     colour: "white",
     product: "Generic white, 11.5 percent vol",
-    price: 55.2,
+    price: 4.6,
     unit: "EUR/hl",
-    change: -2.4,
+    change: -0.2,
     changePercent: -4.2,
     yoyPercent: -2.4,
     observedAt: "2026-08-20",
@@ -213,14 +163,14 @@ export const keyPrices: PriceQuote[] = [
   },
   {
     id: "kp-fr-lan-red",
-    code: "FR-LAN-RED-GEN",
+    code: "FR-LAN-RED-NGI",
     market: "Languedoc",
     country: "FR",
     colour: "red",
     product: "Vin de France red, without GI",
-    price: 93.6,
+    price: 7.8,
     unit: "EUR/hl",
-    change: 0.6,
+    change: 0.05,
     changePercent: 0.6,
     yoyPercent: -1.2,
     observedAt: "2026-08-18",
@@ -234,9 +184,9 @@ export const keyPrices: PriceQuote[] = [
     country: "IT",
     colour: "red",
     product: "Generic red, 12.5 percent vol",
-    price: 70.8,
+    price: 5.9,
     unit: "EUR/hl",
-    change: -1.2,
+    change: -0.1,
     changePercent: -1.7,
     yoyPercent: 2.8,
     observedAt: "2026-08-19",
@@ -245,42 +195,15 @@ export const keyPrices: PriceQuote[] = [
   },
 ];
 
-export const supplySnapshot: SupplySnapshot = {
-  campaign: "2026/27 campaign, first estimates",
-  rows: [
-    {
-      country: "ES",
-      productionMhl: 34.5,
-      openingStocksMhl: 30.2,
-      availabilityMhl: 65.5,
-      vsFiveYearPercent: -3.2,
-    },
-    {
-      country: "PT",
-      productionMhl: 6.9,
-      openingStocksMhl: 7.4,
-      availabilityMhl: 15.8,
-      vsFiveYearPercent: 1.8,
-    },
-    {
-      country: "FR",
-      productionMhl: 42.0,
-      openingStocksMhl: 37.5,
-      availabilityMhl: 80.2,
-      vsFiveYearPercent: -6.5,
-    },
-    {
-      country: "IT",
-      productionMhl: 47.3,
-      openingStocksMhl: 38.9,
-      availabilityMhl: 86.5,
-      vsFiveYearPercent: 0.9,
-    },
-  ],
-  note: "Availability is opening stocks plus estimated production plus imports, matching the supply balance; the bars show production and opening stocks. First estimates are revised through the autumn.",
-  status: "illustrative",
-  source: { name: "National harvest estimates (sample)" },
-  updatedAt: HOME_UPDATED_AT,
+/**
+ * The desk's reading of the supply snapshot. The figures themselves come
+ * from the supply balances (src/fixtures/supply.ts) through the supply
+ * service; this sentence must be revised whenever they change.
+ */
+export const supplySnapshotText = {
+  takeaway:
+    "Spain and Italy start 2026/27 with more wine available than a year earlier; France has less, and Portugal about the same.",
+  note: "Availability is opening stocks plus production plus imports, each as stated in the country's supply balance. First estimates are revised through the autumn.",
 };
 
 export const harvestRegions: HarvestRegion[] = [
@@ -293,6 +216,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Dry; heat stress in unirrigated plots",
     expected: "down",
     updatedAt: "2026-08-20",
+    status: "illustrative",
   },
   {
     id: "hv-rioja",
@@ -303,6 +227,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Healthy canopy, moderate temperatures",
     expected: "flat",
     updatedAt: "2026-08-19",
+    status: "illustrative",
   },
   {
     id: "hv-alentejo",
@@ -313,6 +238,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Clean fruit, good acidity retention",
     expected: "up",
     updatedAt: "2026-08-20",
+    status: "illustrative",
   },
   {
     id: "hv-douro",
@@ -323,6 +249,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Sound, but rain needed in upper valley",
     expected: "down",
     updatedAt: "2026-08-18",
+    status: "illustrative",
   },
   {
     id: "hv-languedoc",
@@ -333,6 +260,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Uneven ripening after summer heat spikes",
     expected: "down",
     updatedAt: "2026-08-19",
+    status: "illustrative",
   },
   {
     id: "hv-puglia",
@@ -343,6 +271,7 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Good sanitary state, average yields",
     expected: "up",
     updatedAt: "2026-08-20",
+    status: "illustrative",
   },
   {
     id: "hv-veneto",
@@ -353,34 +282,9 @@ export const harvestRegions: HarvestRegion[] = [
     conditionNote: "Regular season, normal disease pressure",
     expected: "flat",
     updatedAt: "2026-08-17",
+    status: "illustrative",
   },
 ];
-
-export const tradeOverview: TradeOverview = {
-  period: "12 months to Jun 2026",
-  exporters: [
-    { rank: 1, country: "ES", volumeMhl: 21.0, yoyPercent: -2.1 },
-    { rank: 2, country: "IT", volumeMhl: 17.4, yoyPercent: 1.2 },
-    { rank: 3, country: "FR", volumeMhl: 12.6, yoyPercent: -4.0 },
-    { rank: 4, country: "PT", volumeMhl: 3.2, yoyPercent: 3.5 },
-  ],
-  importers: [
-    { rank: 1, country: "DE", volumeMhl: 12.9, yoyPercent: -1.5 },
-    { rank: 2, country: "GB", volumeMhl: 10.5, yoyPercent: 0.8 },
-    { rank: 3, country: "US", volumeMhl: 8.7, yoyPercent: -3.9 },
-    { rank: 4, country: "NL", volumeMhl: 4.4, yoyPercent: 2.2 },
-    { rank: 5, country: "BE", volumeMhl: 3.0, yoyPercent: -0.6 },
-  ],
-  split: [
-    { label: "Bulk", sharePercent: 31 },
-    { label: "Bottled", sharePercent: 58 },
-    { label: "Bag-in-box", sharePercent: 4 },
-    { label: "Sparkling", sharePercent: 7 },
-  ],
-  status: "illustrative",
-  source: TRADE_SOURCE,
-  updatedAt: HOME_UPDATED_AT,
-};
 
 /** Homepage editorial: one lead analysis and secondary stories. */
 export const homeLeadAnalysis: Article = {

@@ -30,7 +30,7 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls="wt-mobile-nav"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 items-center gap-2 border border-rule bg-paper px-3 text-sm font-medium text-ink"
+        className="flex h-9 items-center gap-2 border border-rule bg-paper px-3 text-sm font-medium text-ink transition-colors hover:border-wine hover:text-wine-deep"
       >
         <svg
           aria-hidden="true"
@@ -57,17 +57,20 @@ export function MobileNav() {
             {primaryNavigation.map((section) => {
               const isExpanded = expanded === section.label;
               const hasItems = section.items.length > 0;
+              const active = pathname.startsWith(section.href);
 
               return (
                 <li key={section.label}>
                   <div className="flex items-stretch">
                     <Link
                       href={section.href}
-                      className="flex grow items-center gap-3 px-4 py-3 text-base font-medium text-ink"
+                      aria-current={active ? "page" : undefined}
+                      className={`flex grow items-center border-l-2 px-4 py-3 text-base font-medium ${
+                        active
+                          ? "border-wine text-wine-deep"
+                          : "border-transparent text-ink hover:text-wine-deep"
+                      }`}
                     >
-                      <span className="wt-label w-9 text-ink-soft">
-                        {section.code}
-                      </span>
                       {section.label}
                     </Link>
                     {hasItems ? (
@@ -98,7 +101,7 @@ export function MobileNav() {
                         <li key={item.href}>
                           <Link
                             href={item.href}
-                            className="block py-2 pl-16 pr-4 text-sm text-ink hover:text-wine-deep"
+                            className="block py-2.5 pl-8 pr-4 text-[0.9375rem] text-ink hover:text-wine-deep"
                           >
                             {item.label}
                           </Link>
