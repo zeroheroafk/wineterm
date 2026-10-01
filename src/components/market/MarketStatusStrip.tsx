@@ -7,7 +7,8 @@ import { COUNTRY_NAMES, type StripQuote } from "@/services/types";
 /**
  * Compact market price strip under the global header: a static row of
  * representative quotes, market name above price, unit and weekly move,
- * the move signed and coloured. No animation. Market names already carry
+ * the move signed and coloured. No animation. Values are shown exactly as
+ * the service supplies them, unconverted. Market names already carry
  * their region, so the country is given in the tooltip and to assistive
  * technology rather than as a code on every item. When every quote is
  * illustrative the strip opens with one disclosure, pinned so it stays in
@@ -53,9 +54,7 @@ export function MarketStatusStrip({ quotes }: { quotes: StripQuote[] }) {
                   <span className="tnum text-sm font-semibold text-ink">
                     {formatPrice(quote.value)}
                   </span>
-                  <span className="text-[0.6875rem] text-ink-soft">
-                    {quote.unit}
-                  </span>
+                  <span className="text-ink-soft">{quote.unit}</span>
                   <span className="ml-1">
                     <InlinePercentChange value={quote.changePercent} />
                   </span>

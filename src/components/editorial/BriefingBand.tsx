@@ -21,7 +21,7 @@ export function BriefingBand() {
           >
             The wine market, once a week.
           </h2>
-          <p className="mt-2 max-w-xl text-[0.9375rem] leading-relaxed text-pretty text-ink-soft">
+          <p className="mt-2 max-w-xl text-base leading-[1.55] text-pretty text-ink-soft">
             Prices, harvest conditions, supply, trade and the developments
             shaping the professional wine industry.
           </p>

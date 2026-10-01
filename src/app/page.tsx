@@ -1,4 +1,4 @@
-import { PriceTrendChart } from "@/components/charts/PriceTrendChart";
+import { AnnualChangeChart } from "@/components/charts/AnnualChangeChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
 import {
@@ -36,7 +36,6 @@ export default async function Home() {
     harvest,
     trade,
     leadAnalysis,
-    leadSeries,
     secondaryAnalysis,
     digest,
     updatedAt,
@@ -48,11 +47,14 @@ export default async function Home() {
     home.getHarvestRegions(),
     home.getTradeOverview(),
     home.getLeadAnalysis(),
-    home.getLeadAnalysisSeries(),
     home.getSecondaryAnalysis(),
     home.getIndustryDigest(),
     home.getLastUpdated(),
   ]);
+
+  // The lead analysis is about generic red prices: its chart shows those
+  // rows of the key prices table, so chart and table share one record.
+  const genericReds = keyPrices.filter((quote) => quote.colour === "red");
 
   const regions = representativeRegions(harvest);
   const reportDates = regions.map((region) => region.updatedAt).sort();
@@ -69,26 +71,25 @@ export default async function Home() {
       <Container>
         <section
           aria-labelledby="home-intro"
-          className="grid grid-cols-1 gap-8 pt-8 pb-10 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:items-center lg:gap-14"
+          className="grid grid-cols-1 items-start gap-8 pt-7 pb-9 sm:pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-12 lg:pb-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] xl:gap-16"
         >
-          <div className="max-w-xl">
+          {/* The top padding sets the headline's first line level with the
+              first line of the briefing beside it. */}
+          <div className="max-w-xl lg:pt-[1.0625rem]">
             <h1
               id="home-intro"
               className="wt-headline text-[2.25rem] leading-[1.08] font-semibold tracking-[-0.02em] text-balance text-ink sm:text-[2.625rem] lg:text-[2.875rem]"
             >
               Market intelligence for the wine industry.
             </h1>
-            <p className="mt-4 max-w-lg text-[1.0625rem] leading-relaxed text-pretty text-ink-soft sm:text-lg">
+            <p className="mt-4 max-w-lg text-[1.0625rem] leading-[1.6] text-pretty text-ink-soft sm:text-lg">
               Prices, supply and trade intelligence for wineries, growers and
               the international wine trade.
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="mt-6">
               <ButtonLink href="/markets" className="h-10 px-5">
                 Explore markets
               </ButtonLink>
-              <ArrowLink href="/insights/methodology">
-                How we source our data
-              </ArrowLink>
             </div>
           </div>
           <LeadBriefing briefing={briefing} />
@@ -110,6 +111,7 @@ export default async function Home() {
               variant="editorial"
               quotes={keyPrices}
               updatedAt={updatedAt}
+              methodologyHref="/insights/methodology"
             />
           </div>
         </section>
@@ -122,18 +124,17 @@ export default async function Home() {
             title="Analysis and industry"
             action={{ label: "All analysis", href: "/insights/analysis" }}
           />
-          <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-0">
+          <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-0">
             <div className="min-w-0 lg:pr-10">
               <ArticlePreview
                 article={leadAnalysis}
                 variant="feature"
                 visual={
-                  leadSeries ? (
-                    <PriceTrendChart
-                      series={leadSeries}
-                      titleId="lead-analysis-chart"
-                    />
-                  ) : undefined
+                  <AnnualChangeChart
+                    title="Generic red, change on a year earlier"
+                    titleId="lead-analysis-chart"
+                    quotes={genericReds}
+                  />
                 }
               />
               {secondaryAnalysis.length > 0 ? (
@@ -175,18 +176,18 @@ export default async function Home() {
             title="Supply and harvest"
           />
 
-          <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-12">
+          <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-14">
             <div>
-              <h3 className="wt-headline text-xl font-semibold text-ink">
+              <h3 className="wt-headline text-[1.375rem] leading-tight font-semibold text-ink">
                 European supply snapshot
               </h3>
-              <p className="mt-0.5 text-[0.8125rem] text-ink-soft">
-                {supply.campaign}
+              <p className="mt-1 text-[0.8125rem] text-ink-soft">
+                {supply.campaign} campaign
               </p>
               <p className="wt-headline mt-3 text-lg leading-snug text-pretty text-ink">
                 {supply.takeaway}
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-pretty text-ink-soft">
+              <p className="mt-3 text-[0.9375rem] leading-[1.55] text-pretty text-ink-soft">
                 {supply.note}
               </p>
               <ul className="mt-4 space-y-1.5">
@@ -205,12 +206,12 @@ export default async function Home() {
 
           <div className="mt-12">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-              <h3 className="wt-headline text-xl font-semibold text-ink">
+              <h3 className="wt-headline text-[1.375rem] leading-tight font-semibold text-ink">
                 Harvest monitor
               </h3>
               <ArrowLink href="/harvest">Full harvest monitor</ArrowLink>
             </div>
-            <p className="mt-0.5 text-[0.8125rem] text-ink-soft">
+            <p className="mt-1 text-[0.8125rem] text-ink-soft">
               One representative region per country: stage, vineyard condition
               and expected crop.
             </p>
@@ -241,7 +242,7 @@ export default async function Home() {
             id="home-trade"
             kicker="Trade"
             title="Trade snapshot"
-            description={`Volumes in million hectolitres, ${trade.period}. Year-on-year changes compare with the same period a year earlier.`}
+            description={`Exports from Spain, Portugal, France and Italy in million hectolitres, ${trade.period}. Year-on-year changes compare with the same period a year earlier.`}
             action={{ label: "Explore trade data", href: "/trade" }}
           />
           <div className="mt-5">

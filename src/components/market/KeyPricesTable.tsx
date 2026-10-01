@@ -3,6 +3,7 @@ import {
   PercentChange,
 } from "@/components/market/ChangeCell";
 import { PriceCell } from "@/components/market/PriceCell";
+import { ArrowLink } from "@/components/ui/ArrowLink";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import {
   DATA_STATUS_LABELS,
@@ -38,19 +39,29 @@ const SHARED_STATUS_NOTES: Record<DataStatus, string | null> = {
  * shared by every row moves into the column heading; a status shared by
  * every row becomes one table-level note instead of a badge per row.
  * Columns that yield on narrow screens reappear as a line under the
- * market name, so no figure is lost.
+ * market name, so no figure is lost. Changes are signed and coloured
+ * like every other movement on the page, without glyphs.
  */
 export function KeyPricesTable({
   quotes,
   updatedAt,
   variant = "dense",
+  methodologyHref,
 }: {
   quotes: PriceQuote[];
   updatedAt?: string;
   variant?: "dense" | "editorial";
+  /** Editorial only: where the note links to explain the sourcing. */
+  methodologyHref?: string;
 }) {
   if (variant === "editorial") {
-    return <EditorialKeyPrices quotes={quotes} updatedAt={updatedAt} />;
+    return (
+      <EditorialKeyPrices
+        quotes={quotes}
+        updatedAt={updatedAt}
+        methodologyHref={methodologyHref}
+      />
+    );
   }
 
   const tableSource = quotes[0]?.source;
@@ -147,9 +158,11 @@ const TD = "px-2 py-2.5 first:pl-0 last:pr-0 sm:px-3";
 function EditorialKeyPrices({
   quotes,
   updatedAt,
+  methodologyHref,
 }: {
   quotes: PriceQuote[];
   updatedAt?: string;
+  methodologyHref?: string;
 }) {
   const first = quotes[0];
   const sharedUnit = quotes.every((quote) => quote.unit === first?.unit)
@@ -173,8 +186,8 @@ function EditorialKeyPrices({
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
             Key bulk wine reference prices
-            {sharedUnit ? ` in ${sharedUnit}` : ""}, with weekly and annual
-            change
+            {sharedUnit ? ` in ${sharedUnit}` : ""}, with the change on the
+            week and on the same week a year earlier
           </caption>
           <thead>
             <tr className="border-b border-ink/30">
@@ -195,11 +208,11 @@ function EditorialKeyPrices({
               </th>
               <th scope="col" className={`${TH} text-right`}>
                 <span className="sm:hidden">Week</span>
-                <span className="hidden sm:inline">Weekly change</span>
+                <span className="hidden sm:inline">Week on week</span>
               </th>
               <th scope="col" className={`${TH} ${annualEdge} text-right`}>
                 <span className="sm:hidden">Year</span>
-                <span className="hidden sm:inline">Annual change</span>
+                <span className="hidden sm:inline">Year on year</span>
               </th>
               <th scope="col" className={`${TH} hidden text-right lg:table-cell`}>
                 Observed
@@ -263,10 +276,7 @@ function EditorialKeyPrices({
                     )}
                   </td>
                   <td className={`${TD} text-right text-sm`}>
-                    <InlinePercentChange
-                      value={quote.changePercent}
-                      withIndicator
-                    />
+                    <InlinePercentChange value={quote.changePercent} />
                   </td>
                   <td className={`${TD} ${annualEdge} text-right text-sm`}>
                     {typeof quote.yoyPercent === "number" ? (
@@ -301,6 +311,16 @@ function EditorialKeyPrices({
             lead={statusNote}
             source={first.source}
             updatedAt={updatedAt}
+            action={
+              methodologyHref ? (
+                <ArrowLink
+                  href={methodologyHref}
+                  className="text-[0.8125rem] whitespace-nowrap"
+                >
+                  How we source our data
+                </ArrowLink>
+              ) : null
+            }
           />
         </figcaption>
       ) : null}

@@ -56,7 +56,7 @@ export function IndustryHeadlineList({
             className="border-t border-rule py-3 first:border-t-0 first:pt-1"
           >
             <Link href={item.href} className="group block">
-              <span className="wt-headline block text-[1.0625rem] leading-snug font-semibold text-balance text-ink underline-offset-4 group-hover:text-wine-deep group-hover:underline">
+              <span className="wt-headline block text-[1.125rem] leading-[1.3] font-semibold text-balance text-ink underline-offset-4 group-hover:text-wine-deep group-hover:underline">
                 {item.headline}
               </span>
               <span className="mt-1 block text-[0.8125rem] text-ink-soft">

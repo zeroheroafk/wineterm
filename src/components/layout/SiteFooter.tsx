@@ -47,7 +47,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-8 border-t border-wine-wash/20 pt-4">
-          <p className="max-w-4xl text-xs leading-relaxed text-wine-wash/85">
+          <p className="text-[0.8125rem] leading-normal text-wine-wash">
             &copy; <CurrentDate options={{ year: "numeric" }} unit="year" />{" "}
             WineTerm. All rights reserved. Content is provided
             for professional information purposes and is not investment

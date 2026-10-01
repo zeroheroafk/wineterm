@@ -12,28 +12,33 @@ import {
 const TH = "py-1.5 text-[0.8125rem] leading-tight font-medium text-ink-soft";
 const TD = "py-2";
 
-function ListTitle({ children }: { children: string }) {
+function ListTitle({ title, scope }: { title: string; scope: string }) {
   return (
-    <h3 className="text-[0.9375rem] font-semibold text-ink">{children}</h3>
+    <>
+      <h3 className="text-base font-semibold text-ink">{title}</h3>
+      <p className="text-[0.8125rem] text-ink-soft">{scope}</p>
+    </>
   );
 }
 
 function RankedList({
   title,
+  scope,
   rows,
   period,
 }: {
   title: string;
+  scope: string;
   rows: TradeRankRow[];
   period: string;
 }) {
   return (
     <div className="min-w-0">
-      <ListTitle>{title}</ListTitle>
-      <table className="mt-2 w-full border-collapse text-left text-sm">
+      <ListTitle title={title} scope={scope} />
+      <table className="mt-2 w-full border-collapse text-left text-[0.9375rem]">
         <caption className="sr-only">
-          {title}: volume in million hectolitres, {period}, and change
-          against the same period a year earlier
+          {title}, {scope.toLowerCase()}: volume in million hectolitres,{" "}
+          {period}, and change against the same period a year earlier
         </caption>
         <thead>
           <tr className="border-b border-ink/30">
@@ -72,23 +77,35 @@ function RankedList({
   );
 }
 
-function CompositionList({ split }: { split: TradeSplitSegment[] }) {
+function CompositionList({
+  split,
+  totalMhl,
+}: {
+  split: TradeSplitSegment[];
+  totalMhl: number;
+}) {
+  const scope = `Share of ${formatPrice(totalMhl, 1)} Mhl of wine exports`;
   return (
     <div className="min-w-0">
-      <ListTitle>Export volume by product form</ListTitle>
-      <table className="mt-2 w-full border-collapse text-left text-sm">
+      <ListTitle title="Export volume by product form" scope={scope} />
+      <table className="mt-2 w-full border-collapse text-left text-[0.9375rem]">
         <caption className="sr-only">
-          Share of export volume by product form, percent
+          Export volume by product form: million hectolitres and share of the{" "}
+          {formatPrice(totalMhl, 1)} million hectolitres exported in these
+          forms
         </caption>
         <thead>
           <tr className="border-b border-ink/30">
             <th scope="col" className={TH}>
               Product
             </th>
-            <th scope="col" className={`${TH} w-2/5`}>
+            <th scope="col" className={`${TH} w-[34%]`}>
               <span className="sr-only">Share, as a bar</span>
             </th>
-            <th scope="col" className={`${TH} w-24 text-right`}>
+            <th scope="col" className={`${TH} text-right`}>
+              Mhl
+            </th>
+            <th scope="col" className={`${TH} w-16 text-right`}>
               Share
             </th>
           </tr>
@@ -99,13 +116,16 @@ function CompositionList({ split }: { split: TradeSplitSegment[] }) {
               <th scope="row" className={`${TD} font-medium text-ink`}>
                 {segment.label}
               </th>
-              <td className={TD}>
+              <td className={`${TD} pl-3`}>
                 <span aria-hidden="true" className="block h-2.5 w-full bg-rule/45">
                   <span
                     className="block h-full bg-wine"
                     style={{ width: `${segment.sharePercent}%` }}
                   />
                 </span>
+              </td>
+              <td className={`${TD} tnum text-right text-ink`}>
+                {formatPrice(segment.volumeMhl, 1)}
               </td>
               <td className={`${TD} tnum text-right font-semibold text-ink`}>
                 {formatPrice(segment.sharePercent, 0)}%
@@ -119,9 +139,10 @@ function CompositionList({ split }: { split: TradeSplitSegment[] }) {
 }
 
 /**
- * Trade snapshot: leading exporters and import destinations as compact
- * ranked lists, and export composition by product form as a single
- * burgundy bar series. Detailed rankings live on the Trade page.
+ * Trade snapshot: leading wine exporters, the leading destinations of one
+ * category and export composition by product form, as three compact
+ * lists. Each list states what it covers; the note states what the whole
+ * snapshot leaves out. Detailed rankings live on the Trade page.
  */
 export function TradeFlowsPanel({ overview }: { overview: TradeOverview }) {
   return (
@@ -129,22 +150,29 @@ export function TradeFlowsPanel({ overview }: { overview: TradeOverview }) {
       <div className="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
         <RankedList
           title="Leading exporters"
+          scope="Bulk, bottled and sparkling wine"
           rows={overview.exporters}
           period={overview.period}
         />
         <RankedList
-          title="Leading import destinations"
-          rows={overview.importers}
+          title="Leading destinations"
+          scope={overview.destinationsLabel}
+          rows={overview.destinations}
           period={overview.period}
         />
-        <CompositionList split={overview.split} />
+        <CompositionList
+          split={overview.split}
+          totalMhl={overview.splitTotalMhl}
+        />
       </div>
       <figcaption className="mt-4">
         <DataNote
           lead={sharedStatusNote(overview.status)}
           source={overview.source}
           updatedAt={overview.updatedAt}
-        />
+        >
+          {overview.scopeNote}
+        </DataNote>
       </figcaption>
     </figure>
   );
