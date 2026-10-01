@@ -27,9 +27,9 @@ const SEGMENTS: {
 ];
 
 /**
- * Country, bar, availability, five-year comparison. Fixed figure columns
- * keep the header grid and every row grid aligned. Below sm the bar
- * leaves the first line and spans the row underneath.
+ * Country, bar, availability, change on the previous campaign. Fixed
+ * figure columns keep the header grid and every row grid aligned. Below
+ * sm the bar leaves the first line and spans the row underneath.
  */
 const ROW_GRID =
   "grid grid-cols-[minmax(0,1fr)_5rem_5.5rem] gap-x-4 sm:grid-cols-[6.5rem_minmax(0,1fr)_5.5rem_7rem] sm:gap-x-5";
@@ -42,8 +42,8 @@ function mhl(value: number): string {
  * Availability comparison by producer country. Each bar is the full
  * availability of the supply balance, split into production, opening
  * stocks and imports on a shared scale, with the exact figures written
- * underneath and the position against the five-year average beside it.
- * On narrow screens the bar drops below the country line.
+ * underneath and the change against the previous campaign's balance
+ * beside it. On narrow screens the bar drops below the country line.
  */
 export function SupplyComparison({ snapshot }: { snapshot: SupplySnapshot }) {
   const scaleMax = Math.max(...snapshot.rows.map((row) => row.availabilityMhl));
@@ -52,7 +52,7 @@ export function SupplyComparison({ snapshot }: { snapshot: SupplySnapshot }) {
     <figure>
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1.5">
         <p className="text-[0.8125rem] text-ink-soft">
-          Availability by country, million hectolitres
+          Availability by country, {snapshot.campaign}, million hectolitres
         </p>
         <ul
           aria-label="Bar segments"
@@ -79,10 +79,7 @@ export function SupplyComparison({ snapshot }: { snapshot: SupplySnapshot }) {
           Production, opening stocks and imports
         </span>
         <span className="text-right">Availability</span>
-        <span className="text-right">
-          <span className="sm:hidden">vs 5-yr avg</span>
-          <span className="hidden sm:inline">vs five-year average</span>
-        </span>
+        <span className="text-right">vs {snapshot.previousCampaign}</span>
       </div>
 
       <ul>
@@ -125,8 +122,10 @@ export function SupplyComparison({ snapshot }: { snapshot: SupplySnapshot }) {
               {mhl(row.availabilityMhl)}
             </p>
             <p className="col-start-3 row-start-1 text-right text-sm sm:col-start-4">
-              <span className="sr-only">Against the five-year average </span>
-              <InlinePercentChange value={row.vsFiveYearPercent} />
+              <span className="sr-only">
+                Against {snapshot.previousCampaign}{" "}
+              </span>
+              <InlinePercentChange value={row.vsPreviousPercent} />
             </p>
           </li>
         ))}

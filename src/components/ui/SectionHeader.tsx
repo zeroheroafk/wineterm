@@ -36,7 +36,7 @@ export function SectionHeader({
         <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
           <h2
             id={id}
-            className="wt-headline text-[1.625rem] leading-tight font-semibold text-balance text-ink"
+            className="wt-headline text-[1.625rem] leading-tight font-semibold text-balance text-ink sm:text-[1.75rem]"
           >
             {title}
           </h2>
@@ -45,7 +45,7 @@ export function SectionHeader({
           ) : null}
         </div>
         {description ? (
-          <p className="mt-1.5 max-w-2xl text-[0.9375rem] leading-relaxed text-pretty text-ink-soft">
+          <p className="mt-1.5 max-w-2xl text-base leading-[1.55] text-pretty text-ink-soft">
             {description}
           </p>
         ) : null}

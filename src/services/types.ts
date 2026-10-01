@@ -54,6 +54,12 @@ export interface DataSource {
   /** Publishing body, e.g. a ministry or statistics office. */
   name: string;
   url?: string;
+  /**
+   * Caveat on how the source's figures are recorded, shown with the
+   * attribution wherever the source is cited, e.g. a unit basis that has
+   * not been verified.
+   */
+  note?: string;
 }
 
 /** One row of a market price table. */
@@ -113,11 +119,6 @@ export interface Article {
   publishedAt: string;
   readingMinutes: number;
   href: string;
-  /**
-   * Code of the price series the article discusses, when there is one.
-   * The homepage charts it beside the lead preview.
-   */
-  seriesCode?: string;
 }
 
 /** A short dated commentary block attached to a market table. */
@@ -142,46 +143,40 @@ export interface StripQuote {
   status: DataStatus;
 }
 
-/** One observation bullet in the lead market briefing. */
-export interface BriefingObservation {
-  id: string;
-  text: string;
-  direction: "up" | "down" | "flat";
-}
-
 /** The editorial market briefing that leads the homepage. */
 export interface MarketBriefing {
-  /** Short market status phrase, e.g. "Firm into the vintage". */
-  statusLabel: string;
   headline: string;
   summary: string;
-  observations: BriefingObservation[];
+  /** At most one further development, when it adds to the summary. */
+  development?: string;
   updatedAt: string;
   status: DataStatus;
   outlookHref: string;
 }
 
-/** One producer country's row in the supply snapshot. */
+/**
+ * One producer country's row in the supply snapshot, taken from the
+ * campaign's supply balance.
+ */
 export interface SupplyCountryRow {
   country: ProducerCountry;
   /** Estimated production for the campaign, million hl. */
   productionMhl: number;
   /** Opening stocks carried into the campaign, million hl. */
   openingStocksMhl: number;
-  /** Imports expected over the campaign, million hl. */
+  /** Imports expected over the campaign, as stated in the balance, million hl. */
   importsMhl: number;
-  /**
-   * Opening stocks plus production plus imports, million hl, matching
-   * the supply balance.
-   */
+  /** Opening stocks plus production plus imports, million hl. */
   availabilityMhl: number;
-  /** Availability against the five-year average, percent. */
-  vsFiveYearPercent: number;
+  /** Availability against the previous campaign's balance, percent. */
+  vsPreviousPercent: number;
 }
 
 export interface SupplySnapshot {
-  /** Campaign reference, e.g. "2026/27 campaign, first estimates". */
+  /** Campaign code, e.g. "2026/27". */
   campaign: string;
+  /** Campaign the comparison column refers to, e.g. "2025/26". */
+  previousCampaign: string;
   rows: SupplyCountryRow[];
   /** The desk's one-sentence reading of the rows. */
   takeaway: string;
@@ -220,18 +215,33 @@ export interface TradeRankRow {
   yoyPercent: number;
 }
 
-/** Volume share of a product category, percent. */
+/** Export volume of one product form and its share of the forms shown. */
 export interface TradeSplitSegment {
   label: string;
+  volumeMhl: number;
+  /** Share of the total of the forms shown, percent. */
   sharePercent: number;
 }
 
+/**
+ * The homepage trade snapshot, derived from the trade categories. Wine
+ * covers the bulk, bottled and sparkling categories; grape must is a
+ * separate heading and is never added to wine volumes.
+ */
 export interface TradeOverview {
   /** Reference period, e.g. "12 months to Jun 2026". */
   period: string;
+  /** Wine exports by producer country, all three wine categories. */
   exporters: TradeRankRow[];
-  importers: TradeRankRow[];
+  /** Leading destinations within one category, named by destinationsLabel. */
+  destinations: TradeRankRow[];
+  /** The category the destinations cover, e.g. "Bottled wine". */
+  destinationsLabel: string;
   split: TradeSplitSegment[];
+  /** Combined export volume of the forms in the split, million hl. */
+  splitTotalMhl: number;
+  /** What the figures cover and leave out. */
+  scopeNote: string;
   status: DataStatus;
   source: DataSource;
   updatedAt: string;

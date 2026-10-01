@@ -14,22 +14,29 @@ export function formatPrice(value: number, decimals = 2): string {
   }).format(value);
 }
 
-/** Signed percentage, e.g. "+2.4%" / "-1.8%" / "0.0%". */
+/**
+ * Negative sign for figures: the minus sign (U+2212) is as wide as the
+ * plus sign in tabular figures, so signed columns line up; the hyphen is
+ * narrower.
+ */
+const MINUS = "−";
+
+/** Signed percentage, e.g. "+2.4%" / "−1.8%" / "0.0%". */
 export function formatPercent(value: number, decimals = 1): string {
   const formatted = new Intl.NumberFormat(EN_GB, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(Math.abs(value));
   if (value > 0) return `+${formatted}%`;
-  if (value < 0) return `-${formatted}%`;
+  if (value < 0) return `${MINUS}${formatted}%`;
   return `${formatted}%`;
 }
 
-/** Signed absolute change in the series unit, e.g. "+0.15". */
+/** Signed absolute change in the series unit, e.g. "+0.15" / "−0.05". */
 export function formatChange(value: number, decimals = 2): string {
   const formatted = formatPrice(Math.abs(value), decimals);
   if (value > 0) return `+${formatted}`;
-  if (value < 0) return `-${formatted}`;
+  if (value < 0) return `${MINUS}${formatted}`;
   return formatted;
 }
 
