@@ -1,16 +1,7 @@
 import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
-
-function editionDate(now: Date): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(now);
-}
+import { EditionDate } from "@/components/layout/EditionDate";
 
 /**
  * Compact institutional strip above the masthead: edition date, coverage
@@ -18,15 +9,11 @@ function editionDate(now: Date): string {
  * competes with the primary navigation.
  */
 export function UtilityBar() {
-  const now = new Date();
-
   return (
     <div className="wt-on-dark bg-wine-deep text-xs text-wine-wash">
       <Container className="flex h-7 items-center justify-between gap-4">
         <p className="truncate">
-          <time dateTime={now.toISOString().slice(0, 10)}>
-            {editionDate(now)}
-          </time>
+          <EditionDate />
           <span className="hidden md:inline">
             <span aria-hidden="true" className="mx-2.5 opacity-50">
               |
