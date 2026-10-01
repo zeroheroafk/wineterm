@@ -7,6 +7,7 @@ production and balance, the official harvest forecasts), the services
 show the real data instead of the samples or beside them, and the
 Illustrative status is what tells the two apart on the page. The sample
 Market Outlook edition stays on the fixtures it was written against.
+Published articles are not fixtures: they live in `src/content`.
 
 Rules:
 

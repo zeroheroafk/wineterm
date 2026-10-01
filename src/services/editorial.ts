@@ -1,19 +1,16 @@
 /**
  * Editorial content service.
  *
- * Typed interface with a fixture-backed implementation, swappable for a
- * CMS later. Serves news, analysis, Weekly Briefing editions and
- * monthly reports for the Insights section.
+ * Typed interface, swappable for a CMS later. Serves the published
+ * articles in src/content for the Insights section, and the Weekly
+ * Briefing editions and monthly reports, which are still fixtures.
  */
 
-import {
-  analysisArticles,
-  briefingEditions,
-  monthlyReports,
-  newsArticles,
-} from "@/fixtures/insights";
+import { publishedArticles } from "@/content/articles";
+import { briefingEditions, monthlyReports } from "@/fixtures/insights";
 import type {
   Article,
+  ArticleDetail,
   ArticleKind,
   BriefingEdition,
   MonthlyReport,
@@ -22,24 +19,28 @@ import type {
 export interface EditorialService {
   getLatestArticles(limit?: number): Promise<Article[]>;
   getArticlesByKind(kind: ArticleKind, limit?: number): Promise<Article[]>;
+  /** One article with its full text, by id. */
+  getArticle(id: string): Promise<ArticleDetail | null>;
   getBriefingEditions(): Promise<BriefingEdition[]>;
   getMonthlyReports(): Promise<MonthlyReport[]>;
 }
 
-const allArticles = [...newsArticles, ...analysisArticles];
-
-class FixtureEditorialService implements EditorialService {
+class StaticEditorialService implements EditorialService {
   async getLatestArticles(limit = 10): Promise<Article[]> {
-    return [...allArticles]
+    return [...publishedArticles]
       .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
       .slice(0, limit);
   }
 
   async getArticlesByKind(kind: ArticleKind, limit = 20): Promise<Article[]> {
-    return allArticles
+    return publishedArticles
       .filter((a) => a.kind === kind)
       .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
       .slice(0, limit);
+  }
+
+  async getArticle(id: string): Promise<ArticleDetail | null> {
+    return publishedArticles.find((a) => a.id === id) ?? null;
   }
 
   async getBriefingEditions(): Promise<BriefingEdition[]> {
@@ -54,6 +55,6 @@ class FixtureEditorialService implements EditorialService {
 let service: EditorialService | null = null;
 
 export function getEditorialService(): EditorialService {
-  service ??= new FixtureEditorialService();
+  service ??= new StaticEditorialService();
   return service;
 }
