@@ -12,10 +12,15 @@ import {
 export function StoryList({
   stories,
   withTopic = false,
+  headingLevel = 3,
 }: {
   stories: IndustryStory[];
   withTopic?: boolean;
+  /** 3 (default) under a section heading; 2 directly under the page title. */
+  headingLevel?: 2 | 3;
 }) {
+  const Headline = headingLevel === 2 ? "h2" : "h3";
+
   return (
     <div>
       {stories.map((story) => (
@@ -28,9 +33,9 @@ export function StoryList({
               {INDUSTRY_TOPIC_LABELS[story.topic]}
             </p>
           ) : null}
-          <h3 className="wt-headline mt-1.5 text-xl leading-snug font-semibold text-ink">
+          <Headline className="wt-headline mt-1.5 text-xl leading-snug font-semibold text-ink">
             {story.headline}
-          </h3>
+          </Headline>
           <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-soft">
             {story.summary}
           </p>

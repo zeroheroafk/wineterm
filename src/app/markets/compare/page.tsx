@@ -18,6 +18,7 @@ import {
   type CompareOption,
 } from "@/components/markets/ComparePicker";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatDate, formatPrice } from "@/lib/format";
 import { getMarketsService } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
@@ -221,7 +222,7 @@ export default async function ComparePage({
             </div>
           </div>
 
-          <div className="mt-6 overflow-x-auto border border-rule bg-paper">
+          <ScrollRegion className="mt-6 border border-rule bg-paper">
             <table className="w-full border-collapse text-left">
               <caption className="sr-only">
                 Latest values of the compared series
@@ -293,7 +294,7 @@ export default async function ComparePage({
                 )}
               </tbody>
             </table>
-          </div>
+          </ScrollRegion>
         </>
       )}
     </Container>

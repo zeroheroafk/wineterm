@@ -15,12 +15,20 @@ export function ArticlePreview({
   article,
   variant = "list",
   visual,
+  headingLevel = 3,
 }: {
   article: Article;
   variant?: "lead" | "list" | "feature" | "compact";
   /** Feature only: a chart or image supported by real content. */
   visual?: ReactNode;
+  /**
+   * 3 (default) under a section heading; 2 when the previews sit directly
+   * under the page title, as on the Analysis and News pages.
+   */
+  headingLevel?: 2 | 3;
 }) {
+  const Headline = headingLevel === 2 ? "h2" : "h3";
+
   if (variant === "feature") {
     return (
       <article
@@ -28,14 +36,14 @@ export function ArticlePreview({
       >
         <div className="group">
           <p className="wt-kicker text-wine">{article.section}</p>
-          <h3 className="wt-headline mt-2 text-[1.75rem] leading-[1.15] font-semibold text-balance text-ink sm:text-[2rem]">
+          <Headline className="wt-headline mt-2 text-[1.75rem] leading-[1.15] font-semibold text-balance text-ink sm:text-[2rem]">
             <Link
               href={article.href}
               className="decoration-2 underline-offset-4 group-hover:text-wine-deep hover:underline"
             >
               {article.headline}
             </Link>
-          </h3>
+          </Headline>
           <p className="mt-3 max-w-2xl text-[1.0625rem] leading-relaxed text-pretty text-ink-soft">
             {article.standfirst}
           </p>
@@ -50,14 +58,14 @@ export function ArticlePreview({
     return (
       <article className="group">
         <p className="wt-kicker text-wine">{article.section}</p>
-        <h3 className="wt-headline mt-1.5 text-xl leading-snug font-semibold text-balance text-ink">
+        <Headline className="wt-headline mt-1.5 text-xl leading-snug font-semibold text-balance text-ink">
           <Link
             href={article.href}
             className="underline-offset-4 group-hover:text-wine-deep hover:underline"
           >
             {article.headline}
           </Link>
-        </h3>
+        </Headline>
         <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-pretty text-ink-soft">
           {article.standfirst}
         </p>
@@ -70,11 +78,11 @@ export function ArticlePreview({
     return (
       <article className="group">
         <p className="wt-label text-wine">{article.section}</p>
-        <h3 className="wt-headline mt-2 text-3xl font-semibold leading-tight text-ink">
+        <Headline className="wt-headline mt-2 text-3xl font-semibold leading-tight text-ink">
           <Link href={article.href} className="group-hover:text-wine-deep">
             {article.headline}
           </Link>
-        </h3>
+        </Headline>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft">
           {article.standfirst}
         </p>
@@ -86,11 +94,11 @@ export function ArticlePreview({
   return (
     <article className="group border-t border-rule py-4 first:border-t-0 first:pt-0">
       <p className="wt-label text-wine">{article.section}</p>
-      <h3 className="wt-headline mt-1.5 text-xl font-semibold leading-snug text-ink">
+      <Headline className="wt-headline mt-1.5 text-xl font-semibold leading-snug text-ink">
         <Link href={article.href} className="group-hover:text-wine-deep">
           {article.headline}
         </Link>
-      </h3>
+      </Headline>
       <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
         {article.standfirst}
       </p>

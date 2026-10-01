@@ -1,4 +1,5 @@
 import { MaybePercent, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatPrice } from "@/lib/format";
 import type { CampaignAverage, SeriesUnit } from "@/services/markets/types";
 
@@ -15,7 +16,7 @@ export function CampaignComparisonTable({
   unit: SeriesUnit;
 }) {
   return (
-    <div className="overflow-x-auto border border-rule bg-paper">
+    <ScrollRegion className="border border-rule bg-paper">
       <table className="w-full border-collapse text-left">
         <caption className="sr-only">
           Campaign average prices and change against the previous campaign
@@ -57,6 +58,6 @@ export function CampaignComparisonTable({
           ))}
         </tbody>
       </table>
-    </div>
+    </ScrollRegion>
   );
 }

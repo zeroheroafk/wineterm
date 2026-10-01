@@ -1,4 +1,5 @@
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatPrice } from "@/lib/format";
 import type { SupplyBalanceComputed } from "@/services/supply/types";
 
@@ -122,7 +123,7 @@ export function BalanceTable({
 
   return (
     <figure>
-      <div className="overflow-x-auto border border-rule bg-paper">
+      <ScrollRegion className="border border-rule bg-paper">
         <table className="w-full border-collapse">
           <caption className="sr-only">
             Supply balance for the {campaign} campaign by country, million
@@ -157,7 +158,7 @@ export function BalanceTable({
             {MEMO_LINES.map((line) => renderLine(line, true))}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
       <figcaption className="wt-label mt-2 max-w-3xl leading-relaxed text-ink-soft">
         <sup className="text-ochre-deep">a</sup> Domestic use includes industrial
         uses, distillation and losses.{" "}

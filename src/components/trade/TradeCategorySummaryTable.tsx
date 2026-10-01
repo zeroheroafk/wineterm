@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { MaybePercent, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatPrice } from "@/lib/format";
 import {
   TRADE_CATEGORY_LABELS,
@@ -29,7 +30,7 @@ export function TradeCategorySummaryTable({
 }) {
   return (
     <figure>
-      <div className="overflow-x-auto border border-rule bg-paper">
+      <ScrollRegion className="border border-rule bg-paper">
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
             Trade by customs category, {period}: export and import volumes and
@@ -114,7 +115,7 @@ export function TradeCategorySummaryTable({
             ))}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
       <figcaption className="wt-label mt-2 max-w-3xl leading-relaxed text-ink-soft">
         External trade of ES, PT, FR and IT combined, {period}. Categories are
         distinct customs headings and are never summed: bulk, bottled and

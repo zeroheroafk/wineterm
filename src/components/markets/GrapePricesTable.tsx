@@ -11,6 +11,7 @@ import {
 } from "@/components/markets/cells";
 import { SourceTypeTag, VerificationTag } from "@/components/markets/tags";
 import { CountryLabel } from "@/components/ui/CountryLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatPrice } from "@/lib/format";
 import { referenceUnit, type MarketRow } from "@/services/markets/types";
@@ -33,7 +34,7 @@ export function GrapePricesTable({ rows }: { rows: MarketRow[] }) {
   }
 
   return (
-    <div className="overflow-x-auto border border-rule bg-paper">
+    <ScrollRegion className="border border-rule bg-paper">
       <table className="w-full border-collapse text-left">
         <caption className="sr-only">
           Grape prices by region, variety and harvest, with source type and
@@ -143,6 +144,6 @@ export function GrapePricesTable({ rows }: { rows: MarketRow[] }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </ScrollRegion>
   );
 }

@@ -12,6 +12,7 @@ import {
 import { DataClassificationTag } from "@/components/markets/tags";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { EmptyState } from "@/components/ui/states";
 import { formatDate } from "@/lib/format";
 import { getSource } from "@/services/markets/sources";
@@ -39,7 +40,7 @@ export function MustPricesTable({ rows }: { rows: MarketRow[] }) {
   }
 
   return (
-    <div className="overflow-x-auto border border-rule bg-paper">
+    <ScrollRegion className="border border-rule bg-paper">
       <table className="w-full border-collapse text-left">
         <caption className="sr-only">
           Must and concentrate quotations with product form, specification,
@@ -140,6 +141,6 @@ export function MustPricesTable({ rows }: { rows: MarketRow[] }) {
           })}
         </tbody>
       </table>
-    </div>
+    </ScrollRegion>
   );
 }

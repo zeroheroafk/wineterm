@@ -42,10 +42,16 @@ export default async function AnalysisPage() {
 
       <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <div>
-          {lead ? <ArticlePreview article={lead} variant="lead" /> : null}
+          {lead ? (
+            <ArticlePreview article={lead} variant="lead" headingLevel={2} />
+          ) : null}
           <div className="mt-6 border-t-2 border-ink pt-4">
             {rest.map((article) => (
-              <ArticlePreview key={article.id} article={article} />
+              <ArticlePreview
+                key={article.id}
+                article={article}
+                headingLevel={2}
+              />
             ))}
           </div>
         </div>

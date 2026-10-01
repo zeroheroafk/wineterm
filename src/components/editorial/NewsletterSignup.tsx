@@ -2,7 +2,9 @@ import { Button } from "@/components/ui/Button";
 
 /**
  * The main newsletter module. The form posts to the briefing landing
- * route; subscription handling arrives with the backend phase.
+ * route; subscription handling arrives with the backend phase. Each form
+ * is named by its own visible heading, so a page showing both variants
+ * has two distinguishable form landmarks.
  */
 export function NewsletterSignup({
   variant = "panel",
@@ -13,16 +15,17 @@ export function NewsletterSignup({
   titleAs?: "h1" | "h2" | "h3";
 }) {
   const inputId = `briefing-email-${variant}`;
+  const nameId = `briefing-name-${variant}`;
 
   if (variant === "inline") {
     return (
       <form
         action="/briefing"
-        aria-label="Newsletter signup"
+        aria-labelledby={nameId}
         className="flex flex-wrap items-end gap-3 border-y border-rule py-4"
       >
         <div className="min-w-56 grow">
-          <label htmlFor={inputId} className="wt-label text-wine">
+          <label id={nameId} htmlFor={inputId} className="wt-label text-wine">
             The Weekly Briefing
           </label>
           <input
@@ -42,11 +45,14 @@ export function NewsletterSignup({
   return (
     <form
       action="/briefing"
-      aria-label="Newsletter signup"
+      aria-labelledby={nameId}
       className="border border-rule border-t-2 border-t-wine bg-paper p-6"
     >
       <p className="wt-label text-wine">The Weekly Briefing</p>
-      <Title className="wt-headline mt-2 text-2xl font-semibold text-ink">
+      <Title
+        id={nameId}
+        className="wt-headline mt-2 text-2xl font-semibold text-ink"
+      >
         The week in wine markets, every Friday
       </Title>
       <p className="mt-2 text-sm leading-relaxed text-ink-soft">

@@ -8,6 +8,7 @@ import {
   DATA_STATUS_LABELS,
   DataStatusLabel,
 } from "@/components/ui/DataStatusLabel";
+import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { DataNote, SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatPrice } from "@/lib/format";
 import type { DataStatus, PriceQuote } from "@/services/types";
@@ -56,7 +57,7 @@ export function KeyPricesTable({
 
   return (
     <figure>
-      <div className="overflow-x-auto border border-rule bg-paper">
+      <ScrollRegion className="border border-rule bg-paper">
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
             Key bulk wine reference prices with weekly and year-on-year change
@@ -129,7 +130,7 @@ export function KeyPricesTable({
             ))}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
       {tableSource ? (
         <figcaption className="mt-2">
           <SourceLine source={tableSource} updatedAt={updatedAt} />
@@ -168,7 +169,7 @@ function EditorialKeyPrices({
 
   return (
     <figure>
-      <div className="overflow-x-auto">
+      <ScrollRegion>
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
             Key bulk wine reference prices
@@ -293,7 +294,7 @@ function EditorialKeyPrices({
             })}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
       {first ? (
         <figcaption className="mt-3">
           <DataNote

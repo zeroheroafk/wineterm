@@ -229,6 +229,7 @@ export default async function DesignSystemPage() {
         <SectionNav section={markets} activeHref="/markets/bulk-wine" />
         <div className="mt-4 border border-rule bg-paper px-3">
           <Breadcrumbs
+            label="Breadcrumb example"
             items={[
               { label: "Markets", href: "/markets" },
               { label: "Bulk Wine Prices" },

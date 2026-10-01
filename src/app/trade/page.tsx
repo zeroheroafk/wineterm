@@ -112,17 +112,23 @@ export default async function TradePage() {
           <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
             <TradePartnersTable
               title="Exporters"
+              category={TRADE_CATEGORY_LABELS[detail.category]}
               rows={detail.exporters}
               period={period.label}
             />
             <TradePartnersTable
               title="Leading destinations"
+              category={TRADE_CATEGORY_LABELS[detail.category]}
               rows={detail.destinations}
               period={period.label}
             />
           </div>
           <div className="mt-5">
-            <TradeFlowsRelationTable rows={detail.topFlows} period={period.label} />
+            <TradeFlowsRelationTable
+              category={TRADE_CATEGORY_LABELS[detail.category]}
+              rows={detail.topFlows}
+              period={period.label}
+            />
           </div>
         </section>
       ))}
