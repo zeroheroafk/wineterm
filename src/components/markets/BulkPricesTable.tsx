@@ -35,9 +35,9 @@ function shortDate(iso: string): string {
 
 // Denser cells than the shared defaults: this is the widest table on the
 // platform and must fit the content column at desktop widths.
-const TH = "wt-label px-2 py-2 font-normal text-ink-soft";
+const TH = "wt-label px-1.5 py-2 font-normal text-ink-soft";
 const TH_RIGHT = `${TH} text-right`;
-const TD = "px-2 py-2.5 whitespace-nowrap";
+const TD = "px-1.5 py-2.5 whitespace-nowrap";
 const TD_RIGHT = `${TD} text-right`;
 
 function categoryLabel(row: MarketRow): string {
@@ -106,7 +106,7 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
             <th scope="col" className={`${TH} hidden lg:table-cell`}>
               Source
             </th>
-            <th scope="col" className={TH}>
+            <th scope="col" className={`${TH} hidden sm:table-cell`}>
               Status
             </th>
           </tr>
@@ -128,6 +128,11 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
                     >
                       {row.series.appellation ?? row.series.region}
                     </Link>
+                  </span>
+                  {/* On phones the status column is out of view, so the
+                      status rides under the market name. */}
+                  <span className="mt-1 block sm:hidden">
+                    <DataStatusLabel status={row.latest.status} />
                   </span>
                 </td>
                 <td className={`${TD} hidden text-sm text-ink-soft sm:table-cell`}>
@@ -180,7 +185,7 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
                     />
                   </span>
                 </td>
-                <td className={TD}>
+                <td className={`${TD} hidden sm:table-cell`}>
                   <DataStatusLabel status={row.latest.status} />
                 </td>
               </tr>

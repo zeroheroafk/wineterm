@@ -30,6 +30,22 @@ export const COUNTRY_NAMES: Record<CountryCode, string> = {
   BE: "Belgium",
 };
 
+const REGION_NAMES = new Intl.DisplayNames(["en-GB"], { type: "region" });
+
+/**
+ * English name of any ISO 3166-1 alpha-2 code: the names above for the
+ * countries WineTerm covers, the runtime's region names for trade partners
+ * elsewhere, and the code itself when neither knows it.
+ */
+export function countryName(code: string): string {
+  if (code in COUNTRY_NAMES) return COUNTRY_NAMES[code as CountryCode];
+  try {
+    return REGION_NAMES.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 /** The four producer countries WineTerm covers at launch. */
 export type ProducerCountry = "ES" | "PT" | "FR" | "IT";
 
@@ -57,7 +73,8 @@ export interface DataSource {
   /**
    * Caveat on how the source's figures are recorded, shown with the
    * attribution wherever the source is cited, e.g. a unit basis that has
-   * not been verified.
+   * not been verified. Worded to stand on its own, since one line may
+   * cite several sources.
    */
   note?: string;
 }
@@ -141,6 +158,8 @@ export interface StripQuote {
   changePercent: number;
   observedAt: string;
   status: DataStatus;
+  /** Publisher of a real quote; illustrative quotes have none. */
+  source?: DataSource;
 }
 
 /** The editorial market briefing that leads the homepage. */
@@ -205,14 +224,14 @@ export interface HarvestRegion {
   status: DataStatus;
 }
 
-/** One ranked row in a trade flow table. */
+/** One ranked row in a trade flow table; any ISO 3166-1 alpha-2 country. */
 export interface TradeRankRow {
   rank: number;
-  country: CountryCode;
+  country: string;
   /** Volume over the reference period, million hl. */
   volumeMhl: number;
-  /** Year-on-year change in volume, percent. */
-  yoyPercent: number;
+  /** Year-on-year change in volume, percent, when a year earlier is known. */
+  yoyPercent: number | null;
 }
 
 /** Export volume of one product form and its share of the forms shown. */
@@ -224,18 +243,20 @@ export interface TradeSplitSegment {
 }
 
 /**
- * The homepage trade snapshot, derived from the trade categories. Wine
- * covers the bulk, bottled and sparkling categories; grape must is a
- * separate heading and is never added to wine volumes.
+ * The homepage trade snapshot, built from the trade categories. Wine
+ * covers every wine category, still wine by container size and sparkling
+ * wine; grape must is a separate subheading and is never added to wine.
  */
 export interface TradeOverview {
   /** Reference period, e.g. "12 months to Jun 2026". */
   period: string;
-  /** Wine exports by producer country, all three wine categories. */
+  /** Wine exports by producer country, across the wine categories. */
   exporters: TradeRankRow[];
-  /** Leading destinations within one category, named by destinationsLabel. */
+  /** What the exporter figures cover, e.g. "Bulk, bottled and sparkling wine". */
+  exportersLabel: string;
+  /** Leading destinations of those exports, named by destinationsLabel. */
   destinations: TradeRankRow[];
-  /** The category the destinations cover, e.g. "Bottled wine". */
+  /** What the destinations cover, e.g. "All wine" or "Bottled still wine". */
   destinationsLabel: string;
   split: TradeSplitSegment[];
   /** Combined export volume of the forms in the split, million hl. */

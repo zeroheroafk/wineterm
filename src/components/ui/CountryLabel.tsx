@@ -1,4 +1,4 @@
-import { COUNTRY_NAMES, type CountryCode } from "@/services/types";
+import { countryName } from "@/services/types";
 
 /**
  * Country identifier: ISO code, optionally followed by the country name.
@@ -13,22 +13,22 @@ export function CountryLabel({
   withName = false,
   variant = "badge",
 }: {
-  code: CountryCode;
+  code: string;
   withName?: boolean;
   variant?: "badge" | "plain";
 }) {
+  const name = countryName(code);
+
   if (variant === "plain") {
     return (
       <span className="inline-flex items-baseline gap-2">
         <abbr
-          title={COUNTRY_NAMES[code]}
+          title={name}
           className="text-xs font-medium tracking-wide text-ink-soft no-underline"
         >
           {code}
         </abbr>
-        {withName ? (
-          <span className="text-sm text-ink">{COUNTRY_NAMES[code]}</span>
-        ) : null}
+        {withName ? <span className="text-sm text-ink">{name}</span> : null}
       </span>
     );
   }
@@ -36,14 +36,12 @@ export function CountryLabel({
   return (
     <span className="inline-flex items-center gap-1.5">
       <abbr
-        title={COUNTRY_NAMES[code]}
+        title={name}
         className="wt-label border border-rule bg-ground px-1 py-0.5 text-ink no-underline"
       >
         {code}
       </abbr>
-      {withName ? (
-        <span className="text-sm text-ink">{COUNTRY_NAMES[code]}</span>
-      ) : null}
+      {withName ? <span className="text-sm text-ink">{name}</span> : null}
     </span>
   );
 }

@@ -1,10 +1,12 @@
+import { ActionForm } from "@/components/ui/ActionForm";
 import { Button } from "@/components/ui/Button";
+import { subscribeToBriefing } from "@/lib/actions";
 
 /**
  * The homepage's single newsletter signup: editorial copy on the left,
  * the labelled form on the right, on one flat surface under a burgundy
- * rule. The form posts to the briefing landing route; the browser's
- * email validation is the feedback until signup processing is connected.
+ * rule. Submissions go to the briefing Server Action, which replies under
+ * the form.
  */
 export function BriefingBand() {
   return (
@@ -26,7 +28,11 @@ export function BriefingBand() {
             shaping the professional wine industry.
           </p>
         </div>
-        <form action="/briefing" aria-labelledby="briefing-band-title">
+        <ActionForm
+          action={subscribeToBriefing}
+          aria-labelledby="briefing-band-title"
+          messageClassName="text-wine"
+        >
           <label
             htmlFor="band-briefing-email"
             className="block text-sm font-medium text-ink"
@@ -50,7 +56,7 @@ export function BriefingBand() {
           <p className="mt-2 text-[0.8125rem] text-ink-soft">
             Every Friday. No marketing lists. Unsubscribe at any time.
           </p>
-        </form>
+        </ActionForm>
       </div>
     </section>
   );

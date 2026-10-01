@@ -1,0 +1,15 @@
+-- New tables, functions and sequences in public are no longer granted to
+-- anon, authenticated and service_role automatically. Every migration
+-- grants exactly what each role needs, so nothing reaches the Data API by
+-- accident. This is the default Supabase is moving projects to.
+alter default privileges for role postgres in schema public
+  revoke select, insert, update, delete on tables from anon, authenticated, service_role;
+
+alter default privileges for role postgres in schema public
+  revoke execute on functions from anon, authenticated, service_role;
+
+alter default privileges for role postgres in schema public
+  revoke usage, select on sequences from anon, authenticated, service_role;
+
+alter default privileges for role postgres in schema public
+  revoke execute on functions from public;

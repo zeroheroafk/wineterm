@@ -1,8 +1,12 @@
 # Fixtures
 
 Everything in this directory is **illustrative sample content** used to
-demonstrate WineTerm components while the platform has no live data
-sources.
+demonstrate WineTerm components where no live data source is connected
+yet. Where one is (Eurostat trade, MAPA's Spanish wine prices, stocks,
+production and balance, the official harvest forecasts), the services
+show the real data instead of the samples or beside them, and the
+Illustrative status is what tells the two apart on the page. The sample
+Market Outlook edition stays on the fixtures it was written against.
 
 Rules:
 

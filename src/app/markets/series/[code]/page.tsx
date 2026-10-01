@@ -140,7 +140,7 @@ export default async function MarketDetailPage({
             code={series.code}
             unit={series.unit}
             status={latest.status}
-            source={{ name: source.name }}
+            source={{ name: source.name, url: source.url }}
             updatedAt={latest.updatedAt}
           >
             <PriceLineChart points={points} unit={series.unit} />
@@ -166,7 +166,16 @@ export default async function MarketDetailPage({
                 <div>
                   <dt className="wt-label text-ink-soft">Source</dt>
                   <dd className="mt-1 text-sm font-medium text-ink">
-                    {source.name}
+                    {source.url ? (
+                      <a
+                        href={source.url}
+                        className="underline decoration-rule underline-offset-2 hover:text-wine-deep"
+                      >
+                        {source.name}
+                      </a>
+                    ) : (
+                      source.name
+                    )}
                   </dd>
                 </div>
                 <div>

@@ -38,7 +38,6 @@ const b = (
   domesticUseMhl: number,
   exportsMhl: number,
   vineyardKha: number,
-  status: SupplyBalance["status"],
 ): SupplyBalance => ({
   campaign,
   country,
@@ -48,7 +47,7 @@ const b = (
   domesticUseMhl,
   exportsMhl,
   vineyardKha,
-  status,
+  status: "illustrative",
   sourceId: "sample-supply-stats",
   updatedAt: SUPPLY_UPDATED_AT,
 });
@@ -59,21 +58,21 @@ const b = (
  * next campaign's declared opening stocks.
  */
 export const supplyBalances: SupplyBalance[] = [
-  // 2024/25, final
-  b("2024/25", "ES", 31.4, 31.2, 0.6, 12.9, 20.6, 935, "final"),
-  b("2024/25", "PT", 7.7, 6.9, 1.3, 5.4, 3.0, 191, "final"),
-  b("2024/25", "FR", 41.0, 36.1, 0.9, 27.0, 12.5, 755, "final"),
-  b("2024/25", "IT", 40.0, 41.1, 0.4, 25.2, 17.0, 672, "final"),
-  // 2025/26, provisional
-  b("2025/26", "ES", 28.9, 32.0, 0.7, 12.0, 20.9, 932, "provisional"),
-  b("2025/26", "PT", 7.5, 7.0, 1.4, 5.6, 3.1, 190, "provisional"),
-  b("2025/26", "FR", 38.6, 44.0, 0.8, 30.6, 13.0, 752, "provisional"),
-  b("2025/26", "IT", 39.5, 44.0, 0.3, 26.0, 17.3, 671, "provisional"),
-  // 2026/27, first estimates
-  b("2026/27", "ES", 30.2, 34.5, 0.8, 12.1, 21.0, 930, "forecast"),
-  b("2026/27", "PT", 7.4, 6.9, 1.5, 5.5, 3.0, 190, "forecast"),
-  b("2026/27", "FR", 37.5, 42.0, 0.7, 30.0, 12.8, 750, "forecast"),
-  b("2026/27", "IT", 38.9, 47.3, 0.3, 25.6, 17.5, 670, "forecast"),
+  // 2024/25, standing in for final figures
+  b("2024/25", "ES", 31.4, 31.2, 0.6, 12.9, 20.6, 935),
+  b("2024/25", "PT", 7.7, 6.9, 1.3, 5.4, 3.0, 191),
+  b("2024/25", "FR", 41.0, 36.1, 0.9, 27.0, 12.5, 755),
+  b("2024/25", "IT", 40.0, 41.1, 0.4, 25.2, 17.0, 672),
+  // 2025/26, standing in for provisional figures
+  b("2025/26", "ES", 28.9, 32.0, 0.7, 12.0, 20.9, 932),
+  b("2025/26", "PT", 7.5, 7.0, 1.4, 5.6, 3.1, 190),
+  b("2025/26", "FR", 38.6, 44.0, 0.8, 30.6, 13.0, 752),
+  b("2025/26", "IT", 39.5, 44.0, 0.3, 26.0, 17.3, 671),
+  // 2026/27, standing in for first estimates
+  b("2026/27", "ES", 30.2, 34.5, 0.8, 12.1, 21.0, 930),
+  b("2026/27", "PT", 7.4, 6.9, 1.5, 5.5, 3.0, 190),
+  b("2026/27", "FR", 37.5, 42.0, 0.7, 30.0, 12.8, 750),
+  b("2026/27", "IT", 38.9, 47.3, 0.3, 25.6, 17.5, 670),
 ];
 
 const p = (
@@ -93,39 +92,39 @@ const p = (
 
 export const productionRecords: ProductionRecord[] = [
   // Totals per campaign
-  p("2021/22", "ES", "total", 35.5, "final"),
-  p("2021/22", "PT", "total", 7.3, "final"),
-  p("2021/22", "FR", "total", 37.8, "final"),
-  p("2021/22", "IT", "total", 50.2, "final"),
-  p("2022/23", "ES", "total", 35.7, "final"),
-  p("2022/23", "PT", "total", 6.8, "final"),
-  p("2022/23", "FR", "total", 45.6, "final"),
-  p("2022/23", "IT", "total", 49.8, "final"),
-  p("2023/24", "ES", "total", 28.3, "final"),
-  p("2023/24", "PT", "total", 7.4, "final"),
-  p("2023/24", "FR", "total", 47.9, "final"),
-  p("2023/24", "IT", "total", 38.3, "final"),
-  p("2024/25", "ES", "total", 31.2, "final"),
-  p("2024/25", "PT", "total", 6.9, "final"),
-  p("2024/25", "FR", "total", 36.1, "final"),
-  p("2024/25", "IT", "total", 41.1, "final"),
-  p("2025/26", "ES", "total", 32.0, "provisional"),
-  p("2025/26", "PT", "total", 7.0, "provisional"),
-  p("2025/26", "FR", "total", 44.0, "provisional"),
-  p("2025/26", "IT", "total", 44.0, "provisional"),
-  p("2026/27", "ES", "total", 34.5, "forecast"),
-  p("2026/27", "PT", "total", 6.9, "forecast"),
-  p("2026/27", "FR", "total", 42.0, "forecast"),
-  p("2026/27", "IT", "total", 47.3, "forecast"),
+  p("2021/22", "ES", "total", 35.5, "illustrative"),
+  p("2021/22", "PT", "total", 7.3, "illustrative"),
+  p("2021/22", "FR", "total", 37.8, "illustrative"),
+  p("2021/22", "IT", "total", 50.2, "illustrative"),
+  p("2022/23", "ES", "total", 35.7, "illustrative"),
+  p("2022/23", "PT", "total", 6.8, "illustrative"),
+  p("2022/23", "FR", "total", 45.6, "illustrative"),
+  p("2022/23", "IT", "total", 49.8, "illustrative"),
+  p("2023/24", "ES", "total", 28.3, "illustrative"),
+  p("2023/24", "PT", "total", 7.4, "illustrative"),
+  p("2023/24", "FR", "total", 47.9, "illustrative"),
+  p("2023/24", "IT", "total", 38.3, "illustrative"),
+  p("2024/25", "ES", "total", 31.2, "illustrative"),
+  p("2024/25", "PT", "total", 6.9, "illustrative"),
+  p("2024/25", "FR", "total", 36.1, "illustrative"),
+  p("2024/25", "IT", "total", 41.1, "illustrative"),
+  p("2025/26", "ES", "total", 32.0, "illustrative"),
+  p("2025/26", "PT", "total", 7.0, "illustrative"),
+  p("2025/26", "FR", "total", 44.0, "illustrative"),
+  p("2025/26", "IT", "total", 44.0, "illustrative"),
+  p("2026/27", "ES", "total", 34.5, "illustrative"),
+  p("2026/27", "PT", "total", 6.9, "illustrative"),
+  p("2026/27", "FR", "total", 42.0, "illustrative"),
+  p("2026/27", "IT", "total", 47.3, "illustrative"),
   // Colour breakdown, current campaign estimates
-  p("2026/27", "ES", "red-rose", 13.6, "forecast"),
-  p("2026/27", "ES", "white", 20.9, "forecast"),
-  p("2026/27", "PT", "red-rose", 4.3, "forecast"),
-  p("2026/27", "PT", "white", 2.6, "forecast"),
-  p("2026/27", "FR", "red-rose", 18.5, "forecast"),
-  p("2026/27", "FR", "white", 23.5, "forecast"),
-  p("2026/27", "IT", "red-rose", 21.3, "forecast"),
-  p("2026/27", "IT", "white", 26.0, "forecast"),
+  p("2026/27", "ES", "red-rose", 13.6, "illustrative"),
+  p("2026/27", "ES", "white", 20.9, "illustrative"),
+  p("2026/27", "PT", "red-rose", 4.3, "illustrative"),
+  p("2026/27", "PT", "white", 2.6, "illustrative"),
+  p("2026/27", "FR", "red-rose", 18.5, "illustrative"),
+  p("2026/27", "FR", "white", 23.5, "illustrative"),
+  p("2026/27", "IT", "red-rose", 21.3, "illustrative"),
+  p("2026/27", "IT", "white", 26.0, "illustrative"),
 ];
 
 export const stockRecords: StockRecord[] = [
@@ -134,7 +133,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-07-31",
     stocksMhl: 30.2,
     yearEarlierMhl: 28.9,
-    status: "provisional",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "Monthly operator declarations covering wineries and storage holders, published about three weeks after the reference date.",
@@ -144,7 +143,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-07-31",
     stocksMhl: 7.4,
     yearEarlierMhl: 7.5,
-    status: "provisional",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "End-of-campaign declarations by all holders, provisional until the campaign closure is validated in the autumn.",
@@ -154,7 +153,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-07-31",
     stocksMhl: 37.5,
     yearEarlierMhl: 38.6,
-    status: "provisional",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "Annual stock declaration at 31 July: one yearly reference point, not a monthly series, so intra-campaign comparisons are not available.",
@@ -164,7 +163,7 @@ export const stockRecords: StockRecord[] = [
     referenceDate: "2026-06-30",
     stocksMhl: 41.2,
     yearEarlierMhl: 41.8,
-    status: "final",
+    status: "illustrative",
     sourceId: "sample-supply-stats",
     methodology:
       "Monthly extract of the electronic wine registry; the latest available month runs one month behind the other countries.",

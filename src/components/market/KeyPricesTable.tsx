@@ -12,11 +12,18 @@ import {
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { DataNote, SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatPrice } from "@/lib/format";
-import type { DataStatus, PriceQuote } from "@/services/types";
+import type { DataSource, DataStatus, PriceQuote } from "@/services/types";
 
 const COLOUR_LABELS = { red: "Red", white: "White", rose: "Rose" } as const;
 
 const HEAD_CELL = "wt-label px-3 py-2 font-normal text-ink-soft";
+
+/** Every source in the table, once each, in row order. */
+function sourcesOf(quotes: PriceQuote[]): DataSource[] {
+  return [
+    ...new Map(quotes.map((quote) => [quote.source.name, quote.source])).values(),
+  ];
+}
 
 /** Table-level note when every row shares one non-final status. */
 const SHARED_STATUS_NOTES: Record<DataStatus, string | null> = {
@@ -29,11 +36,12 @@ const SHARED_STATUS_NOTES: Record<DataStatus, string | null> = {
 
 /**
  * Key bulk wine prices with weekly and year-on-year change, denser than
- * the full MarketTable.
+ * the full MarketTable. The status tells real prices from illustrative
+ * ones, and the caption names every source in the table.
  *
  * "dense" (default): the ruled terminal table used in the Market Outlook.
- * Category and YoY columns yield on narrow screens so price, movement,
- * date and status stay in view.
+ * Category and YoY columns yield on narrow screens so price, movement and
+ * date stay in view; on phones the status rides under the market name.
  *
  * "editorial": the homepage table. Market names and prices lead; a unit
  * shared by every row moves into the column heading; a status shared by
@@ -64,7 +72,7 @@ export function KeyPricesTable({
     );
   }
 
-  const tableSource = quotes[0]?.source;
+  const sources = sourcesOf(quotes);
 
   return (
     <figure>
@@ -96,7 +104,7 @@ export function KeyPricesTable({
               <th scope="col" className={HEAD_CELL}>
                 Date
               </th>
-              <th scope="col" className={HEAD_CELL}>
+              <th scope="col" className={`${HEAD_CELL} hidden sm:table-cell`}>
                 Status
               </th>
             </tr>
@@ -113,6 +121,11 @@ export function KeyPricesTable({
                     <span className="text-sm font-medium text-ink">
                       {quote.market}
                     </span>
+                  </span>
+                  {/* On phones the status column is out of view, so the
+                      status rides under the market name. */}
+                  <span className="mt-1 block sm:hidden">
+                    <DataStatusLabel status={quote.status} />
                   </span>
                 </td>
                 <td className="hidden px-3 py-2.5 text-sm text-ink-soft sm:table-cell">
@@ -134,7 +147,7 @@ export function KeyPricesTable({
                 <td className="tnum px-3 py-2.5 font-mono text-xs whitespace-nowrap text-ink-soft">
                   {formatDate(quote.observedAt)}
                 </td>
-                <td className="px-3 py-2.5 whitespace-nowrap">
+                <td className="hidden px-3 py-2.5 whitespace-nowrap sm:table-cell">
                   <DataStatusLabel status={quote.status} />
                 </td>
               </tr>
@@ -142,9 +155,9 @@ export function KeyPricesTable({
           </tbody>
         </table>
       </ScrollRegion>
-      {tableSource ? (
+      {sources.length > 0 ? (
         <figcaption className="mt-2">
-          <SourceLine source={tableSource} updatedAt={updatedAt} />
+          <SourceLine source={sources} updatedAt={updatedAt} />
         </figcaption>
       ) : null}
     </figure>
@@ -309,7 +322,7 @@ function EditorialKeyPrices({
         <figcaption className="mt-3">
           <DataNote
             lead={statusNote}
-            source={first.source}
+            source={sourcesOf(quotes)}
             updatedAt={updatedAt}
             action={
               methodologyHref ? (

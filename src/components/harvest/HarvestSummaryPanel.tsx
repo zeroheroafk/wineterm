@@ -12,7 +12,7 @@ export function HarvestSummaryPanel({ summary }: { summary: HarvestSummary }) {
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule px-5 py-2.5">
         <h2 className="wt-label text-wine">Executive summary</h2>
         <span className="flex items-center gap-3">
-          <DataStatusLabel status="estimate" />
+          <DataStatusLabel status={summary.status} />
           <UpdatedAt iso={summary.updatedAt} />
         </span>
       </div>

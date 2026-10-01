@@ -23,6 +23,10 @@ import { DataNote } from "@/components/ui/SourceLine";
 import { formatDateRange } from "@/lib/format";
 import { getHomeService } from "@/services/home";
 
+// The prices and the trade panel read the database; regenerate at most
+// hourly.
+export const revalidate = 3600;
+
 /** Headlines in the industry rail; the Industry section carries the rest. */
 const INDUSTRY_HEADLINES = 5;
 
@@ -52,9 +56,13 @@ export default async function Home() {
     home.getLastUpdated(),
   ]);
 
-  // The lead analysis is about generic red prices: its chart shows those
-  // rows of the key prices table, so chart and table share one record.
-  const genericReds = keyPrices.filter((quote) => quote.colour === "red");
+  // The lead analysis is an illustrative preview about generic red prices:
+  // its chart shows the illustrative generic red rows of the key prices
+  // table, so chart and table share one record and real prices are never
+  // charted beside samples.
+  const genericReds = keyPrices.filter(
+    (quote) => quote.colour === "red" && quote.status === "illustrative",
+  );
 
   const regions = representativeRegions(harvest);
   const reportDates = regions.map((region) => region.updatedAt).sort();

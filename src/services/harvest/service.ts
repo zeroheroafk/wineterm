@@ -1,6 +1,8 @@
 /**
  * Harvest service: executive summary, country forecasts, regional
- * reports and the campaign timeline. Fixture-backed.
+ * reports and the campaign timeline. Country forecasts are the official
+ * releases entered in official.ts; the summary, regional reports and
+ * timeline are still illustrative fixtures.
  */
 
 import {
@@ -9,6 +11,7 @@ import {
   harvestSummary,
   harvestTimeline,
 } from "@/fixtures/harvest";
+import { officialForecasts } from "@/services/harvest/official";
 import type {
   CountryHarvestForecast,
   HarvestRegionReport,
@@ -43,9 +46,26 @@ class FixtureHarvestService implements HarvestService {
   }
 }
 
+/** The fixtures, with the official country forecasts. */
+class OfficialHarvestService extends FixtureHarvestService {
+  async getCountryForecasts(): Promise<CountryHarvestForecast[]> {
+    return officialForecasts;
+  }
+}
+
 let service: HarvestService | null = null;
+let illustrative: HarvestService | null = null;
 
 export function getHarvestService(): HarvestService {
-  service ??= new FixtureHarvestService();
+  service ??= new OfficialHarvestService();
   return service;
+}
+
+/**
+ * Only the fixtures, for pages written against them, such as the sample
+ * Market Outlook edition.
+ */
+export function getIllustrativeHarvestService(): HarvestService {
+  illustrative ??= new FixtureHarvestService();
+  return illustrative;
 }

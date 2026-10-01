@@ -3,7 +3,7 @@
  *
  * Development-only sample records demonstrating the homepage sections.
  * Values are plausible orders of magnitude, not real observations, and
- * every record carries an illustrative or forecast status. No real or
+ * every record carries the illustrative status. No real or
  * invented companies, transactions or people appear. See
  * src/fixtures/README.md for the rules this file follows.
  */
@@ -26,7 +26,7 @@ import type {
  */
 const ILLUSTRATIVE_SOURCE = {
   name: "Regional market bulletin (sample)",
-  note: "Prices are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
+  note: "The sample prices are shown as recorded, in EUR/hl; that unit has not been verified against a published price series.",
 };
 
 export const HOME_UPDATED_AT = "2026-08-21T09:30:00Z";

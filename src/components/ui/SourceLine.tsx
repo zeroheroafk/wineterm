@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import { formatDateTime } from "@/lib/format";
 import type { DataSource } from "@/services/types";
@@ -25,23 +25,45 @@ function SourceName({ source }: { source: DataSource }) {
   );
 }
 
+function asList(source: DataSource | DataSource[] | undefined): DataSource[] {
+  if (!source) return [];
+  return Array.isArray(source) ? source : [source];
+}
+
+/** "Source: A" or "Sources: A; B", each linked when it has an address. */
+function SourceNames({ sources }: { sources: DataSource[] }) {
+  return (
+    <>
+      {sources.length > 1 ? "Sources: " : "Source: "}
+      {sources.map((item, index) => (
+        <span key={item.name}>
+          {index > 0 ? "; " : null}
+          <SourceName source={item} />
+        </span>
+      ))}
+    </>
+  );
+}
+
 /**
  * Source attribution line shown under every table and chart, optionally
- * combined with the last-updated timestamp, and followed by the source's
- * caveat when it has one.
+ * combined with the last-updated timestamp. A table that mixes sources
+ * names each of them, and each source's caveat follows the line.
  */
 export function SourceLine({
   source,
   updatedAt,
 }: {
-  source: DataSource;
+  source: DataSource | DataSource[];
   updatedAt?: string;
 }) {
+  const sources = asList(source);
+  const noted = sources.filter((item) => item.note);
   return (
     <>
       <p className="wt-label flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-soft">
         <span>
-          Source: <SourceName source={source} />
+          <SourceNames sources={sources} />
         </span>
         {updatedAt ? (
           <>
@@ -52,11 +74,11 @@ export function SourceLine({
           </>
         ) : null}
       </p>
-      {source.note ? (
-        <p className="mt-1 text-xs leading-relaxed text-ink-soft">
-          {source.note}
+      {noted.map((item) => (
+        <p key={item.name} className="mt-1 text-xs leading-relaxed text-ink-soft">
+          {item.note}
         </p>
-      ) : null}
+      ))}
     </>
   );
 }
@@ -64,8 +86,8 @@ export function SourceLine({
 /**
  * Sentence-case data note for editorial layouts: an optional lead (such as
  * a sample-data disclosure, set in the primary ink so it cannot be
- * missed), optional further text, the source with its caveat, the update
- * time and an optional closing link.
+ * missed), optional further text, the sources with their caveats, the
+ * update time and an optional closing link.
  */
 export function DataNote({
   lead,
@@ -77,22 +99,27 @@ export function DataNote({
 }: {
   lead?: ReactNode;
   children?: ReactNode;
-  source?: DataSource;
+  source?: DataSource | DataSource[];
   updatedAt?: string;
   /** A link set after the note, such as the methodology. */
   action?: ReactNode;
   className?: string;
 }) {
+  const sources = asList(source);
   return (
     <p
       className={`text-[0.8125rem] leading-relaxed text-pretty text-ink-soft ${className}`}
     >
       {lead ? <span className="font-medium text-ink">{lead} </span> : null}
       {children ? <>{children} </> : null}
-      {source ? (
+      {sources.length > 0 ? (
         <>
-          Source: <SourceName source={source} />.{" "}
-          {source.note ? <>{source.note} </> : null}
+          <SourceNames sources={sources} />.{" "}
+          {sources
+            .filter((item) => item.note)
+            .map((item) => (
+              <Fragment key={item.name}>{item.note} </Fragment>
+            ))}
         </>
       ) : null}
       {updatedAt ? (
