@@ -14,8 +14,18 @@ export const LATEST_WEEKLY_DATE = "2026-08-20";
 export const FIXTURES_UPDATED_AT = "2026-08-21T09:30:00Z";
 
 export interface HistoryConfig {
-  /** Anchor value: the generated series ends near this latest value. */
+  /** Anchor value: the generated series ends on this latest value. */
   latestValue: number;
+  /**
+   * Value of the observation before the latest, when pinned so that the
+   * latest change matches a figure quoted elsewhere.
+   */
+  previousValue?: number;
+  /**
+   * Value of the observation a year before the latest, when pinned so
+   * that the change on a year earlier matches a figure quoted elsewhere.
+   */
+  yearAgoValue?: number;
   /** Number of observations to generate. */
   points: number;
   /** Days between observations (7 = weekly, 28 = four-weekly). */
@@ -59,10 +69,46 @@ function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
+/** Observation index to pinned value; the latest is always pinned. */
+function pinnedValues(config: HistoryConfig): Map<number, number> {
+  const last = config.points - 1;
+  const pins = new Map([[last, config.latestValue]]);
+  if (config.previousValue !== undefined) {
+    pins.set(last - 1, config.previousValue);
+  }
+  if (config.yearAgoValue !== undefined) {
+    const index = last - Math.round(365 / config.stepDays);
+    if (index < 0) throw new Error("History too short to pin a year-ago value");
+    pins.set(index, config.yearAgoValue);
+  }
+  return pins;
+}
+
+/**
+ * Multiplicative corrections that bend a walk through its pinned values:
+ * interpolated in log space between pins and held flat before the first,
+ * so the walk keeps its shape around them.
+ */
+function corrections(walk: number[], pins: Map<number, number>): number[] {
+  const indices = [...pins.keys()].sort((a, b) => a - b);
+  const logs = new Map(
+    indices.map((index) => [index, Math.log(pins.get(index)! / walk[index])]),
+  );
+  return walk.map((_, i) => {
+    // The latest is pinned, so a pin at or after i always exists.
+    const after = indices.find((index) => index >= i)!;
+    const before = indices.findLast((index) => index <= i);
+    if (before === undefined || before === after) return Math.exp(logs.get(after)!);
+    const t = (i - before) / (after - before);
+    return Math.exp(logs.get(before)! * (1 - t) + logs.get(after)! * t);
+  });
+}
+
 /**
  * Generates the observation list for one series, oldest first. The walk
- * is built backwards from the anchored latest value so table figures stay
- * consistent with the homepage fixtures.
+ * ends on the anchored latest value and passes through any pinned
+ * earlier observation, so the figures the homepage quotes from a series
+ * are the catalogue's own.
  */
 export function generateHistory(
   code: string,
@@ -93,15 +139,25 @@ export function generateHistory(
   };
   const finalSeasonal = seasonalFor(last);
 
-  const observations: SeriesObservation[] = [];
-  for (let i = 0; i < config.points; i++) {
+  const dates = factors.map((_, i) => {
     const date = new Date(last);
     date.setUTCDate(date.getUTCDate() - (config.points - 1 - i) * config.stepDays);
-
-    const value = round2(
+    return date;
+  });
+  const walk = dates.map(
+    (date, i) =>
       (config.latestValue * factors[i] * seasonalFor(date)) /
-        (finalFactor * finalSeasonal),
-    );
+      (finalFactor * finalSeasonal),
+  );
+  // Only series that pin an earlier observation are bent; the others
+  // keep the plain walk.
+  const pins = pinnedValues(config);
+  const bend = pins.size > 1 ? corrections(walk, pins) : null;
+
+  const observations: SeriesObservation[] = [];
+  for (let i = 0; i < config.points; i++) {
+    const date = dates[i];
+    const value = round2(bend ? walk[i] * bend[i] : walk[i]);
 
     const published = new Date(date);
     published.setUTCDate(published.getUTCDate() + 1);

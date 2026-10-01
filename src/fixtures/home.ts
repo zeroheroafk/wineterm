@@ -8,23 +8,20 @@
  * src/fixtures/README.md for the rules this file follows.
  */
 
-import {
-  quoteFromPerDegree,
-  type Article,
-  type DataSource,
-  type HarvestRegion,
-  type IndustryDigest,
-  type MarketBriefing,
-  type PriceQuote,
-  type StripQuote,
+import type {
+  Article,
+  DataSource,
+  HarvestRegion,
+  IndustryDigest,
+  MarketBriefing,
+  StripQuote,
 } from "@/services/types";
 
 /**
- * The sample bulk prices are recorded per hectolitre-degree, the usual
- * basis of bulk quotations, and shown in EUR/hl so that they read in the
- * unit of the official prices beside them. Each record keeps its
- * recorded figures and the strength they were converted at; the note
- * travels with every citation of the source.
+ * Where the homepage cites the sample bulk prices. They are recorded per
+ * hectolitre-degree, the usual basis of bulk quotations, and shown in
+ * EUR/hl so that they read in the unit of the official prices beside
+ * them; the note travels with every citation of the source.
  */
 export const ILLUSTRATIVE_PRICE_SOURCE: DataSource = {
   name: "Regional market bulletin (sample)",
@@ -36,7 +33,7 @@ export const HOME_UPDATED_AT = "2026-08-21T09:30:00Z";
 /**
  * Key prices repeated in the market strip, in strip order, with their
  * short strip names. The strip reads value, unit, change, date and status
- * from the key price records, so the two displays cannot disagree.
+ * from the key prices, so the two displays cannot disagree.
  */
 export const stripPriceCodes: { code: string; name: string }[] = [
   { code: "ES-CLM-RED-GEN", name: "CLM bulk red" },
@@ -81,141 +78,19 @@ export const leadBriefing: MarketBriefing = {
   outlookHref: "/outlook",
 };
 
-/** Key bulk wine reference prices with weekly and year-on-year change. */
-export const keyPrices: PriceQuote[] = [
-  {
-    id: "kp-es-clm-red",
-    code: "ES-CLM-RED-GEN",
-    market: "Castilla-La Mancha",
-    country: "ES",
-    colour: "red",
-    product: "Generic red, 12 to 13 percent vol",
-    ...quoteFromPerDegree({
-      price: 4.1,
-      change: 0.1,
-      alcoholPercent: 12.5,
-      strengthBasis: "range-midpoint",
-    }),
-    changePercent: 2.5,
-    yoyPercent: 7.9,
-    observedAt: "2026-08-20",
-    status: "illustrative",
-    source: ILLUSTRATIVE_PRICE_SOURCE,
-  },
-  {
-    id: "kp-es-clm-white",
-    code: "ES-CLM-WHT-GEN",
-    market: "Castilla-La Mancha",
-    country: "ES",
-    colour: "white",
-    product: "Generic white, 11 to 12 percent vol",
-    ...quoteFromPerDegree({
-      price: 3.85,
-      change: -0.05,
-      alcoholPercent: 11.5,
-      strengthBasis: "range-midpoint",
-    }),
-    changePercent: -1.3,
-    yoyPercent: -3.8,
-    observedAt: "2026-08-20",
-    status: "illustrative",
-    source: ILLUSTRATIVE_PRICE_SOURCE,
-  },
-  {
-    id: "kp-es-ext-red",
-    code: "ES-EXT-RED-GEN",
-    market: "Extremadura",
-    country: "ES",
-    colour: "red",
-    product: "Generic red, 12 percent vol",
-    ...quoteFromPerDegree({
-      price: 3.95,
-      change: 0,
-      alcoholPercent: 12,
-      strengthBasis: "stated",
-    }),
-    changePercent: 0,
-    yoyPercent: 5.3,
-    observedAt: "2026-08-19",
-    status: "illustrative",
-    source: ILLUSTRATIVE_PRICE_SOURCE,
-  },
-  {
-    id: "kp-pt-ale-red",
-    code: "PT-ALE-RED-GEN",
-    market: "Alentejo",
-    country: "PT",
-    colour: "red",
-    product: "Generic red, 13 percent vol",
-    ...quoteFromPerDegree({
-      price: 5.4,
-      change: 0.15,
-      alcoholPercent: 13,
-      strengthBasis: "stated",
-    }),
-    changePercent: 2.9,
-    yoyPercent: 6.1,
-    observedAt: "2026-08-20",
-    status: "illustrative",
-    source: ILLUSTRATIVE_PRICE_SOURCE,
-  },
-  {
-    id: "kp-pt-lis-white",
-    code: "PT-LIS-WHT-GEN",
-    market: "Lisboa",
-    country: "PT",
-    colour: "white",
-    product: "Generic white, 11.5 percent vol",
-    ...quoteFromPerDegree({
-      price: 4.6,
-      change: -0.2,
-      alcoholPercent: 11.5,
-      strengthBasis: "stated",
-    }),
-    changePercent: -4.2,
-    yoyPercent: -2.4,
-    observedAt: "2026-08-20",
-    status: "illustrative",
-    source: ILLUSTRATIVE_PRICE_SOURCE,
-  },
-  {
-    id: "kp-fr-lan-red",
-    code: "FR-LAN-RED-NGI",
-    market: "Languedoc",
-    country: "FR",
-    colour: "red",
-    product: "Vin de France red, without GI",
-    ...quoteFromPerDegree({
-      price: 7.8,
-      change: 0.05,
-      alcoholPercent: 12,
-      strengthBasis: "assumed",
-    }),
-    changePercent: 0.6,
-    yoyPercent: -1.2,
-    observedAt: "2026-08-18",
-    status: "illustrative",
-    source: ILLUSTRATIVE_PRICE_SOURCE,
-  },
-  {
-    id: "kp-it-pug-red",
-    code: "IT-PUG-RED-GEN",
-    market: "Puglia",
-    country: "IT",
-    colour: "red",
-    product: "Generic red, 12.5 percent vol",
-    ...quoteFromPerDegree({
-      price: 5.9,
-      change: -0.1,
-      alcoholPercent: 12.5,
-      strengthBasis: "stated",
-    }),
-    changePercent: -1.7,
-    yoyPercent: 2.8,
-    observedAt: "2026-08-19",
-    status: "illustrative",
-    source: ILLUSTRATIVE_PRICE_SOURCE,
-  },
+/**
+ * The sample series shown as key bulk wine prices, in table order. Their
+ * figures are read from the markets catalogue (src/fixtures/markets/series.ts),
+ * as the real prices are, so the homepage and the Markets pages agree.
+ */
+export const keyPriceCodes: string[] = [
+  "ES-CLM-RED-GEN",
+  "ES-CLM-WHT-GEN",
+  "ES-EXT-RED-GEN",
+  "PT-ALE-RED-GEN",
+  "PT-LIS-WHT-GEN",
+  "FR-LAN-RED-NGI",
+  "IT-PUG-RED-GEN",
 ];
 
 /**
