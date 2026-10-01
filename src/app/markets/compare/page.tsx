@@ -327,6 +327,13 @@ export default async function ComparePage({
               </tbody>
             </table>
           </ScrollRegion>
+          {rows.some((row) => row?.series.perDegree) ? (
+            <p className="wt-label mt-2 text-ink-soft">
+              Samples recorded per hectolitre-degree are shown in EUR/hl at the
+              product&apos;s strength; each series page gives the recorded
+              value and the strength used.
+            </p>
+          ) : null}
         </>
       )}
     </Container>

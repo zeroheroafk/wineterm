@@ -83,8 +83,8 @@ export default async function MarketsPage() {
         title="Markets"
         description={
           hasReal
-            ? "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its original unit, source and status. Spain's weekly national bulk wine averages are official MAPA statistics; the other series are illustrative samples, marked as such."
-            : "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its original unit, source and status; development figures are illustrative samples."
+            ? "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. Spain's weekly national bulk wine averages are official MAPA statistics; the other series are illustrative samples, marked as such."
+            : "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength; development figures are illustrative samples."
         }
         activeHref="/markets"
       />
@@ -229,6 +229,13 @@ export default async function MarketsPage() {
             </tbody>
           </table>
         </ScrollRegion>
+        {recent.some((row) => row.series.perDegree) ? (
+          <p className="wt-label mt-2 text-ink-soft">
+            Samples recorded per hectolitre-degree are shown in EUR/hl at the
+            product&apos;s strength; each series page gives the recorded value
+            and the strength used.
+          </p>
+        ) : null}
       </section>
 
       <section className="mt-12">
