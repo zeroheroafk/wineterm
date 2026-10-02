@@ -268,8 +268,10 @@ Status legend:
   read on 2 October 2026: generic white 10 to 12% vol 4.50 to 4.90,
   red 4.10 to 4.60 EUR/hl-degree; RCGM 4.80 to 5.00 per degree Brix.
 - **Not usable without permission:** Bologna and Alessandria-Asti
-  publish under CC BY-NC-ND, which excludes commercial use. Ask each
-  chamber for written permission.
+  publish under CC BY-NC-ND, which excludes commercial use. Florence's
+  list (n. 15 of 2026) prices bulk Chianti and Chianti Classico by
+  vintage in EUR/hl, ex-producer, but reserves all rights and forbids
+  reproduction. Ask each chamber for written permission.
 - Link: [Bologna weekly lists](https://www.bo.camcom.gov.it/it/borsa-merci-e-rilevazione-prezzi/listino-settimanale-dei-prezzi-rilevati-il-giovedi).
 
 ### France: FranceAgriMer VISIONet
