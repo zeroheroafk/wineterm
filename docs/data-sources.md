@@ -119,21 +119,51 @@ Status legend:
   [weekly wine price bulletins](https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/boletines_semanales_precio_vino),
   [reuse conditions](https://datos.gob.es/en/documentacion/aviso-legal-tipo-para-la-reutilizacion-de-la-informacion-del-sector-publico).
 
-### Spain: MAPA representative wine markets
+### Spain: MAPA representative wine markets. Imported
 
 - **Covers:** weekly ex-winery bulk prices of white and red wine without
-  PDO/PGI in EUR/hl at Albacete, Ciudad Real, Cuenca and Toledo, and red
-  at Murcia: the prices Spain notifies to the Commission under Regulation
-  (EU) 2017/1185, and the source of the Agri-food portal's regional
-  series. Validated on 2 October 2026 in table 2.2 of the "Informe
-  Semanal de Coyuntura" for week 38/2026 (14 to 20 September): Ciudad
-  Real white 40.61 and red 48.78 EUR/hl.
-- **Access:** one PDF report a week on the ministry's site, under a
-  hashed file name; no workbook found yet. **To validate:** a link that
-  can be found each week, and how far back the reports go.
+  PDO/PGI in EUR/hl in the representative markets: whites at Albacete,
+  Badajoz, Ciudad Real, Cuenca and Toledo, reds there and at Murcia and
+  Valencia. They are the prices Spain notifies to the Commission under
+  Regulation (EU) 2017/1185, and the source of the Agri-food portal's
+  regional series. Cádiz, Huelva and Córdoba whites appeared for a few
+  weeks in 2023 and 2024, and a Valencia white once; they are not
+  imported.
+- **In the database:** `public.market_observations`, twelve series
+  `ES-<market>-<WHT|RED>-NGI` (`ALB`, `BAD`, `CRE`, `CUE`, `MUR`, `TOL`,
+  `VAL`), source `mapa-isc`, region the autonomous community and
+  appellation the market.
+- **Access:** table 2.2 of the "Informe Semanal de Coyuntura", published
+  every week as PDF and xlsx and listed on a page per year
+  (`/es/estadistica/temas/publicaciones/informe-semanal-coyuntura/2026`),
+  the latest weeks on the main page first. The table starts in week 12 of
+  2019. Validated.
+- **Layout quirks, all handled:** week headings are typed by hand: last
+  week's dates under this week's number ("Semana 24 01-07/06 2020"), both
+  columns headed with one week ("Semana 27" twice in 2022 week 28), the
+  first day where the week number goes in early 2019 ("Semana 24 - 30/06
+  2019"), years typed as months ("Semana 04 25-31/21"); some links point
+  to another week's workbook (2021 week 31 links week 30's headings with
+  week 31's prices; 2024 has two "semana 21" links, one of them week 22).
+  Comparing each case's prices with the neighbouring weeks showed that the
+  heading's week number is right when the link agrees with it or the two
+  columns head different weeks; the import follows that and the printed
+  dates otherwise, and treats a second, different report of a held week as
+  its link's week. The column for the week before is not read: in 2020
+  week 25 it restates week 23. Values are numbers or text with a decimal
+  comma, and "--" for markets without a quotation.
+- **Checks:** all 403 workbooks of 2019 to 2026 read on 2 October 2026:
+  392 carry the table, the 11 others are the weeks of 2019 before it
+  starts; 4,344 prices, one per series and week from 24 March 2019 to 27
+  September 2026, no week twice, one week missing (the week ending 14
+  June 2026, for which the ministry's pages list no workbook). The week 38/2026 PDF prints Ciudad Real
+  white 40.61 and red 48.78 EUR/hl; the stored series give the same.
+- **Refresh:** `pg_cron` job `import-mapa-markets`, Tuesday and Friday at
+  06:29 UTC, re-imports the current year, and the previous one in January.
+  See `README.md`, section Database.
 - **Licence:** Law 37/2007, as the other MAPA statistics.
-- **Feeds:** would replace the Castilla-La Mancha samples with official
-  provincial prices.
+- **Feeds:** the Markets pages; the Castilla-La Mancha and Extremadura
+  samples of wine without GI give way to these series.
 
 ### Spain: Ciudad Real market (Cámara de Comercio)
 
@@ -177,14 +207,34 @@ Status legend:
 ### France: DRAAF Occitanie, bulk wine market follow-up
 
 - **Covers:** a monthly report of the regional office of the Ministry of
-  Agriculture on the Occitanie bulk market, with average prices of
-  registered purchase contracts by category (without GI, PGI, PDO) and
-  colour. **To validate:** neither the reports nor the pages could be
-  read from the development environment on 2 October 2026 (connection
-  reset, and 503 through a fetch service), so the figures and the
-  licence are unchecked. French state services usually publish under the
-  Licence Ouverte; to confirm.
+  Agriculture on the Occitanie bulk market, from the purchase contracts
+  registered with FranceAgriMer: volumes and average prices from 1 August
+  to date, by category (without GI, PGI, PDO), colour and basin
+  (Languedoc-Roussillon, Sud-Ouest), conventional and organic. The report
+  of 1 July 2026 (48 weeks, 11 of 12) gives, all categories of wine
+  without GI 80.77 EUR/hl and PGI 95.73; PGI red 92.46, rosé 83.93, white
+  112.76; without GI red 70.20, rosé 75.22, white 94.39 EUR/hl. Validated
+  on 2 October 2026 from Supabase (`pg_net`); the development
+  environment's connections are reset.
+- **Caveat:** the prices are averages of the campaign to date, not of the
+  month, so one value a month moves slowly; a month's own price would have
+  to be derived from two reports' averages and volumes.
+- **Access:** one HTML page a month with the text and figures, plus a
+  PDF (`IMG/pdf/bilan_conjoncture_marches_viti_publication_202607.pdf`);
+  page addresses carry an article number, so they would be found from
+  the section's listing.
+- **Licence:** Licence Ouverte / Etalab 2.0 (the site's legal notice):
+  commercial reuse allowed, citing the source. Confirmed.
 - Links: [monthly follow-up, 48 weeks to 1 July 2026](https://draaf.occitanie.agriculture.gouv.fr/suivi-mensuel-du-marche-des-vins-en-vrac-48-semaines-1er-juillet-2026-11-sur-12-a10100.html).
+
+### Italy: EU Agri-food portal market prices
+
+- **Covers:** weekly prices of wine without PDO/PGI at Bari, Pescara and
+  Trapani (white and red), Verona (red; white with a PDO) and Lugo, the
+  markets Italy notifies under Regulation (EU) 2017/1185. On 2 October
+  2026 the newest week ended on 6 July 2025, fifteen months late, so
+  they are not imported. France's series on the portal are national, by
+  category, to 2 November 2025.
 
 ### Italy: chamber of commerce price lists
 
@@ -441,10 +491,12 @@ when a new release appears. Checked on 30 September 2026.
 3. Check the Agri-food prices' lag again every few months, and import
    France and Italy if they catch up.
 4. Read the licence pages still marked **to confirm** (Agri-food portal,
-   IVV, FranceAgriMer, DRAAF Occitanie) and record the attribution text
+   IVV, FranceAgriMer) and record the attribution text
    in `sources` before importing from them.
-5. Import MAPA's representative wine markets, which would replace the
-   Castilla-La Mancha samples with official provincial prices, once a
-   weekly link and the report history are found.
+5. Regional prices for France: import the DRAAF Occitanie monthly
+   averages (Languedoc-Roussillon and Sud-Ouest), finding each month's
+   page from the section's listing. Italy: ask the chambers of commerce
+   for permission, or wait for the Agri-food portal to catch up. Portugal:
+   no regional source found; ask the IVV.
 6. Ask the Bologna and Alessandria-Asti chambers of commerce for
    permission to republish their wine, must and grape prices.

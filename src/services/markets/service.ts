@@ -24,6 +24,7 @@ import {
   type SourceId,
 } from "@/services/markets/sources";
 import {
+  NATIONAL_AVERAGE,
   TIME_RANGES,
   UNIT_TO_REFERENCE,
   referenceUnit,
@@ -368,10 +369,15 @@ function matches(row: MarketRow, filter: SeriesFilter): boolean {
   return true;
 }
 
-/** Real series first, then by country, region and code. */
+/**
+ * Real series first, national averages before regional prices, then by
+ * country, region and code.
+ */
 function compareRows(a: MarketRow, b: MarketRow): number {
+  const regional = (row: MarketRow) => Number(row.series.region !== NATIONAL_AVERAGE);
   return (
     Number(isIllustrative(a)) - Number(isIllustrative(b)) ||
+    regional(a) - regional(b) ||
     `${a.series.country}-${a.series.region}-${a.series.code}`.localeCompare(
       `${b.series.country}-${b.series.region}-${b.series.code}`,
     )

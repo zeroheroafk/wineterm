@@ -149,7 +149,7 @@ export default async function BulkWinePage({
         title="Bulk Wine Prices"
         description={
           hasReal
-            ? "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. National averages are listed first, then the illustrative samples, marked as such. How each price is established is set out in the methodology."
+            ? "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. National averages are listed first, then prices in regional reference markets, then the illustrative samples, marked as such. How each price is established is set out in the methodology."
             : "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Development figures are illustrative samples."
         }
         activeHref="/markets/bulk-wine"

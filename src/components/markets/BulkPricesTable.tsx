@@ -123,6 +123,14 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
                     {row.series.appellation ?? row.series.region}
                   </Link>
                 </span>
+                {/* A reference market names its town; its region goes
+                    beneath, unless the market's name already gives it. */}
+                {row.series.appellation &&
+                !row.series.appellation.includes(row.series.region) ? (
+                  <span className="mt-0.5 block text-xs text-ink-soft">
+                    {row.series.region}
+                  </span>
+                ) : null}
                 {/* On phones the status column is out of view, so a
                     sample's label rides under the market name. */}
                 {isIllustrative(row) ? (

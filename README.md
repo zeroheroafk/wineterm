@@ -35,8 +35,9 @@ src/
 The service interfaces in `src/services` are the seam for real data
 sources; components depend only on those interfaces. Trade reads Eurostat
 figures from the database, Markets reads the Spanish Ministry of
-Agriculture's weekly national wine prices from it, listed before the
-illustrative series, with one national bulk wine price each for
+Agriculture's weekly national wine prices and its weekly prices in
+seven representative markets from it, listed before the illustrative
+series, with one national bulk wine price each for
 Portugal, France and Italy: WineTerm's monthly estimate, the average
 price of the country's bulk exports, computed in the database from the
 Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
@@ -140,6 +141,29 @@ outcome on the run.
   Combined Nomenclature added a CN8 code: add it to `cn8.ts`, redeploy
   and re-import that year.
 
+- **MAPA, Informe Semanal de Coyuntura** (`supabase/functions/import-mapa-markets`)
+  loads the weekly ex-winery prices of white and red wine without PDO/PGI
+  in the representative markets (table 2.2: Albacete, Badajoz, Ciudad
+  Real, Cuenca, Murcia, Toledo and Valencia) into `market_observations`,
+  as twelve series `ES-<market>-<WHT|RED>-NGI`. The ministry publishes a
+  workbook a week, listed on a page per year (the latest weeks on the
+  main page first); `isc.ts` reads table 2.2 from each and dates it by the
+  week its heading and link agree on, since both are typed by hand: see
+  `reportedWeek` and `settleWeeks`. Only each report's own week is read,
+  not the week before it restates. A run covers one year, from 2019
+  (table 2.2 starts in week 12). A call of the function has about two
+  seconds of CPU time, so it reads at most eight workbooks, keeps each in
+  `mapa_market_reports` and queues its run again while some remain; the
+  job `dispatch-mapa-market-imports` posts queued runs one at a time and
+  removes itself when none is left, and the call that finds nothing left
+  to read saves the year's prices. Kept workbooks are not read again.
+  `private.start_mapa_market_imports()` queues one run per year, and the
+  job `import-mapa-markets` starts the current year on Tuesday and Friday
+  mornings, and the previous one in January. For a backfill, run
+  `select private.start_mapa_market_imports(2019);`. A run that could not
+  read a workbook saves the other weeks and fails, naming it; the next run
+  reads that workbook again.
+
 - **WineTerm trade price estimates** (no Edge Function): three monthly
   series in `market_observations`, source `wineterm-trade-estimate`,
   `PT-NAT-BULK`, `FR-NAT-BULK` and `IT-NAT-BULK`: the value of a month's
@@ -195,4 +219,5 @@ queued, not the caller.
 
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise
-`import-mapa-prices` and `import-infovi`) or the dashboard.
+`import-mapa-prices`, `import-mapa-markets` and `import-infovi`) or the
+dashboard.

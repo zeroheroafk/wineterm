@@ -38,6 +38,7 @@ export type SourceId =
   | "eurostat-comext"
   | "mapa-pmn"
   | "mapa-infovi"
+  | "mapa-isc"
   | "mapa-avances"
   | "agreste"
   | "ivv"
@@ -206,6 +207,18 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, compiled from the compulsory monthly declarations of the wine sector and imported unchanged, in hectolitres. Producers making less than 1,000 hl a year do not declare monthly and are not included. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
     isSample: false,
     url: "https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/datos_infovi_anteriores",
+  },
+  "mapa-isc": {
+    id: "mapa-isc",
+    name: "MAPA, Informe Semanal de Coyuntura",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Spain, weekly prices in the representative agricultural markets; WineTerm imports white and red wine without PDO/PGI by market",
+    cadence: "Weekly, a few days after the week ends",
+    note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, the prices Spain notifies to the European Commission, imported unchanged: ex-winery bulk prices in euros per hectolitre. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
+    isSample: false,
+    url: "https://www.mapa.gob.es/es/estadistica/temas/publicaciones/informe-semanal-coyuntura",
   },
   "mapa-avances": {
     id: "mapa-avances",

@@ -34,7 +34,11 @@ import {
   type MarketsService,
 } from "@/services/markets/service";
 import { getSource, type SourceId } from "@/services/markets/sources";
-import type { MarketRow, SeriesObservation } from "@/services/markets/types";
+import {
+  NATIONAL_AVERAGE,
+  type MarketRow,
+  type SeriesObservation,
+} from "@/services/markets/types";
 import { getSupplyService } from "@/services/supply/service";
 import type { SupplyBalanceComputed } from "@/services/supply/types";
 import {
@@ -310,13 +314,14 @@ class FixtureHomeService implements HomeService {
 }
 
 /**
- * Real bulk wine prices, each with its previous observation: a week
- * earlier for weekly series, a month earlier for monthly ones.
+ * Each country's real national bulk wine prices, each with its previous
+ * observation: a week earlier for weekly series, a month earlier for
+ * monthly ones. Regional prices are on the Markets pages.
  */
 async function importedPrices(): Promise<CataloguePrice[]> {
   const markets = getMarketsService();
   const rows = (await markets.getRows("bulk-wine")).filter(
-    (row) => !isIllustrative(row),
+    (row) => !isIllustrative(row) && row.series.region === NATIONAL_AVERAGE,
   );
   const prices = await Promise.all(
     rows.map(async (row) => {
@@ -336,7 +341,7 @@ async function importedPrices(): Promise<CataloguePrice[]> {
 function stripName(row: MarketRow): string {
   const { series } = row;
   const market =
-    series.region === "National average"
+    series.region === NATIONAL_AVERAGE
       ? COUNTRY_NAMES[series.country]
       : marketName(row);
   return [market, series.colour].filter(Boolean).join(" ");

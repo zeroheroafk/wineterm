@@ -277,7 +277,7 @@ export default function MethodologyPage() {
         <SectionHeader
           kicker="Bulk wine"
           title="How each country's bulk price is established"
-          description="The price tables show one national bulk wine price per country without a status tag. This is where each one comes from."
+          description="The price tables show one national bulk wine price per country, and regional prices where a source publishes them, without a status tag. This is where each one comes from."
         />
         <ul className="mt-5 max-w-3xl divide-y divide-rule border-y border-rule">
           <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
@@ -285,7 +285,11 @@ export default function MethodologyPage() {
             <span className="text-sm leading-relaxed text-ink-soft">
               Official. The Spanish Ministry of Agriculture&apos;s weekly
               national average ex-winery prices of white and of red wine
-              without PDO/PGI (Precios Medios Nacionales), imported unchanged.
+              without PDO/PGI (Precios Medios Nacionales), and the same
+              prices in its representative markets (Albacete, Ciudad Real,
+              Cuenca and Toledo in Castilla-La Mancha, Badajoz, Murcia and
+              Valencia), as Spain notifies them to the European Commission,
+              both imported unchanged.
             </span>
           </li>
           <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">

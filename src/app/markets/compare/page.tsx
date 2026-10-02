@@ -44,6 +44,10 @@ const PRESETS: { label: string; codes: string[] }[] = [
     codes: ["ES-NAT-WHT-NGI", "ES-NAT-RED-NGI"],
   },
   {
+    label: "Castilla-La Mancha markets, red without PDO/PGI (MAPA)",
+    codes: ["ES-ALB-RED-NGI", "ES-CRE-RED-NGI", "ES-CUE-RED-NGI", "ES-TOL-RED-NGI"],
+  },
+  {
     label: "National bulk wine averages: Spain (red), Portugal, France, Italy",
     codes: ["ES-NAT-RED-NGI", "PT-NAT-BULK", "FR-NAT-BULK", "IT-NAT-BULK"],
   },

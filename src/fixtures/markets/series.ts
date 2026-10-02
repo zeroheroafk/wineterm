@@ -35,6 +35,12 @@ const PT_ESTIMATES = ["PT-NAT-BULK"];
 const FR_ESTIMATES = ["FR-NAT-BULK"];
 const IT_ESTIMATES = ["IT-NAT-BULK"];
 
+// MAPA's weekly prices in the representative markets, which stand in for
+// the Castilla-La Mancha and Extremadura samples of wine without GI.
+const CLM_RED_MARKETS = ["ES-ALB-RED-NGI", "ES-CRE-RED-NGI", "ES-CUE-RED-NGI", "ES-TOL-RED-NGI"];
+const CLM_WHITE_MARKETS = ["ES-ALB-WHT-NGI", "ES-CRE-WHT-NGI", "ES-CUE-WHT-NGI", "ES-TOL-WHT-NGI"];
+const EXTREMADURA_RED_MARKETS = ["ES-BAD-RED-NGI"];
+
 const WEEKLY_5Y = 261; // ~five years of weekly observations
 const WEEKLY_3Y = 157;
 const WEEKLY_2Y = 105;
@@ -74,6 +80,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.04,
     },
+    givesWayTo: CLM_RED_MARKETS,
   },
   {
     series: {
@@ -107,6 +114,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.035,
       rangeSpread: 0.04,
     },
+    givesWayTo: CLM_WHITE_MARKETS,
   },
   {
     series: {
@@ -202,6 +210,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.05,
     },
+    givesWayTo: EXTREMADURA_RED_MARKETS,
   },
   {
     series: {
