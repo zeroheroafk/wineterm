@@ -303,7 +303,7 @@ export default async function DesignSystemPage() {
             <option value="all">All colours</option>
             <option value="red">Red</option>
             <option value="white">White</option>
-            <option value="rose">Rose</option>
+            <option value="rose">Rosé</option>
           </FilterSelect>
           <FilterSelect label="Period" id="ds-filter-period" defaultValue="3m">
             <option value="1m">1 month</option>

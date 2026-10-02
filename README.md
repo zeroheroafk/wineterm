@@ -35,8 +35,14 @@ src/
 The service interfaces in `src/services` are the seam for real data
 sources; components depend only on those interfaces. Trade reads Eurostat
 figures from the database, Markets reads the Spanish Ministry of
-Agriculture's weekly national wine prices from it, listed before the
-illustrative series, and the stocks and production pages read Spain's
+Agriculture's weekly national wine prices and its weekly prices in
+seven representative markets from it, the French Ministry of
+Agriculture's monthly prices in Languedoc-Roussillon and Midi-Pyrénées
+(DRAAF Occitanie), listed before the illustrative series, with one
+national bulk wine price each for
+Portugal, France and Italy: WineTerm's monthly estimate, the average
+price of the country's bulk exports, computed in the database from the
+Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
 month-end wine stocks and wine made since 1 August. Insights articles
 are published content in `src/content/articles`, one file per article,
 each read at `/insights/analysis/<id>`. Everything else
@@ -68,6 +74,9 @@ from the sitemap and marked noindex.
   and contact messages; `/trade` and the homepage trade panel show
   Eurostat figures, the Markets pages, the homepage key prices and the
   market strip add MAPA's national wine prices to the illustrative series,
+  the Markets pages add the Spanish and French regional prices, the
+  Markets pages and the homepage show the national bulk prices of
+  Portugal, France and Italy computed from the trade figures,
   and `/supply`, `/supply/stocks` and `/supply/production` show Spain's
   INFOVI balance, stocks and wine production.
   Pages regenerate at most hourly and database reads are cached for an
@@ -103,7 +112,9 @@ The Markets pages read `market_series` and `market_observations` whole,
 paging through the observations, and cache them for an hour
 (`unstable_cache`, tag `market-data`). A stored series appears only when
 its source is in `src/services/markets/sources.ts`; a fixture with the
-same code gives way to it. The supply, stocks and production pages read
+same code gives way to it, as does a fixture naming it in `givesWayTo`.
+Sample publications such as the Outlook read every fixture through
+`getIllustrativeMarketsService()`. The supply, stocks and production pages read
 Spain's rows of `supply_figures` the same way (tag `supply-data`).
 
 Real data providers that will replace the fixtures, with their coverage,
@@ -132,6 +143,55 @@ outcome on the run.
   reports rows without litres usually means the January revision of the
   Combined Nomenclature added a CN8 code: add it to `cn8.ts`, redeploy
   and re-import that year.
+
+- **MAPA, Informe Semanal de Coyuntura** (`supabase/functions/import-mapa-markets`)
+  loads the weekly ex-winery prices of white and red wine without PDO/PGI
+  in the representative markets (table 2.2: Albacete, Badajoz, Ciudad
+  Real, Cuenca, Murcia, Toledo and Valencia) into `market_observations`,
+  as twelve series `ES-<market>-<WHT|RED>-NGI`. The ministry publishes a
+  workbook a week, listed on a page per year (the latest weeks on the
+  main page first); `isc.ts` reads table 2.2 from each and dates it by the
+  week its heading and link agree on, since both are typed by hand: see
+  `reportedWeek` and `settleWeeks`. Only each report's own week is read,
+  not the week before it restates. A run covers one year, from 2019
+  (table 2.2 starts in week 12). A call of the function has about two
+  seconds of CPU time, so it reads at most eight workbooks, keeps each in
+  `mapa_market_reports` and queues its run again while some remain; the
+  job `dispatch-mapa-market-imports` posts queued runs one at a time and
+  removes itself when none is left, and the call that finds nothing left
+  to read saves the year's prices. Kept workbooks are not read again.
+  `private.start_mapa_market_imports()` queues one run per year, and the
+  job `import-mapa-markets` starts the current year on Tuesday and Friday
+  mornings, and the previous one in January. For a backfill, run
+  `select private.start_mapa_market_imports(2019);`. A run that could not
+  read a workbook saves the other weeks and fails, naming it; the next run
+  reads that workbook again.
+
+- **DRAAF Occitanie, Marché vrac des vins** (`supabase/functions/import-draaf-occitanie`)
+  loads the monthly average prices of the bulk wine contracts presented
+  for visa to FranceAgriMer and the interprofessions, for wine produced in
+  Occitanie, into `market_observations` as twelve series
+  `FR-<LR|MP>-<RED|ROS|WHT>-<NGI|PGI>`: wine without GI and PGI wine, by
+  colour, in the departments of former Languedoc-Roussillon and of former
+  Midi-Pyrénées, in EUR/hl. The regional office keeps one page with the
+  last three campaigns; `draaf.ts` reads its twelve price tables by their
+  captions and dates each price to the last day of its month. A run reads
+  the page once: new months are stored with the date the page carries,
+  and a changed value as a revision. The job `import-draaf-occitanie`
+  runs `private.start_draaf_imports()` on Wednesday mornings; call it to
+  import at once. A failed run names the table or cell that did not read
+  as expected.
+
+- **WineTerm trade price estimates** (no Edge Function): three monthly
+  series in `market_observations`, source `wineterm-trade-estimate`,
+  `PT-NAT-BULK`, `FR-NAT-BULK` and `IT-NAT-BULK`: the value of a month's
+  bulk wine exports (CN 2204 29) divided by their litres, in EUR/hl.
+  `private.refresh_trade_price_estimates()`
+  computes them from `trade_flows`, stores a changed month as a revision
+  and moves each series' campaign to its latest month; the Comext
+  dispatcher calls it once the last queued run has finished. After
+  loading trade figures another way, run
+  `select private.refresh_trade_price_estimates();`.
 
 - **MAPA, Precios Medios Nacionales** (`supabase/functions/import-mapa-prices`)
   loads the Spanish Ministry of Agriculture's weekly national average
@@ -177,4 +237,5 @@ queued, not the caller.
 
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise
-`import-mapa-prices` and `import-infovi`) or the dashboard.
+`import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie` and
+`import-infovi`) or the dashboard.

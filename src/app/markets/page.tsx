@@ -33,7 +33,7 @@ const PRODUCTS: {
     title: "Bulk Wine Prices",
     href: "/markets/bulk-wine",
     description:
-      "Weekly reference prices for bulk wine by country, region, classification and colour, with original units preserved and movements over three horizons.",
+      "Bulk wine prices by country, region, classification and colour, with original units preserved and movements over three horizons.",
   },
   {
     kind: "grape",
@@ -83,7 +83,7 @@ export default async function MarketsPage() {
         title="Markets"
         description={
           hasReal
-            ? "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. Spain's weekly national bulk wine averages are official MAPA statistics; the other series are illustrative samples, marked as such."
+            ? "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. National bulk wine averages lead; the other series are illustrative samples, marked as such. How each price is established is set out in the methodology."
             : "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength; development figures are illustrative samples."
         }
         activeHref="/markets"
@@ -208,9 +208,11 @@ export default async function MarketsPage() {
                     >
                       {row.series.name}
                     </Link>
-                    <span className="mt-1 block sm:hidden">
-                      <DataStatusLabel status={row.latest.status} />
-                    </span>
+                    {isIllustrative(row) ? (
+                      <span className="mt-1 block sm:hidden">
+                        <DataStatusLabel status="illustrative" />
+                      </span>
+                    ) : null}
                   </td>
                   <td className={TD_RIGHT}>
                     <PriceCell value={row.latest.value} unit={row.series.unit} />
@@ -222,7 +224,9 @@ export default async function MarketsPage() {
                     {formatDate(row.latest.date)}
                   </td>
                   <td className={`${TD} hidden sm:table-cell`}>
-                    <DataStatusLabel status={row.latest.status} />
+                    {isIllustrative(row) ? (
+                      <DataStatusLabel status="illustrative" />
+                    ) : null}
                   </td>
                 </tr>
               ))}

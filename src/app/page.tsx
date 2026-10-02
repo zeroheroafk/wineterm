@@ -111,7 +111,7 @@ export default async function Home() {
               variant="editorial"
               quotes={keyPrices}
               updatedAt={updatedAt}
-              methodologyHref="/insights/methodology"
+              methodologyHref="/insights/methodology#bulk-prices"
             />
           </div>
         </section>

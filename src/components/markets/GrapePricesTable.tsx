@@ -16,7 +16,7 @@ import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatPrice } from "@/lib/format";
 import { referenceUnit, type MarketRow } from "@/services/markets/types";
 
-const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rose" } as const;
+const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rosé" } as const;
 
 /**
  * Grape price table. Provenance leads: every row carries its source type

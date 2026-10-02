@@ -20,7 +20,7 @@ import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime, formatPrice } from "@/lib/format";
-import { getMarketsService } from "@/services/markets/service";
+import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
 import { getSource } from "@/services/markets/sources";
 import {
@@ -67,6 +67,7 @@ export default async function MarketDetailPage({
   const { series, latest, changes } = row;
   const kindMeta = KIND_META[series.kind];
   const source = getSource(series.sourceId);
+  const sample = isIllustrative(row);
 
   const available = await markets.getAvailableRanges(code);
   const requested = firstParam(query, "r") as TimeRangeKey | undefined;
@@ -118,10 +119,17 @@ export default async function MarketDetailPage({
           <span className="text-sm text-ink-soft">
             {series.appellation ?? series.region}
           </span>
-          <DataClassificationTag classification={source.classification} />
-          <SourceTypeTag type={series.sourceType} />
-          <VerificationTag status={series.verification} />
-          <DataStatusLabel status={latest.status} />
+          {/* Samples show how they would be classified and that they are
+              samples; how a real price is established is on the
+              methodology page and in the provenance below. */}
+          {sample ? (
+            <>
+              <DataClassificationTag classification={source.classification} />
+              <SourceTypeTag type={series.sourceType} />
+              <VerificationTag status={series.verification} />
+              <DataStatusLabel status={latest.status} />
+            </>
+          ) : null}
         </div>
       </header>
 
@@ -139,7 +147,7 @@ export default async function MarketDetailPage({
             title={series.name}
             code={series.code}
             unit={series.unit}
-            status={latest.status}
+            status={sample ? latest.status : undefined}
             source={{ name: source.name, url: source.url }}
             updatedAt={latest.updatedAt}
           >
@@ -178,14 +186,16 @@ export default async function MarketDetailPage({
                     )}
                   </dd>
                 </div>
-                <div>
-                  <dt className="wt-label text-ink-soft">Classification</dt>
-                  <dd className="mt-1">
-                    <DataClassificationTag
-                      classification={source.classification}
-                    />
-                  </dd>
-                </div>
+                {sample ? (
+                  <div>
+                    <dt className="wt-label text-ink-soft">Classification</dt>
+                    <dd className="mt-1">
+                      <DataClassificationTag
+                        classification={source.classification}
+                      />
+                    </dd>
+                  </div>
+                ) : null}
                 <div>
                   <dt className="wt-label text-ink-soft">Coverage</dt>
                   <dd className="mt-1 text-sm text-ink">{source.coverage}</dd>
