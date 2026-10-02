@@ -2,12 +2,11 @@ import Link from "next/link";
 
 import { PriceCell } from "@/components/market/PriceCell";
 import { MaybePercent, RangeCell } from "@/components/markets/cells";
-import { DataClassificationTag } from "@/components/markets/tags";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatDateTime, formatPrice } from "@/lib/format";
-import { getSource } from "@/services/markets/sources";
+import { isIllustrative } from "@/services/markets/service";
 import {
   referenceUnit,
   type MarketRow,
@@ -21,7 +20,7 @@ const CLASSIFICATION_SHORT: Record<WineClassification, string> = {
   pdo: "PDO",
 };
 
-const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rose" } as const;
+const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rosé" } as const;
 
 /** Two-digit-year date to keep the widest table inside its frame. */
 function shortDate(iso: string): string {
@@ -51,8 +50,8 @@ function categoryLabel(row: MarketRow): string {
 
 /**
  * The bulk wine price table: original observation first, labelled
- * normalisation alongside, movements over three horizons, then
- * provenance. Secondary columns yield below lg; the full table scrolls
+ * normalisation alongside, movements over three horizons. Only samples
+ * carry a status; the source is on each series page. Secondary columns yield below lg; the full table scrolls
  * inside its frame rather than the page.
  */
 export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
@@ -70,7 +69,7 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
       <table className="w-full border-collapse text-left">
         <caption className="sr-only">
           Bulk wine reference prices with original units, labelled EUR/hl
-          normalisation, movements and provenance
+          normalisation and movements
         </caption>
         <thead>
           <tr className="border-b-2 border-ink">
@@ -103,94 +102,93 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
             <th scope="col" className={TH}>
               Date
             </th>
-            <th scope="col" className={`${TH} hidden lg:table-cell`}>
-              Source
-            </th>
             <th scope="col" className={`${TH} hidden sm:table-cell`}>
               Status
             </th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => {
-            const source = getSource(row.series.sourceId);
-            return (
-              <tr
-                key={row.series.code}
-                className="border-b border-rule transition-colors last:border-b-0 hover:bg-ground/70"
-              >
-                <td className={TD}>
-                  <span className="flex items-center gap-1.5">
-                    <CountryLabel code={row.series.country} />
-                    <Link
-                      href={`/markets/series/${row.series.code}`}
-                      className="text-sm font-medium text-ink hover:text-wine-deep"
-                    >
-                      {row.series.appellation ?? row.series.region}
-                    </Link>
+          {rows.map((row) => (
+            <tr
+              key={row.series.code}
+              className="border-b border-rule transition-colors last:border-b-0 hover:bg-ground/70"
+            >
+              <td className={TD}>
+                <span className="flex items-center gap-1.5">
+                  <CountryLabel code={row.series.country} />
+                  <Link
+                    href={`/markets/series/${row.series.code}`}
+                    className="text-sm font-medium text-ink hover:text-wine-deep"
+                  >
+                    {row.series.appellation ?? row.series.region}
+                  </Link>
+                </span>
+                {/* A reference market names its town; its region goes
+                    beneath, unless the market's name already gives it. */}
+                {row.series.appellation &&
+                !row.series.appellation.includes(row.series.region) ? (
+                  <span className="mt-0.5 block text-xs text-ink-soft">
+                    {row.series.region}
                   </span>
-                  {/* On phones the status column is out of view, so the
-                      status rides under the market name. */}
+                ) : null}
+                {/* On phones the status column is out of view, so a
+                    sample's label rides under the market name. */}
+                {isIllustrative(row) ? (
                   <span className="mt-1 block sm:hidden">
-                    <DataStatusLabel status={row.latest.status} />
+                    <DataStatusLabel status="illustrative" />
                   </span>
-                </td>
-                <td className={`${TD} hidden text-sm text-ink-soft sm:table-cell`}>
-                  {categoryLabel(row)}
-                  {row.series.colour ? (
-                    <span className="text-ink">
-                      {" "}
-                      {COLOUR_SHORT[row.series.colour]}
-                    </span>
-                  ) : null}
-                </td>
-                <td className={TD_RIGHT}>
-                  <PriceCell value={row.latest.value} unit={row.series.unit} />
-                </td>
-                <td className={`${TD_RIGHT} hidden lg:table-cell`}>
-                  <RangeCell observation={row.latest} />
-                </td>
-                <td className={`${TD_RIGHT} hidden lg:table-cell`}>
-                  {row.normalisedValue !== null ? (
-                    <span
-                      className="tnum font-mono text-sm text-ink-soft"
-                      title={`Normalised from ${row.series.unit} to ${referenceUnit(row.series.unit)}`}
-                    >
-                      {formatPrice(row.normalisedValue)}
-                      <sup className="ml-0.5 text-[0.6rem] text-ochre-deep">n</sup>
-                    </span>
-                  ) : (
-                    <span className="wt-label text-ink-soft">&middot;</span>
-                  )}
-                </td>
-                <td className={TD_RIGHT}>
-                  <MaybePercent value={row.changes.weekPercent} />
-                </td>
-                <td className={`${TD_RIGHT} hidden md:table-cell`}>
-                  <MaybePercent value={row.changes.monthPercent} />
-                </td>
-                <td className={`${TD_RIGHT} hidden md:table-cell`}>
-                  <MaybePercent value={row.changes.yoyPercent} />
-                </td>
-                <td
-                  className={`${TD} tnum font-mono text-xs text-ink-soft`}
-                  title={`Last updated ${formatDateTime(row.latest.updatedAt)}`}
-                >
-                  {shortDate(row.latest.date)}
-                </td>
-                <td className={`${TD} hidden lg:table-cell`}>
-                  <span title={source.name}>
-                    <DataClassificationTag
-                      classification={source.classification}
-                    />
+                ) : null}
+              </td>
+              <td className={`${TD} hidden text-sm text-ink-soft sm:table-cell`}>
+                {categoryLabel(row)}
+                {row.series.colour ? (
+                  <span className="text-ink">
+                    {" "}
+                    {COLOUR_SHORT[row.series.colour]}
                   </span>
-                </td>
-                <td className={`${TD} hidden sm:table-cell`}>
-                  <DataStatusLabel status={row.latest.status} />
-                </td>
-              </tr>
-            );
-          })}
+                ) : null}
+              </td>
+              <td className={TD_RIGHT}>
+                <PriceCell value={row.latest.value} unit={row.series.unit} />
+              </td>
+              <td className={`${TD_RIGHT} hidden lg:table-cell`}>
+                <RangeCell observation={row.latest} />
+              </td>
+              <td className={`${TD_RIGHT} hidden lg:table-cell`}>
+                {row.normalisedValue !== null ? (
+                  <span
+                    className="tnum font-mono text-sm text-ink-soft"
+                    title={`Normalised from ${row.series.unit} to ${referenceUnit(row.series.unit)}`}
+                  >
+                    {formatPrice(row.normalisedValue)}
+                    <sup className="ml-0.5 text-[0.6rem] text-ochre-deep">n</sup>
+                  </span>
+                ) : (
+                  <span className="wt-label text-ink-soft">&middot;</span>
+                )}
+              </td>
+              <td className={TD_RIGHT}>
+                <MaybePercent value={row.changes.weekPercent} />
+              </td>
+              <td className={`${TD_RIGHT} hidden md:table-cell`}>
+                <MaybePercent value={row.changes.monthPercent} />
+              </td>
+              <td className={`${TD_RIGHT} hidden md:table-cell`}>
+                <MaybePercent value={row.changes.yoyPercent} />
+              </td>
+              <td
+                className={`${TD} tnum font-mono text-xs text-ink-soft`}
+                title={`Last updated ${formatDateTime(row.latest.updatedAt)}`}
+              >
+                {shortDate(row.latest.date)}
+              </td>
+              <td className={`${TD} hidden sm:table-cell`}>
+                {isIllustrative(row) ? (
+                  <DataStatusLabel status="illustrative" />
+                ) : null}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </ScrollRegion>

@@ -5,8 +5,14 @@ demonstrate WineTerm components where no live data source is connected
 yet. Where one is (Eurostat trade, MAPA's Spanish wine prices, stocks,
 production and balance, the official harvest forecasts), the services
 show the real data instead of the samples or beside them, and the
-Illustrative status is what tells the two apart on the page. The sample
-Market Outlook edition stays on the fixtures it was written against.
+Illustrative status is what tells the two apart on the page. Portugal's,
+France's and Italy's bulk wine samples leave the live site once
+WineTerm's monthly national bulk price for their country, computed from
+the trade figures, is imported
+(`givesWayTo` in `markets/series.ts`), and so do the Castilla-La Mancha
+and Extremadura samples of wine without GI once MAPA's market prices
+are. The sample Market Outlook edition
+stays on the fixtures it was written against.
 Published articles are not fixtures: they live in `src/content`.
 
 Rules:

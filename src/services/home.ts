@@ -10,8 +10,8 @@
  * from the trade service and the analysis is the latest published by the
  * editorial service. Sections with a connected source read it:
  * trade from Eurostat, and the key prices and the market strip from the
- * imported price series, listed before the illustrative series that
- * complete them.
+ * real price series, listed before the illustrative series that complete
+ * them.
  */
 
 import {
@@ -27,33 +27,44 @@ import {
 } from "@/fixtures/home";
 import { getEditorialService } from "@/services/editorial";
 import { getHarvestService } from "@/services/harvest/service";
-import { getMarketsService, isIllustrative } from "@/services/markets/service";
+import {
+  getIllustrativeMarketsService,
+  getMarketsService,
+  isIllustrative,
+  type MarketsService,
+} from "@/services/markets/service";
 import { getSource, type SourceId } from "@/services/markets/sources";
-import type { MarketRow, SeriesObservation } from "@/services/markets/types";
+import {
+  NATIONAL_AVERAGE,
+  type MarketRow,
+  type SeriesObservation,
+} from "@/services/markets/types";
 import { getSupplyService } from "@/services/supply/service";
 import type { SupplyBalanceComputed } from "@/services/supply/types";
 import {
   getIllustrativeTradeService,
   getTradeService,
 } from "@/services/trade/service";
-import type {
-  Article,
-  ArticleDetail,
-  DataSource,
-  DataStatus,
-  HarvestRegion,
-  IndustryDigest,
-  MarketBriefing,
-  PriceQuote,
-  PriceUnit,
-  StripQuote,
-  SupplySnapshot,
-  TradeOverview,
+import {
+  COUNTRY_NAMES,
+  type Article,
+  type ArticleDetail,
+  type DataSource,
+  type DataStatus,
+  type HarvestRegion,
+  type IndustryDigest,
+  type MarketBriefing,
+  type PriceQuote,
+  type PriceUnit,
+  type StripQuote,
+  type SupplySnapshot,
+  type TradeOverview,
 } from "@/services/types";
 
 export interface HomeService {
   getMarketStrip(): Promise<StripQuote[]>;
   getLeadBriefing(): Promise<MarketBriefing>;
+  /** One price per real series, then the samples still shown. */
   getKeyPrices(): Promise<PriceQuote[]>;
   getSupplySnapshot(): Promise<SupplySnapshot>;
   getHarvestRegions(): Promise<HarvestRegion[]>;
@@ -200,11 +211,13 @@ function keyPrice(
   };
 }
 
-/** The sample series shown as key prices, read from the catalogue by code. */
-async function sampleKeyPrices(): Promise<PriceQuote[]> {
-  const markets = getMarketsService();
+/** Sample series shown as key prices, read from a catalogue by code. */
+async function sampleKeyPrices(
+  markets: MarketsService,
+  codes: string[],
+): Promise<PriceQuote[]> {
   const prices = await Promise.all(
-    keyPriceCodes.map(async (code) => {
+    codes.map(async (code) => {
       const row = await markets.getRow(code);
       const previous = (await markets.getHistory(code, "3m")).at(-2);
       if (!row || !isIllustrative(row) || !previous) {
@@ -216,11 +229,20 @@ async function sampleKeyPrices(): Promise<PriceQuote[]> {
   return prices.flatMap((price) => keyPrice(price, ILLUSTRATIVE_PRICE_SOURCE) ?? []);
 }
 
+/** The homepage as written against the illustrative series. */
 class FixtureHomeService implements HomeService {
+  /** Every sample key price, as the sample publications were written. */
+  protected async samplePrices(): Promise<PriceQuote[]> {
+    return sampleKeyPrices(getIllustrativeMarketsService(), keyPriceCodes);
+  }
+
   async getMarketStrip(): Promise<StripQuote[]> {
+    const quotes = await this.samplePrices();
     return buildMarketStrip(
-      await sampleKeyPrices(),
-      stripPriceCodes,
+      quotes,
+      stripPriceCodes.filter(({ code }) =>
+        quotes.some((quote) => quote.code === code),
+      ),
       stripOtherQuotes,
     );
   }
@@ -230,8 +252,9 @@ class FixtureHomeService implements HomeService {
   }
 
   async getKeyPrices(): Promise<PriceQuote[]> {
-    return sampleKeyPrices();
+    return this.samplePrices();
   }
+
 
   async getSupplySnapshot(): Promise<SupplySnapshot> {
     const supply = getSupplyService();
@@ -290,11 +313,15 @@ class FixtureHomeService implements HomeService {
   }
 }
 
-/** Real bulk wine prices, each with its previous observation. */
+/**
+ * Each country's real national bulk wine prices, each with its previous
+ * observation: a week earlier for weekly series, a month earlier for
+ * monthly ones. Regional prices are on the Markets pages.
+ */
 async function importedPrices(): Promise<CataloguePrice[]> {
   const markets = getMarketsService();
   const rows = (await markets.getRows("bulk-wine")).filter(
-    (row) => !isIllustrative(row),
+    (row) => !isIllustrative(row) && row.series.region === NATIONAL_AVERAGE,
   );
   const prices = await Promise.all(
     rows.map(async (row) => {
@@ -307,24 +334,54 @@ async function importedPrices(): Promise<CataloguePrice[]> {
   );
 }
 
-/** Real prices first, then the illustrative series. */
+/**
+ * A real quote's strip name: the country for a national average, which
+ * every country has, otherwise the market; then the colour, if any.
+ */
+function stripName(row: MarketRow): string {
+  const { series } = row;
+  const market =
+    series.region === NATIONAL_AVERAGE
+      ? COUNTRY_NAMES[series.country]
+      : marketName(row);
+  return [market, series.colour].filter(Boolean).join(" ");
+}
+
+function sourceOf(row: MarketRow): DataSource {
+  const source = getSource(row.series.sourceId);
+  return { name: source.name, url: source.url };
+}
+
+/** Real prices first, then the illustrative series still on the site. */
 class LiveHomeService extends FixtureHomeService {
+  /**
+   * The sample key prices left on the live site: a sample withdrawn for a
+   * real series covering it is not shown.
+   */
+  protected async samplePrices(): Promise<PriceQuote[]> {
+    const markets = getMarketsService();
+    const rows = await Promise.all(keyPriceCodes.map((code) => markets.getRow(code)));
+    return sampleKeyPrices(
+      markets,
+      keyPriceCodes.filter((_, index) => rows[index] !== null),
+    );
+  }
+
   async getMarketStrip(): Promise<StripQuote[]> {
     const imported = (await importedPrices()).flatMap(({ row, previous }) => {
       const unit = priceUnit(row);
       if (!unit) return [];
-      const source = getSource(row.series.sourceId);
       return [
         {
           id: `st-${row.series.code.toLowerCase()}`,
-          name: [marketName(row), row.series.colour].filter(Boolean).join(" "),
+          name: stripName(row),
           country: row.series.country,
           value: row.latest.value,
           unit,
           changePercent: (row.latest.value / previous.value - 1) * 100,
           observedAt: row.latest.date,
           status: row.latest.status,
-          source: { name: source.name, url: source.url },
+          source: sourceOf(row),
         },
       ];
     });
@@ -332,10 +389,9 @@ class LiveHomeService extends FixtureHomeService {
   }
 
   async getKeyPrices(): Promise<PriceQuote[]> {
-    const imported = (await importedPrices()).flatMap((price) => {
-      const source = getSource(price.row.series.sourceId);
-      return keyPrice(price, { name: source.name, url: source.url }) ?? [];
-    });
+    const imported = (await importedPrices()).flatMap(
+      (price) => keyPrice(price, sourceOf(price.row)) ?? [],
+    );
     return [...imported, ...(await super.getKeyPrices())];
   }
 

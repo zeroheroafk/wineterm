@@ -48,7 +48,10 @@ const SHARED_STATUS_NOTES: Record<DataStatus, string | null> = {
  * every row becomes one table-level note instead of a badge per row.
  * Columns that yield on narrow screens reappear as a line under the
  * market name, so no figure is lost. Changes are signed and coloured
- * like every other movement on the page, without glyphs.
+ * like every other movement on the page, without glyphs. A change is on
+ * the previous price: a week earlier for weekly series, a month earlier
+ * for monthly ones. Only illustrative samples carry a status; how each
+ * real price is established is left to the methodology page.
  */
 export function KeyPricesTable({
   quotes,
@@ -181,11 +184,13 @@ function EditorialKeyPrices({
   const sharedUnit = quotes.every((quote) => quote.unit === first?.unit)
     ? first?.unit
     : undefined;
-  const sharedStatus = quotes.every((quote) => quote.status === first?.status)
-    ? first?.status
-    : undefined;
-  const showStatusColumn = sharedStatus === undefined;
-  const statusNote = sharedStatus ? SHARED_STATUS_NOTES[sharedStatus] : null;
+  // Samples are marked; real prices carry no status here.
+  const samples = quotes.filter((quote) => quote.status === "illustrative");
+  const allSamples = quotes.length > 0 && samples.length === quotes.length;
+  const showStatusColumn = samples.length > 0 && !allSamples;
+  // Estimates that span every colour leave the wine column empty.
+  const showWineColumn = quotes.some((quote) => quote.colour);
+  const statusNote = allSamples ? SHARED_STATUS_NOTES.illustrative : null;
   // The annual column ends the visible row until the observed (and status)
   // columns appear; it then drops its right padding to keep the table
   // flush with the grid.
@@ -198,18 +203,19 @@ function EditorialKeyPrices({
       <ScrollRegion>
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
-            Key bulk wine reference prices
-            {sharedUnit ? ` in ${sharedUnit}` : ""}, with the change on the
-            week and on the same week a year earlier
+            Key bulk wine prices{sharedUnit ? ` in ${sharedUnit}` : ""}, with
+            the change on the previous price and on a year earlier
           </caption>
           <thead>
             <tr className="border-b border-ink/30">
               <th scope="col" className={TH}>
                 Market
               </th>
-              <th scope="col" className={`${TH} hidden md:table-cell`}>
-                Wine
-              </th>
+              {showWineColumn ? (
+                <th scope="col" className={`${TH} hidden md:table-cell`}>
+                  Wine
+                </th>
+              ) : null}
               <th scope="col" className={`${TH} text-right`}>
                 Price
                 {sharedUnit ? (
@@ -220,8 +226,7 @@ function EditorialKeyPrices({
                 ) : null}
               </th>
               <th scope="col" className={`${TH} text-right`}>
-                <span className="sm:hidden">Week</span>
-                <span className="hidden sm:inline">Week on week</span>
+                Change
               </th>
               <th scope="col" className={`${TH} ${annualEdge} text-right`}>
                 <span className="sm:hidden">Year</span>
@@ -265,19 +270,21 @@ function EditorialKeyPrices({
                           >
                             {formatDate(quote.observedAt)}
                           </time>
-                          {showStatusColumn ? (
+                          {showStatusColumn && quote.status === "illustrative" ? (
                             <span className="sm:hidden">
                               {" "}
-                              &middot; {DATA_STATUS_LABELS[quote.status]}
+                              &middot; {DATA_STATUS_LABELS.illustrative}
                             </span>
                           ) : null}
                         </span>
                       </span>
                     </span>
                   </th>
-                  <td className={`${TD} hidden text-sm text-ink-soft md:table-cell`}>
-                    {colour ?? "-"}
-                  </td>
+                  {showWineColumn ? (
+                    <td className={`${TD} hidden text-sm text-ink-soft md:table-cell`}>
+                      {colour ?? "-"}
+                    </td>
+                  ) : null}
                   <td className={`${TD} text-right whitespace-nowrap`}>
                     <span className="tnum text-[0.9375rem] font-semibold text-ink">
                       {formatPrice(quote.price)}
@@ -309,7 +316,9 @@ function EditorialKeyPrices({
                     <td
                       className={`${TD} hidden text-sm text-ink-soft sm:table-cell`}
                     >
-                      {DATA_STATUS_LABELS[quote.status]}
+                      {quote.status === "illustrative"
+                        ? DATA_STATUS_LABELS.illustrative
+                        : null}
                     </td>
                   ) : null}
                 </tr>

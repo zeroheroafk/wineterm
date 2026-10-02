@@ -1,17 +1,22 @@
 import type { MetadataRoute } from "next";
 
 import { publishedArticles } from "@/content/articles";
-import { seriesFixtures } from "@/fixtures/markets/series";
 import { SITE_URL } from "@/lib/site";
+import { getMarketsService } from "@/services/markets/service";
 
 /**
  * Public sitemap. Only launched routes are listed; /design-system is
  * internal and is deliberately excluded (and disallowed in robots.ts).
+ * Series pages are the markets catalogue's: the imported series and the
+ * samples still beside them.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE_URL;
-  const seriesEntries: MetadataRoute.Sitemap = seriesFixtures.map((f) => ({
-    url: `${base}/markets/series/${f.series.code}`,
+  const series = await getMarketsService().listSeries();
+  const seriesEntries: MetadataRoute.Sitemap = series.map((s) => ({
+    url: `${base}/markets/series/${s.code}`,
     changeFrequency: "weekly",
     priority: 0.5,
   }));

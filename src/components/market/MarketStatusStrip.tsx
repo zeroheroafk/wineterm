@@ -1,6 +1,5 @@
 import { InlinePercentChange } from "@/components/market/ChangeCell";
 import { Container } from "@/components/layout/Container";
-import { DATA_STATUS_LABELS } from "@/components/ui/DataStatusLabel";
 import { formatDate, formatPrice } from "@/lib/format";
 import {
   countryName,
@@ -27,11 +26,6 @@ function QuoteItem({ quote }: { quote: StripQuote }) {
         <span className="ml-1">
           <InlinePercentChange value={quote.changePercent} />
         </span>
-        {quote.status !== "final" && quote.status !== "illustrative" ? (
-          <span className="text-ink-soft">
-            {DATA_STATUS_LABELS[quote.status]}
-          </span>
-        ) : null}
       </span>
       <span className="sr-only">Observed {formatDate(quote.observedAt)}</span>
     </li>
@@ -53,13 +47,14 @@ function SourceName({ source }: { source: DataSource }) {
 
 /**
  * Compact market price strip under the global header: a static row of
- * representative quotes, market name above price, unit and weekly move,
- * the move signed and coloured. No animation. Values are shown exactly as
+ * representative quotes, market name above price, unit and the move on
+ * the previous price, signed and coloured. No animation. Values are shown exactly as
  * the service supplies them, unconverted. Market names already carry
  * their region, so the country is given in the tooltip and to assistive
  * technology rather than as a code on every item.
  *
- * Real quotes lead, after a cell naming their source; illustrative ones
+ * Real quotes lead, after a cell naming their sources, without a status:
+ * how each is established is on the methodology page. Illustrative ones
  * follow a cell that says what they are. When every quote is
  * illustrative, that cell opens the strip and stays pinned while the row
  * scrolls on narrow screens.
@@ -92,14 +87,14 @@ export function MarketStatusStrip({ quotes }: { quotes: StripQuote[] }) {
           {real.length > 0 ? (
             <>
               <p className={`${LABEL_CELL} border-r pr-3`}>
-                <span className="font-semibold text-ink">Official prices</span>
+                <span className="font-semibold text-ink">Bulk wine prices</span>
                 {sources.map((source) => (
                   <span key={source.name} className="whitespace-nowrap text-ink-soft">
                     <SourceName source={source} />
                   </span>
                 ))}
               </p>
-              <ul aria-label="Official prices" className="flex">
+              <ul aria-label="Bulk wine prices" className="flex">
                 {real.map((quote) => (
                   <QuoteItem key={quote.id} quote={quote} />
                 ))}

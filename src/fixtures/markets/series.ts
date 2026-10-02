@@ -21,7 +21,25 @@ export interface SeriesFixture {
   series: MarketSeries;
   /** In the unit recorded: per hectolitre-degree when series.perDegree is set. */
   history: HistoryConfig;
+  /**
+   * Codes of real series covering the sample's country. Once any of them
+   * is imported, the sample leaves the live site, as a sample whose own
+   * code is imported does; sample publications keep it.
+   */
+  givesWayTo?: string[];
 }
+
+// The national bulk wine averages WineTerm computes from Eurostat trade
+// figures, which stand in for Portugal's, France's and Italy's samples.
+const PT_ESTIMATES = ["PT-NAT-BULK"];
+const FR_ESTIMATES = ["FR-NAT-BULK"];
+const IT_ESTIMATES = ["IT-NAT-BULK"];
+
+// MAPA's weekly prices in the representative markets, which stand in for
+// the Castilla-La Mancha and Extremadura samples of wine without GI.
+const CLM_RED_MARKETS = ["ES-ALB-RED-NGI", "ES-CRE-RED-NGI", "ES-CUE-RED-NGI", "ES-TOL-RED-NGI"];
+const CLM_WHITE_MARKETS = ["ES-ALB-WHT-NGI", "ES-CRE-WHT-NGI", "ES-CUE-WHT-NGI", "ES-TOL-WHT-NGI"];
+const EXTREMADURA_RED_MARKETS = ["ES-BAD-RED-NGI"];
 
 const WEEKLY_5Y = 261; // ~five years of weekly observations
 const WEEKLY_3Y = 157;
@@ -62,6 +80,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.04,
     },
+    givesWayTo: CLM_RED_MARKETS,
   },
   {
     series: {
@@ -95,6 +114,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.035,
       rangeSpread: 0.04,
     },
+    givesWayTo: CLM_WHITE_MARKETS,
   },
   {
     series: {
@@ -190,6 +210,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.05,
     },
+    givesWayTo: EXTREMADURA_RED_MARKETS,
   },
   {
     series: {
@@ -254,6 +275,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.05,
     },
+    givesWayTo: PT_ESTIMATES,
   },
   {
     series: {
@@ -287,6 +309,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.04,
       rangeSpread: 0.05,
     },
+    givesWayTo: PT_ESTIMATES,
   },
   {
     series: {
@@ -318,6 +341,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.02,
       rangeSpread: 0.1,
     },
+    givesWayTo: PT_ESTIMATES,
   },
   {
     series: {
@@ -351,6 +375,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.025,
       rangeSpread: 0.03,
     },
+    givesWayTo: FR_ESTIMATES,
   },
   {
     series: {
@@ -381,6 +406,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.02,
       rangeSpread: 0.04,
     },
+    givesWayTo: FR_ESTIMATES,
   },
   {
     series: {
@@ -414,6 +440,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.05,
     },
+    givesWayTo: IT_ESTIMATES,
   },
   {
     series: {
@@ -445,6 +472,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.025,
       rangeSpread: 0.04,
     },
+    givesWayTo: IT_ESTIMATES,
   },
 
   // Grapes ----------------------------------------------------------------

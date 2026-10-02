@@ -5,7 +5,9 @@
  * real sources, and the illustrative fixtures for everything not yet
  * connected. A real series and a sample behave alike in every table,
  * filter and chart; their source and observation status say which is
- * which, and real series are listed first.
+ * which, and real series are listed first. A sample leaves the live
+ * catalogue once a real series covering it is imported, and stays in the
+ * illustrative one that sample publications read.
  */
 
 import { unstable_cache } from "next/cache";
@@ -22,6 +24,7 @@ import {
   type SourceId,
 } from "@/services/markets/sources";
 import {
+  NATIONAL_AVERAGE,
   TIME_RANGES,
   UNIT_TO_REFERENCE,
   referenceUnit,
@@ -145,9 +148,11 @@ function computeChanges(history: SeriesObservation[]): SeriesChanges {
 }
 
 /** A series and its observations, oldest first. */
-interface CatalogueEntry {
+export interface CatalogueEntry {
   series: MarketSeries;
   history: SeriesObservation[];
+  /** Samples only: the real series it gives way to, by code. */
+  givesWayTo?: string[];
 }
 
 /**
@@ -184,6 +189,7 @@ function fixtureCatalogue(): CatalogueEntry[] {
   fixtureEntries ??= seriesFixtures.map((fixture) => ({
     series: fixture.series,
     history: fixtureHistory(fixture),
+    givesWayTo: fixture.givesWayTo,
   }));
   return fixtureEntries;
 }
@@ -287,16 +293,29 @@ const loadDatabaseCatalogue = unstable_cache(
 );
 
 /**
- * Every series, once per request: the imported ones, then the fixtures.
- * A fixture whose code has been imported gives way to the real series.
+ * The imported series, then the samples still needed beside them: a
+ * sample gives way when its own code is imported, or one of the real
+ * series it names.
  */
-const loadCatalogue = cache(async (): Promise<CatalogueEntry[]> => {
-  const imported = getSupabase() ? await loadDatabaseCatalogue() : [];
+export function mergeCatalogues(
+  imported: CatalogueEntry[],
+  samples: CatalogueEntry[],
+): CatalogueEntry[] {
   const codes = new Set(imported.map((entry) => entry.series.code));
   return [
     ...imported,
-    ...fixtureCatalogue().filter((entry) => !codes.has(entry.series.code)),
+    ...samples.filter(
+      (entry) =>
+        !codes.has(entry.series.code) &&
+        !entry.givesWayTo?.some((code) => codes.has(code)),
+    ),
   ];
+}
+
+/** Every series, once per request: the imported ones, then the samples. */
+const loadCatalogue = cache(async (): Promise<CatalogueEntry[]> => {
+  const imported = getSupabase() ? await loadDatabaseCatalogue() : [];
+  return mergeCatalogues(imported, fixtureCatalogue());
 });
 
 function buildRow({ series, history }: CatalogueEntry): MarketRow | null {
@@ -350,10 +369,15 @@ function matches(row: MarketRow, filter: SeriesFilter): boolean {
   return true;
 }
 
-/** Real series first, then by country, region and code. */
+/**
+ * Real series first, national averages before regional prices, then by
+ * country, region and code.
+ */
 function compareRows(a: MarketRow, b: MarketRow): number {
+  const regional = (row: MarketRow) => Number(row.series.region !== NATIONAL_AVERAGE);
   return (
     Number(isIllustrative(a)) - Number(isIllustrative(b)) ||
+    regional(a) - regional(b) ||
     `${a.series.country}-${a.series.region}-${a.series.code}`.localeCompare(
       `${b.series.country}-${b.series.region}-${b.series.code}`,
     )
@@ -496,6 +520,7 @@ class CatalogueMarketsService implements MarketsService {
 }
 
 let service: MarketsService | null = null;
+let illustrative: MarketsService | null = null;
 
 /** Imported series when Supabase is configured, beside the fixtures. */
 export function getMarketsService(): MarketsService {
@@ -503,8 +528,11 @@ export function getMarketsService(): MarketsService {
   return service;
 }
 
-/** True when at least one series of a kind carries real prices. */
-export async function hasRealSeries(kind: MarketKind): Promise<boolean> {
-  const rows = await getMarketsService().getRows(kind);
-  return rows.some((row) => !isIllustrative(row));
+/**
+ * Always every illustrative series, for sample publications such as the
+ * Market Outlook, whose text was written against them.
+ */
+export function getIllustrativeMarketsService(): MarketsService {
+  illustrative ??= new CatalogueMarketsService(async () => fixtureCatalogue());
+  return illustrative;
 }

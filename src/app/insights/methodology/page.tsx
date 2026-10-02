@@ -43,7 +43,7 @@ const CLASSIFICATION_NOTES: Record<DataClassification, string> = {
   modelled:
     "Derived by WineTerm from other series through a stated calculation, never presented as an observation.",
   estimated:
-    "WineTerm desk estimates from scattered observations, clearly labelled and replaced when published figures arrive.",
+    "WineTerm estimates where no published price exists: computed from official figures by a stated method, or built from scattered observations. Clearly labelled, and replaced when published prices arrive.",
 };
 
 const SOURCE_TYPE_NOTES: Record<ObservationSourceType, string> = {
@@ -56,13 +56,14 @@ const SOURCE_TYPE_NOTES: Record<ObservationSourceType, string> = {
   "reported-range":
     "Mid-points of traded ranges reported by market contacts.",
   "wineterm-estimate":
-    "A WineTerm desk estimate where no published series exists.",
+    "A WineTerm estimate where no published series exists, with its method stated on the series page.",
 };
 
 const STATUS_NOTES: Record<DataStatus, string> = {
   final: "The source has closed the figure; only formal corrections follow.",
   provisional: "Published by the source but still subject to routine revision.",
-  estimate: "A quantified assessment ahead of publication by the source.",
+  estimate:
+    "A quantified assessment rather than a published figure: a WineTerm estimate, or a figure ahead of its publication by the source.",
   forecast: "Forward-looking, expressed as a range wherever possible.",
   illustrative:
     "Development sample data demonstrating the interface; never a real observation.",
@@ -272,6 +273,83 @@ export default function MethodologyPage() {
         </ScrollRegion>
       </section>
 
+      <section id="bulk-prices" className="mt-12 scroll-mt-6">
+        <SectionHeader
+          kicker="Bulk wine"
+          title="How each country's bulk price is established"
+          description="The price tables show one national bulk wine price per country, and regional prices where a source publishes them, without a status tag. This is where each one comes from."
+        />
+        <ul className="mt-5 max-w-3xl divide-y divide-rule border-y border-rule">
+          <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
+            <span className="text-sm font-medium text-ink">Spain</span>
+            <span className="text-sm leading-relaxed text-ink-soft">
+              Official. The Spanish Ministry of Agriculture&apos;s weekly
+              national average ex-winery prices of white and of red wine
+              without PDO/PGI (Precios Medios Nacionales), and the same
+              prices in its representative markets (Albacete, Ciudad Real,
+              Cuenca and Toledo in Castilla-La Mancha, Badajoz, Murcia and
+              Valencia), as Spain notifies them to the European Commission,
+              both imported unchanged.
+            </span>
+          </li>
+          <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
+            <span className="text-sm font-medium text-ink">
+              Portugal, France and Italy
+            </span>
+            <span className="text-sm leading-relaxed text-ink-soft">
+              WineTerm estimates, monthly, for the national price. No current
+              national bulk wine price is yet available that WineTerm may
+              republish, so the price is the average of the bulk wine the
+              country exports, computed from Eurostat&apos;s trade figures, as
+              set out below.
+            </span>
+          </li>
+          <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
+            <span className="text-sm font-medium text-ink">
+              France, by region
+            </span>
+            <span className="text-sm leading-relaxed text-ink-soft">
+              Official. The monthly average prices of the bulk purchase
+              contracts presented for visa to FranceAgriMer and the
+              interprofessions, for wine without GI and PGI wine by colour,
+              in Languedoc-Roussillon and Midi-Pyrénées, as the Ministry of
+              Agriculture&apos;s regional office in Occitanie (DRAAF Occitanie)
+              publishes them, imported unchanged. They are averages over
+              every contract of the month, so a month with few contracts
+              moves more than the market.
+            </span>
+          </li>
+        </ul>
+        <Prose>
+          <p>
+            For Portugal, France and Italy, WineTerm divides the value of a
+            month&apos;s exports of wine in containers over 10 litres (CN 2204
+            29) by their volume in litres, per hectolitre: the average price
+            of the country&apos;s own wine sold in bulk. Imports are left out,
+            since they are mostly Spanish wine and say little about the
+            country&apos;s own prices.
+          </p>
+          <p>
+            It is an average, not a quoted price. It covers every colour,
+            category and destination, valued at the border, so it moves with
+            the mix of wines sold as well as with prices, and a month with
+            little trade moves more than the market. French and Italian bulk
+            exports carry much wine with a PDO or PGI, so their averages sit
+            above the price of wine without GI. As a check, the same average
+            for Spain has followed MAPA&apos;s official national price closely
+            since 2021, at 6 to 17% above it.
+          </p>
+          <p>
+            Each month is dated to its last day and arrives about two months
+            later, when Eurostat publishes it; Eurostat revises recent months,
+            and WineTerm applies its revisions and marks the months they
+            change as revised. An estimate gives way to an official or
+            reported price once one can be published. Illustrative samples,
+            which remain for other markets, are always marked as such.
+          </p>
+        </Prose>
+      </section>
+
       <section id="supply-balance" className="mt-12 scroll-mt-6">
         <SectionHeader
           kicker="Definitions"
@@ -337,7 +415,7 @@ export default function MethodologyPage() {
         <SectionHeader
           kicker="Registry"
           title="Source registry"
-          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and the monthly wine declarations, are added as their data is licensed and connected."
+          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and the monthly wine declarations, are added as their data is licensed and connected, as are WineTerm's own estimates from them."
         />
         <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
@@ -398,7 +476,10 @@ export default function MethodologyPage() {
             declarations of wine stocks, production, entries and exits
             credited to MAPA are official statistics, refreshed every week.
             The harvest forecasts credited to Agreste, the IVV and MAPA are
-            official too, entered by hand from each release. Every other
+            official too, entered by hand from each release. The bulk wine
+            prices for Portugal, France and Italy are WineTerm&apos;s monthly
+            estimates from the Eurostat trade figures, described above. Every
+            other
             figure currently shown is an illustrative sample carrying the
             Illustrative status, every other named source is a stand-in, and
             nothing on the platform is investment advice. This page describes the methodology those samples

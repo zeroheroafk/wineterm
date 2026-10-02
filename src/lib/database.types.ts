@@ -100,6 +100,45 @@ export type Database = {
           },
         ]
       }
+      mapa_market_reports: {
+        Row: {
+          error: string | null
+          label: string
+          link_week: string | null
+          observations: Json
+          read_at: string
+          unknown_markets: string[]
+          uploaded_at: string | null
+          url: string
+          week: string | null
+          year: number
+        }
+        Insert: {
+          error?: string | null
+          label: string
+          link_week?: string | null
+          observations?: Json
+          read_at?: string
+          unknown_markets?: string[]
+          uploaded_at?: string | null
+          url: string
+          week?: string | null
+          year: number
+        }
+        Update: {
+          error?: string | null
+          label?: string
+          link_week?: string | null
+          observations?: Json
+          read_at?: string
+          unknown_markets?: string[]
+          uploaded_at?: string | null
+          url?: string
+          week?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
       market_observations: {
         Row: {
           max_value: number | null

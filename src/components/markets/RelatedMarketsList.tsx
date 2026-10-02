@@ -28,7 +28,9 @@ export function RelatedMarketsList({ rows }: { rows: MarketRow[] }) {
                 <span className="wt-label whitespace-nowrap text-ink-soft">
                   {row.series.code}
                 </span>
-                <DataStatusLabel status={row.latest.status} />
+                {row.latest.status === "illustrative" ? (
+                  <DataStatusLabel status="illustrative" />
+                ) : null}
               </span>
             </span>
             <span className="flex shrink-0 items-center gap-3">

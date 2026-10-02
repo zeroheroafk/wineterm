@@ -99,6 +99,12 @@ export const MUST_PRODUCT_LABELS: Record<MustProduct, string> = {
   rcgm: "Rectified concentrated grape must",
 };
 
+/**
+ * The region of a series that prices a whole country, such as MAPA's
+ * national averages; regional series name their region.
+ */
+export const NATIONAL_AVERAGE = "National average";
+
 export interface MarketSeries {
   /** Stable series code, e.g. "ES-CLM-RED-GEN". */
   code: string;

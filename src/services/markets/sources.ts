@@ -38,10 +38,13 @@ export type SourceId =
   | "eurostat-comext"
   | "mapa-pmn"
   | "mapa-infovi"
+  | "mapa-isc"
   | "mapa-avances"
+  | "draaf-occitanie"
   | "agreste"
   | "ivv"
   | "uiv-assoenologi-ismea"
+  | "wineterm-trade-estimate"
   | "wineterm-desk";
 
 export interface MarketSource {
@@ -206,6 +209,30 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     isSample: false,
     url: "https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/datos_infovi_anteriores",
   },
+  "mapa-isc": {
+    id: "mapa-isc",
+    name: "MAPA, Informe Semanal de Coyuntura",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Spain, weekly prices in the representative agricultural markets; WineTerm imports white and red wine without PDO/PGI by market",
+    cadence: "Weekly, a few days after the week ends",
+    note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, the prices Spain notifies to the European Commission, imported unchanged: ex-winery bulk prices in euros per hectolitre. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
+    isSample: false,
+    url: "https://www.mapa.gob.es/es/estadistica/temas/publicaciones/informe-semanal-coyuntura",
+  },
+  "draaf-occitanie": {
+    id: "draaf-occitanie",
+    name: "DRAAF Occitanie, Marché vrac des vins",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "France, Occitanie: monthly prices of bulk wine without GI and PGI wine by colour, in the departments of former Languedoc-Roussillon and of former Midi-Pyrénées",
+    cadence: "Monthly, some weeks after the month ends",
+    note: "Official statistics of the regional office of the French Ministry of Agriculture, from the bulk wine purchase contracts presented for visa to FranceAgriMer and the interprofessions, imported unchanged: average prices in euros per hectolitre. Source: DRAAF Occitanie, from FranceAgriMer data, reused under the Licence Ouverte / Etalab 2.0.",
+    isSample: false,
+    url: "https://draaf.occitanie.agriculture.gouv.fr/marche-vrac-des-vins-de-la-region-occitanie-donnees-actualisees-a345.html",
+  },
   "mapa-avances": {
     id: "mapa-avances",
     name: "MAPA, crop area and production estimates",
@@ -251,6 +278,18 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     note: "Italy's usual harvest forecast comes from the trade associations Unione Italiana Vini and Assoenologi with the public agency ISMEA. For 2026 they published none, and will report results after the harvest.",
     isSample: false,
     url: "https://www.unioneitalianavini.it/approfondimenti-tematici/news/vendemmia-2026-dati-consuntivi-fine-campagna",
+  },
+  "wineterm-trade-estimate": {
+    id: "wineterm-trade-estimate",
+    name: "Eurostat Comext, calculated by WineTerm",
+    kind: "wineterm",
+    classification: "estimated",
+    coverage:
+      "Portugal, France and Italy: average price per hectolitre of the bulk wine each exports",
+    cadence: "Monthly, after each Comext release, about two months after the month",
+    note: "WineTerm divides the statistical value of each month's exports of wine in containers over 10 litres (CN 2204 29) by their volume in litres, both as Eurostat publishes them. The result averages every colour, category and destination, valued at the border. Data: Eurostat Comext, CC BY 4.0.",
+    isSample: false,
+    url: "https://ec.europa.eu/eurostat/web/international-trade-in-goods/database",
   },
   "wineterm-desk": {
     id: "wineterm-desk",

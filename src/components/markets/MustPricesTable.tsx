@@ -21,7 +21,7 @@ import {
   type MarketRow,
 } from "@/services/markets/types";
 
-const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rose" } as const;
+const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rosé" } as const;
 
 /**
  * Must and concentrates table. The default view stays readable: product,
