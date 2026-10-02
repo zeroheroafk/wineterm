@@ -36,7 +36,10 @@ The service interfaces in `src/services` are the seam for real data
 sources; components depend only on those interfaces. Trade reads Eurostat
 figures from the database, Markets reads the Spanish Ministry of
 Agriculture's weekly national wine prices from it, listed before the
-illustrative series, and the stocks and production pages read Spain's
+illustrative series, with WineTerm's monthly bulk price estimates for
+Spain, Portugal, France and Italy, computed in the database from the
+Eurostat figures; the Portuguese, French and Italian samples give way to
+those estimates. The stocks and production pages read Spain's
 month-end wine stocks and wine made since 1 August. Insights articles
 are published content in `src/content/articles`, one file per article,
 each read at `/insights/analysis/<id>`. Everything else
@@ -68,6 +71,7 @@ from the sitemap and marked noindex.
   and contact messages; `/trade` and the homepage trade panel show
   Eurostat figures, the Markets pages, the homepage key prices and the
   market strip add MAPA's national wine prices to the illustrative series,
+  the Markets pages and the homepage show the monthly trade estimates,
   and `/supply`, `/supply/stocks` and `/supply/production` show Spain's
   INFOVI balance, stocks and wine production.
   Pages regenerate at most hourly and database reads are cached for an
@@ -103,7 +107,9 @@ The Markets pages read `market_series` and `market_observations` whole,
 paging through the observations, and cache them for an hour
 (`unstable_cache`, tag `market-data`). A stored series appears only when
 its source is in `src/services/markets/sources.ts`; a fixture with the
-same code gives way to it. The supply, stocks and production pages read
+same code gives way to it, as does a fixture naming it in `givesWayTo`.
+Sample publications such as the Outlook read every fixture through
+`getIllustrativeMarketsService()`. The supply, stocks and production pages read
 Spain's rows of `supply_figures` the same way (tag `supply-data`).
 
 Real data providers that will replace the fixtures, with their coverage,
@@ -132,6 +138,17 @@ outcome on the run.
   reports rows without litres usually means the January revision of the
   Combined Nomenclature added a CN8 code: add it to `cn8.ts`, redeploy
   and re-import that year.
+
+- **WineTerm trade price estimates** (no Edge Function): seven monthly
+  series in `market_observations`, source `wineterm-trade-estimate`: the
+  value of a month's bulk wine trade (CN 2204 29) divided by its litres,
+  in EUR/hl, for the exports of Spain, Portugal, France and Italy and the
+  imports of the last three. `private.refresh_trade_price_estimates()`
+  computes them from `trade_flows`, stores a changed month as a revision
+  and moves each series' campaign to its latest month; the Comext
+  dispatcher calls it once the last queued run has finished. After
+  loading trade figures another way, run
+  `select private.refresh_trade_price_estimates();`.
 
 - **MAPA, Precios Medios Nacionales** (`supabase/functions/import-mapa-prices`)
   loads the Spanish Ministry of Agriculture's weekly national average

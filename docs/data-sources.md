@@ -44,6 +44,10 @@ Status legend:
    OIV world outlook still to add.
 6. **Gaps to cover with partners or desk estimates:** grape prices,
    must and concentrate prices, and Portuguese bulk wine prices.
+7. **Bulk price estimates from trade: WineTerm. Computed.** Until
+   reusable current prices exist for Portugal, France and Italy, monthly
+   averages of bulk wine trade values from the Comext figures stand in
+   for them. See "WineTerm estimates from Comext" below.
 
 ## Markets: bulk wine prices
 
@@ -114,12 +118,81 @@ Status legend:
   [weekly wine price bulletins](https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/boletines_semanales_precio_vino),
   [reuse conditions](https://datos.gob.es/en/documentacion/aviso-legal-tipo-para-la-reutilizacion-de-la-informacion-del-sector-publico).
 
+### Spain: MAPA representative wine markets
+
+- **Covers:** weekly ex-winery bulk prices of white and red wine without
+  PDO/PGI in EUR/hl at Albacete, Ciudad Real, Cuenca and Toledo, and red
+  at Murcia: the prices Spain notifies to the Commission under Regulation
+  (EU) 2017/1185, and the source of the Agri-food portal's regional
+  series. Validated on 2 October 2026 in table 2.2 of the "Informe
+  Semanal de Coyuntura" for week 38/2026 (14 to 20 September): Ciudad
+  Real white 40.61 and red 48.78 EUR/hl.
+- **Access:** one PDF report a week on the ministry's site, under a
+  hashed file name; no workbook found yet. **To validate:** a link that
+  can be found each week, and how far back the reports go.
+- **Licence:** Law 37/2007, as the other MAPA statistics.
+- **Feeds:** would replace the Castilla-La Mancha samples with official
+  provincial prices.
+
 ### Spain: Ciudad Real market (Cámara de Comercio)
 
 - **Not usable.** The chamber's market price pages carry no wine
   quotations. Castilla-La Mancha prices come from the Agri-food regional
   series instead.
 - Link: [previous weeks](https://www.camaracr.org/servicios/lonja/informacion-de-precios/precios-semanas-anteriores).
+
+### WineTerm estimates from Comext. Computed
+
+- **Covers:** monthly average value of bulk wine trade (CN 2204 29,
+  containers over 10 litres) in EUR/hl: the exports of Spain, Portugal,
+  France and Italy (`ES-BULK-EXP`, `PT-BULK-EXP`, `FR-BULK-EXP`,
+  `IT-BULK-EXP`) and the imports of Portugal, France and Italy
+  (`PT-BULK-IMP`, `FR-BULK-IMP`, `IT-BULK-IMP`), from January 2021. Spain's
+  imports are left out: about 5 million litres a month of mixed origin,
+  whose average varied by 24% month to month since August 2024.
+- **In the database:** source `wineterm-trade-estimate`, classification
+  `estimated`; observations with status `estimate`, dated to the last day
+  of the month, computed by `private.refresh_trade_price_estimates()`
+  from `trade_flows` (partner `WORLD`). 465 months at the first run.
+- **Checks:** Spain's bulk export average followed MAPA's national
+  ex-winery price of white and red wine without PDO/PGI with a
+  correlation of 0.96 over the months since 2021, 6 to 17% above it by
+  year. Imports are mostly Spanish wine since July 2025: 99% of
+  Portugal's, 77% of France's and 79% of Italy's. Volumes since August
+  2024 average 85 million litres a month for Spain's exports, 10 to 30 for
+  France's and Italy's flows, and 4.5 and 10 for Portugal's exports and
+  imports. Month to month the averages vary by 5% (Spain's exports,
+  France's imports) to 10.5% (France's exports); Portugal's by 9% and 8%.
+- **Limits:** averages over every colour, category and partner, valued
+  at the border, not quoted prices; French and Italian exports carry
+  much PDO and PGI wine, so they sit far above the price of wine without
+  GI.
+- **Refresh:** after each Comext import; see `README.md`, section
+  Database.
+
+### France: DRAAF Occitanie, bulk wine market follow-up
+
+- **Covers:** a monthly report of the regional office of the Ministry of
+  Agriculture on the Occitanie bulk market, with average prices of
+  registered purchase contracts by category (without GI, PGI, PDO) and
+  colour. **To validate:** neither the reports nor the pages could be
+  read from the development environment on 2 October 2026 (connection
+  reset, and 503 through a fetch service), so the figures and the
+  licence are unchecked. French state services usually publish under the
+  Licence Ouverte; to confirm.
+- Links: [monthly follow-up, 48 weeks to 1 July 2026](https://draaf.occitanie.agriculture.gouv.fr/suivi-mensuel-du-marche-des-vins-en-vrac-48-semaines-1er-juillet-2026-11-sur-12-a10100.html).
+
+### Italy: chamber of commerce price lists
+
+- **Covers:** weekly wholesale lists with bulk wine in EUR per
+  hectolitre-degree, must and RCGM per degree Brix, and grapes in EUR
+  per 100 kg during the harvest. Bologna's list n. 32 of 6 August 2026,
+  read on 2 October 2026: generic white 10 to 12% vol 4.50 to 4.90,
+  red 4.10 to 4.60 EUR/hl-degree; RCGM 4.80 to 5.00 per degree Brix.
+- **Not usable without permission:** Bologna and Alessandria-Asti
+  publish under CC BY-NC-ND, which excludes commercial use. Ask each
+  chamber for written permission.
+- Link: [Bologna weekly lists](https://www.bo.camcom.gov.it/it/borsa-merci-e-rilevazione-prezzi/listino-settimanale-dei-prezzi-rilevati-il-giovedi).
 
 ### France: FranceAgriMer VISIONet
 
@@ -364,5 +437,10 @@ when a new release appears. Checked on 30 September 2026.
 3. Check the Agri-food prices' lag again every few months, and import
    France and Italy if they catch up.
 4. Read the licence pages still marked **to confirm** (Agri-food portal,
-   IVV, FranceAgriMer) and record the attribution text in `sources`
-   before importing from them.
+   IVV, FranceAgriMer, DRAAF Occitanie) and record the attribution text
+   in `sources` before importing from them.
+5. Import MAPA's representative wine markets, which would replace the
+   Castilla-La Mancha samples with official provincial prices, once a
+   weekly link and the report history are found.
+6. Ask the Bologna and Alessandria-Asti chambers of commerce for
+   permission to republish their wine, must and grape prices.

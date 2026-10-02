@@ -48,19 +48,24 @@ const SHARED_STATUS_NOTES: Record<DataStatus, string | null> = {
  * every row becomes one table-level note instead of a badge per row.
  * Columns that yield on narrow screens reappear as a line under the
  * market name, so no figure is lost. Changes are signed and coloured
- * like every other movement on the page, without glyphs.
+ * like every other movement on the page, without glyphs. Its period
+ * names what each change is measured over: weekly prices change on the
+ * week, monthly estimates on the month.
  */
 export function KeyPricesTable({
   quotes,
   updatedAt,
   variant = "dense",
   methodologyHref,
+  period = "week",
 }: {
   quotes: PriceQuote[];
   updatedAt?: string;
   variant?: "dense" | "editorial";
   /** Editorial only: where the note links to explain the sourcing. */
   methodologyHref?: string;
+  /** Editorial only: the period of the quotes' changes. */
+  period?: ChangePeriod;
 }) {
   if (variant === "editorial") {
     return (
@@ -68,6 +73,7 @@ export function KeyPricesTable({
         quotes={quotes}
         updatedAt={updatedAt}
         methodologyHref={methodologyHref}
+        period={period}
       />
     );
   }
@@ -168,15 +174,36 @@ const TH =
   "px-2 py-2 align-bottom text-[0.8125rem] leading-tight font-medium text-ink-soft first:pl-0 last:pr-0 sm:px-3";
 const TD = "px-2 py-2.5 first:pl-0 last:pr-0 sm:px-3";
 
+type ChangePeriod = "week" | "month";
+
+const PERIOD_TEXT: Record<
+  ChangePeriod,
+  { caption: string; short: string; long: string }
+> = {
+  week: {
+    caption: "Key bulk wine reference prices",
+    short: "Week",
+    long: "Week on week",
+  },
+  month: {
+    caption: "Monthly bulk wine price estimates",
+    short: "Month",
+    long: "Month on month",
+  },
+};
+
 function EditorialKeyPrices({
   quotes,
   updatedAt,
   methodologyHref,
+  period,
 }: {
   quotes: PriceQuote[];
   updatedAt?: string;
   methodologyHref?: string;
+  period: ChangePeriod;
 }) {
+  const text = PERIOD_TEXT[period];
   const first = quotes[0];
   const sharedUnit = quotes.every((quote) => quote.unit === first?.unit)
     ? first?.unit
@@ -185,6 +212,8 @@ function EditorialKeyPrices({
     ? first?.status
     : undefined;
   const showStatusColumn = sharedStatus === undefined;
+  // Estimates that span every colour leave the wine column empty.
+  const showWineColumn = quotes.some((quote) => quote.colour);
   const statusNote = sharedStatus ? SHARED_STATUS_NOTES[sharedStatus] : null;
   // The annual column ends the visible row until the observed (and status)
   // columns appear; it then drops its right padding to keep the table
@@ -198,18 +227,20 @@ function EditorialKeyPrices({
       <ScrollRegion>
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">
-            Key bulk wine reference prices
-            {sharedUnit ? ` in ${sharedUnit}` : ""}, with the change on the
-            week and on the same week a year earlier
+            {text.caption}
+            {sharedUnit ? ` in ${sharedUnit}` : ""}, with the change on the{" "}
+            {period} and on the same {period} a year earlier
           </caption>
           <thead>
             <tr className="border-b border-ink/30">
               <th scope="col" className={TH}>
                 Market
               </th>
-              <th scope="col" className={`${TH} hidden md:table-cell`}>
-                Wine
-              </th>
+              {showWineColumn ? (
+                <th scope="col" className={`${TH} hidden md:table-cell`}>
+                  Wine
+                </th>
+              ) : null}
               <th scope="col" className={`${TH} text-right`}>
                 Price
                 {sharedUnit ? (
@@ -220,8 +251,8 @@ function EditorialKeyPrices({
                 ) : null}
               </th>
               <th scope="col" className={`${TH} text-right`}>
-                <span className="sm:hidden">Week</span>
-                <span className="hidden sm:inline">Week on week</span>
+                <span className="sm:hidden">{text.short}</span>
+                <span className="hidden sm:inline">{text.long}</span>
               </th>
               <th scope="col" className={`${TH} ${annualEdge} text-right`}>
                 <span className="sm:hidden">Year</span>
@@ -275,9 +306,11 @@ function EditorialKeyPrices({
                       </span>
                     </span>
                   </th>
-                  <td className={`${TD} hidden text-sm text-ink-soft md:table-cell`}>
-                    {colour ?? "-"}
-                  </td>
+                  {showWineColumn ? (
+                    <td className={`${TD} hidden text-sm text-ink-soft md:table-cell`}>
+                      {colour ?? "-"}
+                    </td>
+                  ) : null}
                   <td className={`${TD} text-right whitespace-nowrap`}>
                     <span className="tnum text-[0.9375rem] font-semibold text-ink">
                       {formatPrice(quote.price)}

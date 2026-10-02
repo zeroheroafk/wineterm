@@ -43,7 +43,7 @@ const CLASSIFICATION_NOTES: Record<DataClassification, string> = {
   modelled:
     "Derived by WineTerm from other series through a stated calculation, never presented as an observation.",
   estimated:
-    "WineTerm desk estimates from scattered observations, clearly labelled and replaced when published figures arrive.",
+    "WineTerm estimates where no published price exists: computed from official figures by a stated method, or built from scattered observations. Clearly labelled, and replaced when published prices arrive.",
 };
 
 const SOURCE_TYPE_NOTES: Record<ObservationSourceType, string> = {
@@ -56,13 +56,14 @@ const SOURCE_TYPE_NOTES: Record<ObservationSourceType, string> = {
   "reported-range":
     "Mid-points of traded ranges reported by market contacts.",
   "wineterm-estimate":
-    "A WineTerm desk estimate where no published series exists.",
+    "A WineTerm estimate where no published series exists, with its method stated on the series page.",
 };
 
 const STATUS_NOTES: Record<DataStatus, string> = {
   final: "The source has closed the figure; only formal corrections follow.",
   provisional: "Published by the source but still subject to routine revision.",
-  estimate: "A quantified assessment ahead of publication by the source.",
+  estimate:
+    "A quantified assessment rather than a published figure: a WineTerm estimate, or a figure ahead of its publication by the source.",
   forecast: "Forward-looking, expressed as a range wherever possible.",
   illustrative:
     "Development sample data demonstrating the interface; never a real observation.",
@@ -272,6 +273,44 @@ export default function MethodologyPage() {
         </ScrollRegion>
       </section>
 
+      <section id="trade-estimates" className="mt-12 scroll-mt-6">
+        <SectionHeader
+          kicker="Estimates"
+          title="Bulk prices estimated from trade"
+        />
+        <Prose>
+          <p>
+            WineTerm has no current bulk wine price for Portugal, France or
+            Italy that it may republish yet. Until it has, WineTerm estimates
+            where their bulk prices stand from Eurostat&apos;s monthly trade
+            figures: the value of a month&apos;s trade in wine in containers
+            over 10 litres (CN 2204 29) divided by its volume in litres, per
+            hectolitre. Spain, Portugal, France and Italy each get the average
+            value of their bulk exports; Portugal, France and Italy also the
+            average value of their bulk imports, mostly Spanish wine.
+            Spain&apos;s imports are too small and mixed to read as a price.
+          </p>
+          <p>
+            These are averages, not quoted prices. They cover every colour,
+            category and partner, valued at the border, so they move with the
+            mix of wines traded as well as with prices, and a month with little
+            trade moves more than the market. French and Italian exports carry
+            much wine with a PDO or PGI, so their averages sit above the price
+            of wine without GI. As a check, Spain&apos;s bulk exports have
+            followed MAPA&apos;s official national ex-winery price of wine
+            without PDO/PGI closely since 2021, at 6 to 17% above it.
+          </p>
+          <p>
+            Each estimate is dated to the last day of its month and arrives
+            about two months later, when Eurostat publishes the month; Eurostat
+            revises recent months, and WineTerm applies its revisions and marks
+            the estimates they change as revised. The estimates carry the
+            Estimate status and give way to official or reported prices once
+            those can be published.
+          </p>
+        </Prose>
+      </section>
+
       <section id="supply-balance" className="mt-12 scroll-mt-6">
         <SectionHeader
           kicker="Definitions"
@@ -337,7 +376,7 @@ export default function MethodologyPage() {
         <SectionHeader
           kicker="Registry"
           title="Source registry"
-          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and the monthly wine declarations, are added as their data is licensed and connected."
+          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and the monthly wine declarations, are added as their data is licensed and connected, as are WineTerm's own estimates from them."
         />
         <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
@@ -398,7 +437,9 @@ export default function MethodologyPage() {
             declarations of wine stocks, production, entries and exits
             credited to MAPA are official statistics, refreshed every week.
             The harvest forecasts credited to Agreste, the IVV and MAPA are
-            official too, entered by hand from each release. Every other
+            official too, entered by hand from each release. The monthly bulk
+            wine estimates are WineTerm&apos;s own, computed from the Eurostat
+            trade figures and marked Estimate. Every other
             figure currently shown is an illustrative sample carrying the
             Illustrative status, every other named source is a stand-in, and
             nothing on the platform is investment advice. This page describes the methodology those samples

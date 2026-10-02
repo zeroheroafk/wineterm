@@ -44,6 +44,18 @@ const PRESETS: { label: string; codes: string[] }[] = [
     codes: ["ES-NAT-WHT-NGI", "ES-NAT-RED-NGI"],
   },
   {
+    label: "Spain's bulk exports against MAPA's national averages",
+    codes: ["ES-NAT-WHT-NGI", "ES-NAT-RED-NGI", "ES-BULK-EXP"],
+  },
+  {
+    label: "Bulk wine exports by country (WineTerm estimates)",
+    codes: ["ES-BULK-EXP", "PT-BULK-EXP", "FR-BULK-EXP", "IT-BULK-EXP"],
+  },
+  {
+    label: "Bulk wine imports of Portugal, France and Italy (WineTerm estimates)",
+    codes: ["PT-BULK-IMP", "FR-BULK-IMP", "IT-BULK-IMP"],
+  },
+  {
     label: "Iberian generic red",
     codes: ["ES-CLM-RED-GEN", "ES-EXT-RED-GEN", "PT-ALE-RED-GEN"],
   },

@@ -10,7 +10,11 @@ import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { getMarketsService, isIllustrative } from "@/services/markets/service";
+import {
+  getMarketsService,
+  isEstimated,
+  isIllustrative,
+} from "@/services/markets/service";
 import type { MarketKind, MarketRow } from "@/services/markets/types";
 
 // Real series are read from the database; regenerate at most hourly.
@@ -33,7 +37,7 @@ const PRODUCTS: {
     title: "Bulk Wine Prices",
     href: "/markets/bulk-wine",
     description:
-      "Weekly reference prices for bulk wine by country, region, classification and colour, with original units preserved and movements over three horizons.",
+      "Bulk wine prices by country, region, classification and colour, with original units preserved and movements over three horizons.",
   },
   {
     kind: "grape",
@@ -76,6 +80,7 @@ export default async function MarketsPage() {
   const hasReal = [...bulkRows, ...grapeRows, ...mustRows].some(
     (row) => !isIllustrative(row),
   );
+  const hasEstimates = bulkRows.some(isEstimated);
 
   return (
     <Container className="pb-16">
@@ -83,7 +88,7 @@ export default async function MarketsPage() {
         title="Markets"
         description={
           hasReal
-            ? "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. Spain's weekly national bulk wine averages are official MAPA statistics; the other series are illustrative samples, marked as such."
+            ? `Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. Spain's weekly national bulk wine averages are official MAPA statistics${hasEstimates ? ", and WineTerm's monthly estimates give the average value of the bulk wine Spain, Portugal, France and Italy trade, computed from Eurostat figures" : ""}; the other series are illustrative samples, marked as such.`
             : "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength; development figures are illustrative samples."
         }
         activeHref="/markets"

@@ -42,6 +42,7 @@ export type SourceId =
   | "agreste"
   | "ivv"
   | "uiv-assoenologi-ismea"
+  | "wineterm-trade-estimate"
   | "wineterm-desk";
 
 export interface MarketSource {
@@ -251,6 +252,18 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     note: "Italy's usual harvest forecast comes from the trade associations Unione Italiana Vini and Assoenologi with the public agency ISMEA. For 2026 they published none, and will report results after the harvest.",
     isSample: false,
     url: "https://www.unioneitalianavini.it/approfondimenti-tematici/news/vendemmia-2026-dati-consuntivi-fine-campagna",
+  },
+  "wineterm-trade-estimate": {
+    id: "wineterm-trade-estimate",
+    name: "WineTerm estimate from Eurostat Comext",
+    kind: "wineterm",
+    classification: "estimated",
+    coverage:
+      "Spain, Portugal, France and Italy: average value per hectolitre of their bulk wine exports, and of the bulk wine imports of Portugal, France and Italy",
+    cadence: "Monthly, after each Comext release, about two months after the month",
+    note: "WineTerm divides the statistical value of each month's trade in wine in containers over 10 litres (CN 2204 29) by its volume in litres, both as Eurostat publishes them. The result averages every colour, category and partner, valued at the border: an indicator of bulk prices, not a quoted ex-winery price. Data: Eurostat Comext, CC BY 4.0.",
+    isSample: false,
+    url: "https://ec.europa.eu/eurostat/web/international-trade-in-goods/database",
   },
   "wineterm-desk": {
     id: "wineterm-desk",

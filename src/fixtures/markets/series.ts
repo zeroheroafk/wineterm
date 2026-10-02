@@ -21,7 +21,19 @@ export interface SeriesFixture {
   series: MarketSeries;
   /** In the unit recorded: per hectolitre-degree when series.perDegree is set. */
   history: HistoryConfig;
+  /**
+   * Codes of real series covering the sample's country. Once any of them
+   * is imported, the sample leaves the live site, as a sample whose own
+   * code is imported does; sample publications keep it.
+   */
+  givesWayTo?: string[];
 }
+
+// The monthly WineTerm estimates computed from Eurostat trade figures,
+// which stand in for Portugal's, France's and Italy's samples.
+const PT_ESTIMATES = ["PT-BULK-EXP", "PT-BULK-IMP"];
+const FR_ESTIMATES = ["FR-BULK-EXP", "FR-BULK-IMP"];
+const IT_ESTIMATES = ["IT-BULK-EXP", "IT-BULK-IMP"];
 
 const WEEKLY_5Y = 261; // ~five years of weekly observations
 const WEEKLY_3Y = 157;
@@ -254,6 +266,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.05,
     },
+    givesWayTo: PT_ESTIMATES,
   },
   {
     series: {
@@ -287,6 +300,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.04,
       rangeSpread: 0.05,
     },
+    givesWayTo: PT_ESTIMATES,
   },
   {
     series: {
@@ -318,6 +332,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.02,
       rangeSpread: 0.1,
     },
+    givesWayTo: PT_ESTIMATES,
   },
   {
     series: {
@@ -351,6 +366,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.025,
       rangeSpread: 0.03,
     },
+    givesWayTo: FR_ESTIMATES,
   },
   {
     series: {
@@ -381,6 +397,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.02,
       rangeSpread: 0.04,
     },
+    givesWayTo: FR_ESTIMATES,
   },
   {
     series: {
@@ -414,6 +431,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.03,
       rangeSpread: 0.05,
     },
+    givesWayTo: IT_ESTIMATES,
   },
   {
     series: {
@@ -445,6 +463,7 @@ export const seriesFixtures: SeriesFixture[] = [
       seasonality: 0.025,
       rangeSpread: 0.04,
     },
+    givesWayTo: IT_ESTIMATES,
   },
 
   // Grapes ----------------------------------------------------------------

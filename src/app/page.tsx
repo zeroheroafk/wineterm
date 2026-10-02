@@ -36,6 +36,7 @@ export default async function Home() {
     strip,
     briefing,
     keyPrices,
+    estimates,
     supply,
     harvest,
     trade,
@@ -47,6 +48,7 @@ export default async function Home() {
     home.getMarketStrip(),
     home.getLeadBriefing(),
     home.getKeyPrices(),
+    home.getPriceEstimates(),
     home.getSupplySnapshot(),
     home.getHarvestRegions(),
     home.getTradeOverview(),
@@ -114,6 +116,27 @@ export default async function Home() {
               methodologyHref="/insights/methodology"
             />
           </div>
+          {estimates.quotes.length > 0 ? (
+            <div className="mt-10">
+              <h3 className="wt-headline text-[1.375rem] leading-tight font-semibold text-ink">
+                Monthly estimates from trade data
+              </h3>
+              <p className="mt-1 max-w-2xl text-[0.8125rem] leading-relaxed text-ink-soft">
+                The average value of the bulk wine each country exports and
+                imports, from Eurostat&apos;s monthly trade figures: a WineTerm
+                estimate of where bulk prices stand, not a quoted price.
+              </p>
+              <div className="mt-4">
+                <KeyPricesTable
+                  variant="editorial"
+                  period="month"
+                  quotes={estimates.quotes}
+                  updatedAt={estimates.updatedAt ?? undefined}
+                  methodologyHref="/insights/methodology#trade-estimates"
+                />
+              </div>
+            </div>
+          ) : null}
         </section>
 
         <section aria-labelledby="home-analysis" className="mt-14">

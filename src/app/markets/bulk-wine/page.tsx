@@ -12,7 +12,7 @@ import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
 import { SourceLine, UpdatedAt } from "@/components/ui/SourceLine";
 import {
   getMarketsService,
-  hasRealSeries,
+  isEstimated,
   isIllustrative,
 } from "@/services/markets/service";
 import {
@@ -29,7 +29,7 @@ import {
 export const metadata: Metadata = {
   title: "Bulk Wine Prices",
   description:
-    "Weekly bulk wine reference prices by country, region, classification and colour, with original units preserved.",
+    "Bulk wine prices by country, region, classification and colour, with original units preserved.",
 };
 
 export default async function BulkWinePage({
@@ -41,12 +41,14 @@ export default async function BulkWinePage({
   const markets = getMarketsService();
   const filter = filterFromParams(params);
 
-  const [rows, options, commentary, hasReal] = await Promise.all([
+  const [rows, allRows, options, commentary] = await Promise.all([
     markets.getRows("bulk-wine", filter),
+    markets.getRows("bulk-wine"),
     markets.getFilterOptions("bulk-wine"),
     markets.getCommentary("bulk-wine"),
-    hasRealSeries("bulk-wine"),
   ]);
+  const hasReal = allRows.some((row) => !isIllustrative(row));
+  const hasEstimates = allRows.some(isEstimated);
 
   const updatedAt = rows
     .map((row) => row.latest.updatedAt)
@@ -164,8 +166,8 @@ export default async function BulkWinePage({
         title="Bulk Wine Prices"
         description={
           hasReal
-            ? "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Spain's national averages are official MAPA statistics, listed first; the other series are illustrative samples, marked as such."
-            : "Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Development figures are illustrative samples."
+            ? `Reference prices for bulk wine across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Spain's weekly national averages are official MAPA statistics, listed first${hasEstimates ? "; WineTerm's monthly estimates follow, the average value of the bulk wine each country exports or imports, computed from Eurostat trade figures" : ""}; the other series are illustrative samples, marked as such.`
+            :"Weekly reference prices for bulk wine across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Development figures are illustrative samples."
         }
         activeHref="/markets/bulk-wine"
       />
