@@ -8,7 +8,6 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { seriesFixtures } from "@/fixtures/markets/series";
-import { getHomeService } from "@/services/home";
 import {
   getIllustrativeMarketsService,
   getMarketsService,
@@ -29,15 +28,15 @@ const codes = (entries: CatalogueEntry[]) => entries.map((e) => e.series.code);
 
 describe("samples beside real series", () => {
   it("give way to their own code and to the series they name", () => {
-    const imported = [entry("PT-BULK-IMP"), entry("ES-NAT-RED-NGI")];
+    const imported = [entry("PT-NAT-BULK"), entry("ES-NAT-RED-NGI")];
     const samples = [
       entry("ES-NAT-RED-NGI"),
-      entry("PT-ALE-RED-GEN", ["PT-BULK-EXP", "PT-BULK-IMP"]),
-      entry("FR-LAN-RED-NGI", ["FR-BULK-EXP", "FR-BULK-IMP"]),
+      entry("PT-ALE-RED-GEN", ["PT-NAT-BULK"]),
+      entry("FR-LAN-RED-NGI", ["FR-NAT-BULK"]),
       entry("ES-CLM-RED-GEN"),
     ];
     assert.deepEqual(codes(mergeCatalogues(imported, samples)), [
-      "PT-BULK-IMP",
+      "PT-NAT-BULK",
       "ES-NAT-RED-NGI",
       "FR-LAN-RED-NGI",
       "ES-CLM-RED-GEN",
@@ -45,7 +44,7 @@ describe("samples beside real series", () => {
   });
 
   it("all stay when nothing is imported", () => {
-    const samples = [entry("PT-ALE-RED-GEN", ["PT-BULK-EXP"]), entry("ES-CLM-RED-GEN")];
+    const samples = [entry("PT-ALE-RED-GEN", ["PT-NAT-BULK"]), entry("ES-CLM-RED-GEN")];
     assert.deepEqual(codes(mergeCatalogues([], samples)), codes(samples));
   });
 
@@ -71,11 +70,9 @@ describe("samples beside real series", () => {
     );
   });
 
-  it("fill the live catalogue offline, with no estimates on the homepage", async () => {
+  it("fill the live catalogue offline", async () => {
     // Without Supabase configured nothing is imported, so no sample gives way.
     const live = await getMarketsService().listSeries();
     assert.equal(live.length, seriesFixtures.length);
-    const estimates = await getHomeService().getPriceEstimates();
-    assert.deepEqual(estimates, { quotes: [], updatedAt: null });
   });
 });

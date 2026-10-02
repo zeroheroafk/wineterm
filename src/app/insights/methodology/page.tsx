@@ -273,40 +273,59 @@ export default function MethodologyPage() {
         </ScrollRegion>
       </section>
 
-      <section id="trade-estimates" className="mt-12 scroll-mt-6">
+      <section id="bulk-prices" className="mt-12 scroll-mt-6">
         <SectionHeader
-          kicker="Estimates"
-          title="Bulk prices estimated from trade"
+          kicker="Bulk wine"
+          title="How each country's bulk price is established"
+          description="The price tables show one national bulk wine price per country without a status tag. This is where each one comes from."
         />
+        <ul className="mt-5 max-w-3xl divide-y divide-rule border-y border-rule">
+          <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
+            <span className="text-sm font-medium text-ink">Spain</span>
+            <span className="text-sm leading-relaxed text-ink-soft">
+              Official. The Spanish Ministry of Agriculture&apos;s weekly
+              national average ex-winery prices of white and of red wine
+              without PDO/PGI (Precios Medios Nacionales), imported unchanged.
+            </span>
+          </li>
+          <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
+            <span className="text-sm font-medium text-ink">
+              Portugal, France and Italy
+            </span>
+            <span className="text-sm leading-relaxed text-ink-soft">
+              WineTerm estimates, monthly. No current bulk wine price is yet
+              available that WineTerm may republish, so the price is the
+              average of the bulk wine the country exports, computed from
+              Eurostat&apos;s trade figures, as set out below.
+            </span>
+          </li>
+        </ul>
         <Prose>
           <p>
-            WineTerm has no current bulk wine price for Portugal, France or
-            Italy that it may republish yet. Until it has, WineTerm estimates
-            where their bulk prices stand from Eurostat&apos;s monthly trade
-            figures: the value of a month&apos;s trade in wine in containers
-            over 10 litres (CN 2204 29) divided by its volume in litres, per
-            hectolitre. Spain, Portugal, France and Italy each get the average
-            value of their bulk exports; Portugal, France and Italy also the
-            average value of their bulk imports, mostly Spanish wine.
-            Spain&apos;s imports are too small and mixed to read as a price.
+            For Portugal, France and Italy, WineTerm divides the value of a
+            month&apos;s exports of wine in containers over 10 litres (CN 2204
+            29) by their volume in litres, per hectolitre: the average price
+            of the country&apos;s own wine sold in bulk. Imports are left out,
+            since they are mostly Spanish wine and say little about the
+            country&apos;s own prices.
           </p>
           <p>
-            These are averages, not quoted prices. They cover every colour,
-            category and partner, valued at the border, so they move with the
-            mix of wines traded as well as with prices, and a month with little
-            trade moves more than the market. French and Italian exports carry
-            much wine with a PDO or PGI, so their averages sit above the price
-            of wine without GI. As a check, Spain&apos;s bulk exports have
-            followed MAPA&apos;s official national ex-winery price of wine
-            without PDO/PGI closely since 2021, at 6 to 17% above it.
+            It is an average, not a quoted price. It covers every colour,
+            category and destination, valued at the border, so it moves with
+            the mix of wines sold as well as with prices, and a month with
+            little trade moves more than the market. French and Italian bulk
+            exports carry much wine with a PDO or PGI, so their averages sit
+            above the price of wine without GI. As a check, the same average
+            for Spain has followed MAPA&apos;s official national price closely
+            since 2021, at 6 to 17% above it.
           </p>
           <p>
-            Each estimate is dated to the last day of its month and arrives
-            about two months later, when Eurostat publishes the month; Eurostat
-            revises recent months, and WineTerm applies its revisions and marks
-            the estimates they change as revised. The estimates carry the
-            Estimate status and give way to official or reported prices once
-            those can be published.
+            Each month is dated to its last day and arrives about two months
+            later, when Eurostat publishes it; Eurostat revises recent months,
+            and WineTerm applies its revisions and marks the months they
+            change as revised. An estimate gives way to an official or
+            reported price once one can be published. Illustrative samples,
+            which remain for other markets, are always marked as such.
           </p>
         </Prose>
       </section>
@@ -437,9 +456,10 @@ export default function MethodologyPage() {
             declarations of wine stocks, production, entries and exits
             credited to MAPA are official statistics, refreshed every week.
             The harvest forecasts credited to Agreste, the IVV and MAPA are
-            official too, entered by hand from each release. The monthly bulk
-            wine estimates are WineTerm&apos;s own, computed from the Eurostat
-            trade figures and marked Estimate. Every other
+            official too, entered by hand from each release. The bulk wine
+            prices for Portugal, France and Italy are WineTerm&apos;s monthly
+            estimates from the Eurostat trade figures, described above. Every
+            other
             figure currently shown is an illustrative sample carrying the
             Illustrative status, every other named source is a stand-in, and
             nothing on the platform is investment advice. This page describes the methodology those samples

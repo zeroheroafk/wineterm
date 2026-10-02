@@ -58,12 +58,19 @@ describe("key prices", () => {
         Math.round((row.latest.value - previous.value) * 100) / 100,
         quote.code,
       );
-      // The table's weekly change and the Markets pages' Wk % alike.
-      assert.ok(row.changes.weekPercent !== null, quote.code);
+      // The change on the previous price: for the weekly samples, the
+      // Markets pages' Wk % too.
       assert.ok(
-        Math.abs(quote.changePercent - row.changes.weekPercent) < 1e-9,
+        Math.abs(quote.changePercent - (row.latest.value / previous.value - 1) * 100) <
+          1e-9,
         quote.code,
       );
+      if (row.changes.weekPercent !== null) {
+        assert.ok(
+          Math.abs(quote.changePercent - row.changes.weekPercent) < 1e-9,
+          quote.code,
+        );
+      }
       assert.equal(quote.yoyPercent, row.changes.yoyPercent ?? undefined, quote.code);
       assert.equal(quote.perDegree?.price, row.latest.perDegreeValue, quote.code);
       assert.equal(

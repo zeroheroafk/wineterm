@@ -44,16 +44,8 @@ const PRESETS: { label: string; codes: string[] }[] = [
     codes: ["ES-NAT-WHT-NGI", "ES-NAT-RED-NGI"],
   },
   {
-    label: "Spain's bulk exports against MAPA's national averages",
-    codes: ["ES-NAT-WHT-NGI", "ES-NAT-RED-NGI", "ES-BULK-EXP"],
-  },
-  {
-    label: "Bulk wine exports by country (WineTerm estimates)",
-    codes: ["ES-BULK-EXP", "PT-BULK-EXP", "FR-BULK-EXP", "IT-BULK-EXP"],
-  },
-  {
-    label: "Bulk wine imports of Portugal, France and Italy (WineTerm estimates)",
-    codes: ["PT-BULK-IMP", "FR-BULK-IMP", "IT-BULK-IMP"],
+    label: "National bulk wine averages: Spain (red), Portugal, France, Italy",
+    codes: ["ES-NAT-RED-NGI", "PT-NAT-BULK", "FR-NAT-BULK", "IT-NAT-BULK"],
   },
   {
     label: "Iberian generic red",
@@ -331,7 +323,9 @@ export default async function ComparePage({
                         {formatDate(row.latest.date)}
                       </td>
                       <td className={TD}>
-                        <DataStatusLabel status={row.latest.status} />
+                        {isIllustrative(row) ? (
+                          <DataStatusLabel status="illustrative" />
+                        ) : null}
                       </td>
                     </tr>
                   ) : null,

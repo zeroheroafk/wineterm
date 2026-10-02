@@ -255,13 +255,13 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
   },
   "wineterm-trade-estimate": {
     id: "wineterm-trade-estimate",
-    name: "WineTerm estimate from Eurostat Comext",
+    name: "Eurostat Comext, calculated by WineTerm",
     kind: "wineterm",
     classification: "estimated",
     coverage:
-      "Spain, Portugal, France and Italy: average value per hectolitre of their bulk wine exports, and of the bulk wine imports of Portugal, France and Italy",
+      "Portugal, France and Italy: average price per hectolitre of the bulk wine each exports",
     cadence: "Monthly, after each Comext release, about two months after the month",
-    note: "WineTerm divides the statistical value of each month's trade in wine in containers over 10 litres (CN 2204 29) by its volume in litres, both as Eurostat publishes them. The result averages every colour, category and partner, valued at the border: an indicator of bulk prices, not a quoted ex-winery price. Data: Eurostat Comext, CC BY 4.0.",
+    note: "WineTerm divides the statistical value of each month's exports of wine in containers over 10 litres (CN 2204 29) by their volume in litres, both as Eurostat publishes them. The result averages every colour, category and destination, valued at the border. Data: Eurostat Comext, CC BY 4.0.",
     isSample: false,
     url: "https://ec.europa.eu/eurostat/web/international-trade-in-goods/database",
   },

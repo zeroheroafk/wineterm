@@ -162,14 +162,6 @@ export function isIllustrative(row: MarketRow): boolean {
   return row.latest.status === "illustrative";
 }
 
-/** Whether a row is one of WineTerm's own estimates from real figures. */
-export function isEstimated(row: MarketRow): boolean {
-  return (
-    !isIllustrative(row) &&
-    getSource(row.series.sourceId).classification === "estimated"
-  );
-}
-
 let fixtureEntries: CatalogueEntry[] | null = null;
 
 /**
@@ -376,16 +368,10 @@ function matches(row: MarketRow, filter: SeriesFilter): boolean {
   return true;
 }
 
-/** Official prices, then WineTerm's estimates, then samples. */
-function provenanceRank(row: MarketRow): number {
-  if (isIllustrative(row)) return 2;
-  return isEstimated(row) ? 1 : 0;
-}
-
-/** Real series first, official ones leading, then by country, region and code. */
+/** Real series first, then by country, region and code. */
 function compareRows(a: MarketRow, b: MarketRow): number {
   return (
-    provenanceRank(a) - provenanceRank(b) ||
+    Number(isIllustrative(a)) - Number(isIllustrative(b)) ||
     `${a.series.country}-${a.series.region}-${a.series.code}`.localeCompare(
       `${b.series.country}-${b.series.region}-${b.series.code}`,
     )

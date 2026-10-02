@@ -29,11 +29,11 @@ export interface SeriesFixture {
   givesWayTo?: string[];
 }
 
-// The monthly WineTerm estimates computed from Eurostat trade figures,
-// which stand in for Portugal's, France's and Italy's samples.
-const PT_ESTIMATES = ["PT-BULK-EXP", "PT-BULK-IMP"];
-const FR_ESTIMATES = ["FR-BULK-EXP", "FR-BULK-IMP"];
-const IT_ESTIMATES = ["IT-BULK-EXP", "IT-BULK-IMP"];
+// The national bulk wine averages WineTerm computes from Eurostat trade
+// figures, which stand in for Portugal's, France's and Italy's samples.
+const PT_ESTIMATES = ["PT-NAT-BULK"];
+const FR_ESTIMATES = ["FR-NAT-BULK"];
+const IT_ESTIMATES = ["IT-NAT-BULK"];
 
 const WEEKLY_5Y = 261; // ~five years of weekly observations
 const WEEKLY_3Y = 157;

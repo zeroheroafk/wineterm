@@ -45,9 +45,10 @@ Status legend:
 6. **Gaps to cover with partners or desk estimates:** grape prices,
    must and concentrate prices, and Portuguese bulk wine prices.
 7. **Bulk price estimates from trade: WineTerm. Computed.** Until
-   reusable current prices exist for Portugal, France and Italy, monthly
-   averages of bulk wine trade values from the Comext figures stand in
-   for them. See "WineTerm estimates from Comext" below.
+   reusable current prices exist for Portugal, France and Italy, the
+   monthly average price of each country's bulk wine exports, from the
+   Comext figures, is its national bulk price. See "WineTerm estimates
+   from Comext" below.
 
 ## Markets: bulk wine prices
 
@@ -143,30 +144,31 @@ Status legend:
 
 ### WineTerm estimates from Comext. Computed
 
-- **Covers:** monthly average value of bulk wine trade (CN 2204 29,
-  containers over 10 litres) in EUR/hl: the exports of Spain, Portugal,
-  France and Italy (`ES-BULK-EXP`, `PT-BULK-EXP`, `FR-BULK-EXP`,
-  `IT-BULK-EXP`) and the imports of Portugal, France and Italy
-  (`PT-BULK-IMP`, `FR-BULK-IMP`, `IT-BULK-IMP`), from January 2021. Spain's
-  imports are left out: about 5 million litres a month of mixed origin,
-  whose average varied by 24% month to month since August 2024.
-- **In the database:** source `wineterm-trade-estimate`, classification
-  `estimated`; observations with status `estimate`, dated to the last day
-  of the month, computed by `private.refresh_trade_price_estimates()`
-  from `trade_flows` (partner `WORLD`). 465 months at the first run.
-- **Checks:** Spain's bulk export average followed MAPA's national
+- **Covers:** the national bulk wine price of Portugal, France and Italy
+  (`PT-NAT-BULK`, `FR-NAT-BULK`, `IT-NAT-BULK`): the monthly average price
+  of the country's exports of wine in containers over 10 litres (CN 2204
+  29), value divided by litres, in EUR/hl, from January 2021. One price
+  per country: the import averages, mostly Spanish wine (99% of
+  Portugal's, 77% of France's and 79% of Italy's since July 2025), and an
+  export average for Spain, whose price is MAPA's, were computed first
+  and are dropped by the migration `one_bulk_price_per_country`.
+- **In the database:** source `wineterm-trade-estimate` (shown as
+  "Eurostat Comext, calculated by WineTerm"), classification `estimated`;
+  observations with status `estimate`, dated to the last day of the
+  month, computed by `private.refresh_trade_price_estimates()` from
+  `trade_flows` (partner `WORLD`). The price tables show no status for
+  real prices; the methodology page says which are official and which are
+  estimates.
+- **Checks:** the same average for Spain followed MAPA's national
   ex-winery price of white and red wine without PDO/PGI with a
   correlation of 0.96 over the months since 2021, 6 to 17% above it by
-  year. Imports are mostly Spanish wine since July 2025: 99% of
-  Portugal's, 77% of France's and 79% of Italy's. Volumes since August
-  2024 average 85 million litres a month for Spain's exports, 10 to 30 for
-  France's and Italy's flows, and 4.5 and 10 for Portugal's exports and
-  imports. Month to month the averages vary by 5% (Spain's exports,
-  France's imports) to 10.5% (France's exports); Portugal's by 9% and 8%.
-- **Limits:** averages over every colour, category and partner, valued
-  at the border, not quoted prices; French and Italian exports carry
-  much PDO and PGI wine, so they sit far above the price of wine without
-  GI.
+  year. Export volumes since August 2024 average 4.5 million litres a
+  month for Portugal, 10 for France and 28 for Italy; month to month the
+  averages vary by 9%, 10.5% and 6.5%.
+- **Limits:** averages over every colour, category and destination,
+  valued at the border, not quoted prices; French and Italian exports
+  carry much PDO and PGI wine, so they sit far above the price of wine
+  without GI.
 - **Refresh:** after each Comext import; see `README.md`, section
   Database.
 

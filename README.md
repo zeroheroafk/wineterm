@@ -36,10 +36,10 @@ The service interfaces in `src/services` are the seam for real data
 sources; components depend only on those interfaces. Trade reads Eurostat
 figures from the database, Markets reads the Spanish Ministry of
 Agriculture's weekly national wine prices from it, listed before the
-illustrative series, with WineTerm's monthly bulk price estimates for
-Spain, Portugal, France and Italy, computed in the database from the
-Eurostat figures; the Portuguese, French and Italian samples give way to
-those estimates. The stocks and production pages read Spain's
+illustrative series, with one national bulk wine price each for
+Portugal, France and Italy: WineTerm's monthly estimate, the average
+price of the country's bulk exports, computed in the database from the
+Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
 month-end wine stocks and wine made since 1 August. Insights articles
 are published content in `src/content/articles`, one file per article,
 each read at `/insights/analysis/<id>`. Everything else
@@ -71,7 +71,8 @@ from the sitemap and marked noindex.
   and contact messages; `/trade` and the homepage trade panel show
   Eurostat figures, the Markets pages, the homepage key prices and the
   market strip add MAPA's national wine prices to the illustrative series,
-  the Markets pages and the homepage show the monthly trade estimates,
+  the Markets pages and the homepage show the national bulk prices of
+  Portugal, France and Italy computed from the trade figures,
   and `/supply`, `/supply/stocks` and `/supply/production` show Spain's
   INFOVI balance, stocks and wine production.
   Pages regenerate at most hourly and database reads are cached for an
@@ -139,11 +140,11 @@ outcome on the run.
   Combined Nomenclature added a CN8 code: add it to `cn8.ts`, redeploy
   and re-import that year.
 
-- **WineTerm trade price estimates** (no Edge Function): seven monthly
-  series in `market_observations`, source `wineterm-trade-estimate`: the
-  value of a month's bulk wine trade (CN 2204 29) divided by its litres,
-  in EUR/hl, for the exports of Spain, Portugal, France and Italy and the
-  imports of the last three. `private.refresh_trade_price_estimates()`
+- **WineTerm trade price estimates** (no Edge Function): three monthly
+  series in `market_observations`, source `wineterm-trade-estimate`,
+  `PT-NAT-BULK`, `FR-NAT-BULK` and `IT-NAT-BULK`: the value of a month's
+  bulk wine exports (CN 2204 29) divided by their litres, in EUR/hl.
+  `private.refresh_trade_price_estimates()`
   computes them from `trade_flows`, stores a changed month as a revision
   and moves each series' campaign to its latest month; the Comext
   dispatcher calls it once the last queued run has finished. After

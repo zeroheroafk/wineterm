@@ -7,7 +7,8 @@ production and balance, the official harvest forecasts), the services
 show the real data instead of the samples or beside them, and the
 Illustrative status is what tells the two apart on the page. Portugal's,
 France's and Italy's bulk wine samples leave the live site once
-WineTerm's monthly trade estimates for their country are imported
+WineTerm's monthly national bulk price for their country, computed from
+the trade figures, is imported
 (`givesWayTo` in `markets/series.ts`). The sample Market Outlook edition
 stays on the fixtures it was written against.
 Published articles are not fixtures: they live in `src/content`.
