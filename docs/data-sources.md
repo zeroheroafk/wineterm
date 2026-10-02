@@ -151,7 +151,9 @@ Status legend:
   per country: the import averages, mostly Spanish wine (99% of
   Portugal's, 77% of France's and 79% of Italy's since July 2025), and an
   export average for Spain, whose price is MAPA's, were computed first
-  and are dropped by the migration `one_bulk_price_per_country`.
+  and are no longer: their observations were cleared on 2 October 2026,
+  and the migration `drop_unused_trade_price_series`, not yet applied,
+  removes their empty series.
 - **In the database:** source `wineterm-trade-estimate` (shown as
   "Eurostat Comext, calculated by WineTerm"), classification `estimated`;
   observations with status `estimate`, dated to the last day of the

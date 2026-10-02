@@ -1,11 +1,14 @@
 -- One bulk wine price per country instead of separate export and import
 -- averages. Portugal, France and Italy keep the average price of the
 -- bulk wine they export, their own wine, as their national bulk price,
--- under new codes; the import averages, mostly Spanish wine, are
--- dropped, and so is Spain's export average, since Spain's price is
--- MAPA's official national average. The source is renamed after where
--- the figures come from; whether a price is official or a WineTerm
--- calculation is explained on the methodology page.
+-- under new codes; the import averages, mostly Spanish wine, and Spain's
+-- export average, Spain's price being MAPA's official national average,
+-- are no longer computed, so the refresh at the end clears their
+-- observations and the site, which lists only series with observations,
+-- stops showing them. drop_unused_trade_price_series then removes the
+-- empty series. The source is renamed after where the figures come from;
+-- whether a price is official or a WineTerm calculation is explained on
+-- the methodology page.
 
 update public.sources
    set name = 'Eurostat Comext, calculated by WineTerm',
@@ -45,14 +48,6 @@ update public.market_observations as o
       ('IT-BULK-EXP', 'IT-NAT-BULK')
   ) as map (old_code, code)
  where o.series_code = map.old_code;
-
--- The import averages and Spain's export average go with their
--- observations.
-delete from public.market_series
- where code in (
-   'ES-BULK-EXP', 'PT-BULK-EXP', 'PT-BULK-IMP', 'FR-BULK-EXP',
-   'FR-BULK-IMP', 'IT-BULK-EXP', 'IT-BULK-IMP'
- );
 
 create or replace function private.trade_price_estimates()
 returns table (series_code text, observed_on date, value numeric)
