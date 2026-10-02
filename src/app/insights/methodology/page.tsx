@@ -297,10 +297,26 @@ export default function MethodologyPage() {
               Portugal, France and Italy
             </span>
             <span className="text-sm leading-relaxed text-ink-soft">
-              WineTerm estimates, monthly. No current bulk wine price is yet
-              available that WineTerm may republish, so the price is the
-              average of the bulk wine the country exports, computed from
-              Eurostat&apos;s trade figures, as set out below.
+              WineTerm estimates, monthly, for the national price. No current
+              national bulk wine price is yet available that WineTerm may
+              republish, so the price is the average of the bulk wine the
+              country exports, computed from Eurostat&apos;s trade figures, as
+              set out below.
+            </span>
+          </li>
+          <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
+            <span className="text-sm font-medium text-ink">
+              France, by region
+            </span>
+            <span className="text-sm leading-relaxed text-ink-soft">
+              Official. The monthly average prices of the bulk purchase
+              contracts presented for visa to FranceAgriMer and the
+              interprofessions, for wine without GI and PGI wine by colour,
+              in Languedoc-Roussillon and Midi-Pyrénées, as the Ministry of
+              Agriculture&apos;s regional office in Occitanie (DRAAF Occitanie)
+              publishes them, imported unchanged. They are averages over
+              every contract of the month, so a month with few contracts
+              moves more than the market.
             </span>
           </li>
         </ul>

@@ -97,7 +97,7 @@ export default async function BulkWinePage({
       options: [
         { value: "red", label: "Red" },
         { value: "white", label: "White" },
-        { value: "rose", label: "Rose" },
+        { value: "rose", label: "Rosé" },
       ],
     },
     {

@@ -20,7 +20,7 @@ const CLASSIFICATION_SHORT: Record<WineClassification, string> = {
   pdo: "PDO",
 };
 
-const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rose" } as const;
+const COLOUR_SHORT = { red: "Red", white: "White", rose: "Rosé" } as const;
 
 /** Two-digit-year date to keep the widest table inside its frame. */
 function shortDate(iso: string): string {

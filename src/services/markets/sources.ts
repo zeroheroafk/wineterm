@@ -40,6 +40,7 @@ export type SourceId =
   | "mapa-infovi"
   | "mapa-isc"
   | "mapa-avances"
+  | "draaf-occitanie"
   | "agreste"
   | "ivv"
   | "uiv-assoenologi-ismea"
@@ -219,6 +220,18 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     note: "Official statistics of the Spanish Ministry of Agriculture, Fisheries and Food, the prices Spain notifies to the European Commission, imported unchanged: ex-winery bulk prices in euros per hectolitre. Source: Ministerio de Agricultura, Pesca y Alimentación, reused under Law 37/2007.",
     isSample: false,
     url: "https://www.mapa.gob.es/es/estadistica/temas/publicaciones/informe-semanal-coyuntura",
+  },
+  "draaf-occitanie": {
+    id: "draaf-occitanie",
+    name: "DRAAF Occitanie, Marché vrac des vins",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "France, Occitanie: monthly prices of bulk wine without GI and PGI wine by colour, in the departments of former Languedoc-Roussillon and of former Midi-Pyrénées",
+    cadence: "Monthly, some weeks after the month ends",
+    note: "Official statistics of the regional office of the French Ministry of Agriculture, from the bulk wine purchase contracts presented for visa to FranceAgriMer and the interprofessions, imported unchanged: average prices in euros per hectolitre. Source: DRAAF Occitanie, from FranceAgriMer data, reused under the Licence Ouverte / Etalab 2.0.",
+    isSample: false,
+    url: "https://draaf.occitanie.agriculture.gouv.fr/marche-vrac-des-vins-de-la-region-occitanie-donnees-actualisees-a345.html",
   },
   "mapa-avances": {
     id: "mapa-avances",

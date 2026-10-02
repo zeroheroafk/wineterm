@@ -36,8 +36,10 @@ The service interfaces in `src/services` are the seam for real data
 sources; components depend only on those interfaces. Trade reads Eurostat
 figures from the database, Markets reads the Spanish Ministry of
 Agriculture's weekly national wine prices and its weekly prices in
-seven representative markets from it, listed before the illustrative
-series, with one national bulk wine price each for
+seven representative markets from it, the French Ministry of
+Agriculture's monthly prices in Languedoc-Roussillon and Midi-Pyrénées
+(DRAAF Occitanie), listed before the illustrative series, with one
+national bulk wine price each for
 Portugal, France and Italy: WineTerm's monthly estimate, the average
 price of the country's bulk exports, computed in the database from the
 Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
@@ -72,7 +74,8 @@ from the sitemap and marked noindex.
   and contact messages; `/trade` and the homepage trade panel show
   Eurostat figures, the Markets pages, the homepage key prices and the
   market strip add MAPA's national wine prices to the illustrative series,
-  the Markets pages and the homepage show the national bulk prices of
+  the Markets pages add the Spanish and French regional prices, the
+  Markets pages and the homepage show the national bulk prices of
   Portugal, France and Italy computed from the trade figures,
   and `/supply`, `/supply/stocks` and `/supply/production` show Spain's
   INFOVI balance, stocks and wine production.
@@ -164,6 +167,21 @@ outcome on the run.
   read a workbook saves the other weeks and fails, naming it; the next run
   reads that workbook again.
 
+- **DRAAF Occitanie, Marché vrac des vins** (`supabase/functions/import-draaf-occitanie`)
+  loads the monthly average prices of the bulk wine contracts presented
+  for visa to FranceAgriMer and the interprofessions, for wine produced in
+  Occitanie, into `market_observations` as twelve series
+  `FR-<LR|MP>-<RED|ROS|WHT>-<NGI|PGI>`: wine without GI and PGI wine, by
+  colour, in the departments of former Languedoc-Roussillon and of former
+  Midi-Pyrénées, in EUR/hl. The regional office keeps one page with the
+  last three campaigns; `draaf.ts` reads its twelve price tables by their
+  captions and dates each price to the last day of its month. A run reads
+  the page once: new months are stored with the date the page carries,
+  and a changed value as a revision. The job `import-draaf-occitanie`
+  runs `private.start_draaf_imports()` on Wednesday mornings; call it to
+  import at once. A failed run names the table or cell that did not read
+  as expected.
+
 - **WineTerm trade price estimates** (no Edge Function): three monthly
   series in `market_observations`, source `wineterm-trade-estimate`,
   `PT-NAT-BULK`, `FR-NAT-BULK` and `IT-NAT-BULK`: the value of a month's
@@ -219,5 +237,5 @@ queued, not the caller.
 
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise
-`import-mapa-prices`, `import-mapa-markets` and `import-infovi`) or the
-dashboard.
+`import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie` and
+`import-infovi`) or the dashboard.

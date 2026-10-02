@@ -31,7 +31,8 @@ Status legend:
    year old, too late for a weekly market view. Portugal is not covered.
 3. **Spanish bulk wine prices and stocks: MAPA. Imported.** Weekly
    national average prices of white and red wine without PDO/PGI since
-   January 2019, refreshed twice a week, feed the Markets pages, the
+   January 2019, and the same prices in seven representative markets
+   since March 2019, refreshed twice a week, feed the Markets pages, the
    homepage key prices and the market strip. The monthly INFOVI
    declarations since January 2018, refreshed weekly, feed Spain's
    declared balance on `/supply`, its stocks on `/supply/stocks` and the
@@ -44,7 +45,11 @@ Status legend:
    OIV world outlook still to add.
 6. **Gaps to cover with partners or desk estimates:** grape prices,
    must and concentrate prices, and Portuguese bulk wine prices.
-7. **Bulk price estimates from trade: WineTerm. Computed.** Until
+7. **French regional bulk prices: DRAAF Occitanie. Imported.** Monthly
+   prices of wine without GI and PGI wine by colour in
+   Languedoc-Roussillon and Midi-Pyrénées since August 2023, refreshed
+   weekly.
+8. **Bulk price estimates from trade: WineTerm. Computed.** Until
    reusable current prices exist for Portugal, France and Italy, the
    monthly average price of each country's bulk wine exports, from the
    Comext figures, is its national bulk price. See "WineTerm estimates
@@ -204,28 +209,47 @@ Status legend:
 - **Refresh:** after each Comext import; see `README.md`, section
   Database.
 
-### France: DRAAF Occitanie, bulk wine market follow-up
+### France: DRAAF Occitanie bulk wine market. Imported
 
-- **Covers:** a monthly report of the regional office of the Ministry of
-  Agriculture on the Occitanie bulk market, from the purchase contracts
-  registered with FranceAgriMer: volumes and average prices from 1 August
-  to date, by category (without GI, PGI, PDO), colour and basin
-  (Languedoc-Roussillon, Sud-Ouest), conventional and organic. The report
-  of 1 July 2026 (48 weeks, 11 of 12) gives, all categories of wine
-  without GI 80.77 EUR/hl and PGI 95.73; PGI red 92.46, rosé 83.93, white
-  112.76; without GI red 70.20, rosé 75.22, white 94.39 EUR/hl. Validated
-  on 2 October 2026 from Supabase (`pg_net`); the development
-  environment's connections are reset.
-- **Caveat:** the prices are averages of the campaign to date, not of the
-  month, so one value a month moves slowly; a month's own price would have
-  to be derived from two reports' averages and volumes.
-- **Access:** one HTML page a month with the text and figures, plus a
-  PDF (`IMG/pdf/bilan_conjoncture_marches_viti_publication_202607.pdf`);
-  page addresses carry an article number, so they would be found from
-  the section's listing.
+- **Covers:** the monthly average prices of the bulk wine purchase
+  contracts presented for visa to FranceAgriMer and the interprofessions,
+  for wine produced in Occitanie, without GI and PGI, red, rosé and white,
+  in the departments of former Languedoc-Roussillon (Aude, Gard, Hérault,
+  Lozère, Pyrénées-Orientales) and of former Midi-Pyrénées (Ariège,
+  Aveyron, Haute-Garonne, Gers, Lot, Hautes-Pyrénées, Tarn,
+  Tarn-et-Garonne), in EUR/hl, over the last three campaigns. The same
+  page has the cumulative volumes by week and a weekly summary of the
+  latest week, with secret cells ("ss") where few contracts were signed.
+- **In the database:** `public.market_observations`, twelve monthly
+  series `FR-<LR|MP>-<RED|ROS|WHT>-<NGI|PGI>`, source `draaf-occitanie`,
+  region Occitanie and appellation the basin. Each price is dated to the
+  last day of its month.
+- **Access:** one HTML page the office keeps up to date, "Marché vrac des
+  vins de la région Occitanie - Données actualisées" (article 345); each
+  chart has a transcription table in the page and CSV and xls downloads.
+  The import reads the twelve price tables by their captions ("Courbes
+  PRIX IGP - ROSÉ - Département de Production Ex MP"). Validated on 2
+  October 2026 from Supabase; the development environment's connections
+  to the site are reset.
+- **Checks:** on 2 October 2026 (page published 1 October) the twelve
+  tables gave 432 prices, 36 months each from August 2023 to July 2026;
+  Languedoc-Roussillon red without GI read 64.24 EUR/hl in August 2023 and
+  71.80 in July 2026, as the page shows. Midi-Pyrénées trades little, and
+  some of its months repeat the month before.
+- **Refresh:** `pg_cron` job `import-draaf-occitanie`, Wednesday at 06:43
+  UTC. Months that leave the page's three campaigns stay as imported. See
+  `README.md`, section Database.
 - **Licence:** Licence Ouverte / Etalab 2.0 (the site's legal notice):
-  commercial reuse allowed, citing the source. Confirmed.
-- Links: [monthly follow-up, 48 weeks to 1 July 2026](https://draaf.occitanie.agriculture.gouv.fr/suivi-mensuel-du-marche-des-vins-en-vrac-48-semaines-1er-juillet-2026-11-sur-12-a10100.html).
+  commercial reuse allowed, citing the source ("DRAAF Occitanie, from
+  FranceAgriMer data"). Confirmed.
+- **Also published:** a monthly report on the campaign to date, with the
+  basins' averages since 1 August, organic wine and PDO volumes, as prose
+  and a PDF; not imported, since the data page gives each month's own
+  price.
+- **Feeds:** the Markets pages. The French samples already give way to
+  WineTerm's national estimate.
+- Links: [data page](https://draaf.occitanie.agriculture.gouv.fr/marche-vrac-des-vins-de-la-region-occitanie-donnees-actualisees-a345.html),
+  [monthly report, 48 weeks to 1 July 2026](https://draaf.occitanie.agriculture.gouv.fr/suivi-mensuel-du-marche-des-vins-en-vrac-48-semaines-1er-juillet-2026-11-sur-12-a10100.html).
 
 ### Italy: EU Agri-food portal market prices
 
@@ -493,10 +517,10 @@ when a new release appears. Checked on 30 September 2026.
 4. Read the licence pages still marked **to confirm** (Agri-food portal,
    IVV, FranceAgriMer) and record the attribution text
    in `sources` before importing from them.
-5. Regional prices for France: import the DRAAF Occitanie monthly
-   averages (Languedoc-Roussillon and Sud-Ouest), finding each month's
-   page from the section's listing. Italy: ask the chambers of commerce
-   for permission, or wait for the Agri-food portal to catch up. Portugal:
-   no regional source found; ask the IVV.
+5. Regional prices beyond Occitanie and Spain: France's other basins
+   (FranceAgriMer, whose licence is still to confirm, or the other
+   regional offices); Italy: ask the chambers of commerce for permission,
+   or wait for the Agri-food portal to catch up; Portugal: no regional
+   source found; ask the IVV.
 6. Ask the Bologna and Alessandria-Asti chambers of commerce for
    permission to republish their wine, must and grape prices.

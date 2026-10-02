@@ -76,7 +76,7 @@ export default async function GrapePricesPage({
       options: [
         { value: "red", label: "Red" },
         { value: "white", label: "White" },
-        { value: "rose", label: "Rose" },
+        { value: "rose", label: "Rosé" },
       ],
     },
     {

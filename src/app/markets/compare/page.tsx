@@ -48,6 +48,14 @@ const PRESETS: { label: string; codes: string[] }[] = [
     codes: ["ES-ALB-RED-NGI", "ES-CRE-RED-NGI", "ES-CUE-RED-NGI", "ES-TOL-RED-NGI"],
   },
   {
+    label: "Occitanie red, without GI and PGI, by basin (DRAAF Occitanie)",
+    codes: ["FR-LR-RED-NGI", "FR-LR-RED-PGI", "FR-MP-RED-NGI", "FR-MP-RED-PGI"],
+  },
+  {
+    label: "Red without GI: Ciudad Real, Toledo and Languedoc-Roussillon",
+    codes: ["ES-CRE-RED-NGI", "ES-TOL-RED-NGI", "FR-LR-RED-NGI"],
+  },
+  {
     label: "National bulk wine averages: Spain (red), Portugal, France, Italy",
     codes: ["ES-NAT-RED-NGI", "PT-NAT-BULK", "FR-NAT-BULK", "IT-NAT-BULK"],
   },
