@@ -32,8 +32,10 @@ import {
   type MarketKind,
   type MarketRow,
   type MarketSeries,
+  type SeriesCadence,
   type SeriesChanges,
   type SeriesObservation,
+  type SeriesStaleness,
   type TimeRangeKey,
 } from "@/services/markets/types";
 import {
@@ -145,6 +147,62 @@ function computeChanges(history: SeriesObservation[]): SeriesChanges {
     monthPercent: month ? percentChange(latest.value, month.value) : null,
     yoyPercent: yoy ? percentChange(latest.value, yoy.value) : null,
   };
+}
+
+/**
+ * How long a series may go without a new observation before its latest
+ * price is shown as overdue. A weekly source skips a week when a market
+ * has no quotation, so three weeks; a monthly source publishes a month
+ * one to two months after it ends, with Comext's estimates the latest,
+ * so a little over three months.
+ */
+const STALE_AFTER_DAYS: Record<SeriesCadence, number> = {
+  weekly: 21,
+  monthly: 110,
+};
+
+/** A typical gap between observations up to this long means weekly. */
+const WEEKLY_SPACING_LIMIT_DAYS = 14;
+
+function daysBetween(fromIso: string, toMs: number): number {
+  return (toMs - new Date(`${fromIso}T00:00:00Z`).getTime()) / DAY_MS;
+}
+
+/**
+ * The cadence of a history from the typical gap between its last
+ * observations (the median, so a market that goes unquoted for a few
+ * weeks still counts as weekly), or null for a history too short to
+ * tell.
+ */
+export function cadenceOf(history: SeriesObservation[]): SeriesCadence | null {
+  const recent = history.slice(-13);
+  if (recent.length < 2) return null;
+  const gaps = recent
+    .slice(1)
+    .map((obs, index) =>
+      daysBetween(recent[index].date, new Date(`${obs.date}T00:00:00Z`).getTime()),
+    )
+    .sort((a, b) => a - b);
+  const typical = gaps[Math.floor((gaps.length - 1) / 2)];
+  return typical <= WEEKLY_SPACING_LIMIT_DAYS ? "weekly" : "monthly";
+}
+
+/**
+ * Whether a real series' latest observation is overdue at `nowMs`, and
+ * by how much. Samples and histories too short to have a cadence are
+ * never stale.
+ */
+export function stalenessOf(
+  history: SeriesObservation[],
+  nowMs: number,
+): SeriesStaleness | null {
+  const latest = history[history.length - 1];
+  if (!latest || latest.status === "illustrative") return null;
+  const cadence = cadenceOf(history);
+  if (!cadence) return null;
+  const days = Math.floor(daysBetween(latest.date, nowMs));
+  const allowedDays = STALE_AFTER_DAYS[cadence];
+  return days > allowedDays ? { cadence, days, allowedDays } : null;
 }
 
 /** A series and its observations, oldest first. */
@@ -333,6 +391,7 @@ function buildRow({ series, history }: CatalogueEntry): MarketRow | null {
     latest,
     changes: computeChanges(history),
     normalisedValue,
+    staleness: stalenessOf(history, Date.now()),
   };
 }
 

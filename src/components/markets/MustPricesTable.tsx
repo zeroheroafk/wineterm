@@ -10,6 +10,7 @@ import {
   TH_RIGHT,
 } from "@/components/markets/cells";
 import { DataClassificationTag } from "@/components/markets/tags";
+import { StaleLabel } from "@/components/markets/StaleLabel";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
@@ -123,8 +124,13 @@ export function MustPricesTable({ rows }: { rows: MarketRow[] }) {
                 <td className={TD_RIGHT}>
                   <MaybePercent value={row.changes.weekPercent} />
                 </td>
-                <td className={`${TD} tnum font-mono text-xs text-ink-soft`}>
+                <td className={`${TD} tnum font-mono text-xs ${row.staleness ? "text-ochre-deep" : "text-ink-soft"}`}>
                   {formatDate(row.latest.date)}
+                  {row.staleness ? (
+                    <span className="ml-1.5 inline-block align-middle">
+                      <StaleLabel staleness={row.staleness} latestDate={row.latest.date} />
+                    </span>
+                  ) : null}
                 </td>
                 <td className={`${TD} hidden sm:table-cell`}>
                   <span title={source.name}>

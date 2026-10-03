@@ -279,6 +279,17 @@ export default function MethodologyPage() {
           title="How each country's bulk price is established"
           description="The price tables show one national bulk wine price per country, and regional prices where a source publishes them, without a status tag. This is where each one comes from."
         />
+        <Prose>
+          <p>
+            A real price whose series has had no new quotation for longer
+            than its cadence allows (three weeks for a weekly source, a
+            little over three months for a monthly one) is dated in ochre
+            with its age beside it, in every table and on its series page.
+            The source still publishes; that market has not been quoted
+            since, as happens when few contracts are signed, so the price
+            shown may no longer reflect the market.
+          </p>
+        </Prose>
         <ul className="mt-5 max-w-3xl divide-y divide-rule border-y border-rule">
           <li className="grid grid-cols-1 gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[8rem_minmax(0,1fr)]">
             <span className="text-sm font-medium text-ink">Spain</span>

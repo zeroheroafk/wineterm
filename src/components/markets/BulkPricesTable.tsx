@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { PriceCell } from "@/components/market/PriceCell";
 import { MaybePercent, RangeCell } from "@/components/markets/cells";
+import { StaleLabel } from "@/components/markets/StaleLabel";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
@@ -51,8 +52,10 @@ function categoryLabel(row: MarketRow): string {
 /**
  * The bulk wine price table: original observation first, labelled
  * normalisation alongside, movements over three horizons. Only samples
- * carry a status; the source is on each series page. Secondary columns yield below lg; the full table scrolls
- * inside its frame rather than the page.
+ * carry a status; the source is on each series page. A real price with
+ * no new quotation for longer than its cadence allows is dated in ochre
+ * with its age beside it. Secondary columns yield below lg; the full
+ * table scrolls inside its frame rather than the page.
  */
 export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
   if (rows.length === 0) {
@@ -177,10 +180,18 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
                 <MaybePercent value={row.changes.yoyPercent} />
               </td>
               <td
-                className={`${TD} tnum font-mono text-xs text-ink-soft`}
+                className={`${TD} tnum font-mono text-xs ${row.staleness ? "text-ochre-deep" : "text-ink-soft"}`}
                 title={`Last updated ${formatDateTime(row.latest.updatedAt)}`}
               >
                 {shortDate(row.latest.date)}
+                {row.staleness ? (
+                  <span className="ml-1.5 inline-block align-middle">
+                    <StaleLabel
+                      staleness={row.staleness}
+                      latestDate={row.latest.date}
+                    />
+                  </span>
+                ) : null}
               </td>
               <td className={`${TD} hidden sm:table-cell`}>
                 {isIllustrative(row) ? (

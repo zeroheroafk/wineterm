@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { MarketCommentaryBlock } from "@/components/market/MarketCommentaryBlock";
 import { PriceCell } from "@/components/market/PriceCell";
 import { MaybePercent, SeriesCodeLink, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
+import { StaleLabel } from "@/components/markets/StaleLabel";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
@@ -220,8 +221,18 @@ export default async function MarketsPage() {
                   <td className={TD_RIGHT}>
                     <MaybePercent value={row.changes.weekPercent} />
                   </td>
-                  <td className={`${TD} tnum font-mono text-xs text-ink-soft`}>
+                  <td
+                    className={`${TD} tnum font-mono text-xs ${row.staleness ? "text-ochre-deep" : "text-ink-soft"}`}
+                  >
                     {formatDate(row.latest.date)}
+                    {row.staleness ? (
+                      <span className="ml-1.5 inline-block align-middle">
+                        <StaleLabel
+                          staleness={row.staleness}
+                          latestDate={row.latest.date}
+                        />
+                      </span>
+                    ) : null}
                   </td>
                   <td className={`${TD} hidden sm:table-cell`}>
                     {isIllustrative(row) ? (

@@ -10,6 +10,7 @@ import { PriceLineChart } from "@/components/market/PriceLineChart";
 import { CampaignComparisonTable } from "@/components/markets/CampaignComparisonTable";
 import { MaybePercent } from "@/components/markets/cells";
 import { RelatedMarketsList } from "@/components/markets/RelatedMarketsList";
+import { stalenessNote } from "@/components/markets/StaleLabel";
 import {
   DataClassificationTag,
   SourceTypeTag,
@@ -64,7 +65,7 @@ export default async function MarketDetailPage({
   const row = await markets.getRow(code);
   if (!row) notFound();
 
-  const { series, latest, changes } = row;
+  const { series, latest, changes, staleness } = row;
   const kindMeta = KIND_META[series.kind];
   const source = getSource(series.sourceId);
   const sample = isIllustrative(row);
@@ -242,6 +243,14 @@ export default async function MarketDetailPage({
                 <p className="tnum mt-1 font-mono text-xs text-ink-soft">
                   Normalised {formatPrice(normalised)} {reference}
                   <span className="wt-label ml-1.5 text-ochre-deep">labelled</span>
+                </p>
+              ) : null}
+              {staleness ? (
+                <p
+                  role="note"
+                  className="mt-3 border-l-2 border-ochre pl-2.5 text-xs leading-relaxed text-pretty text-ochre-deep"
+                >
+                  {stalenessNote(staleness, latest.date)}
                 </p>
               ) : null}
               {series.perDegree && latest.perDegreeValue !== undefined ? (

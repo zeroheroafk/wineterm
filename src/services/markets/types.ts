@@ -171,6 +171,21 @@ export interface SeriesChanges {
   yoyPercent: number | null;
 }
 
+/** How often a series' observations arrive, read from their spacing. */
+export type SeriesCadence = "weekly" | "monthly";
+
+/**
+ * A real series whose latest observation is older than its cadence
+ * allows: no quotation for `days` days, against an allowance of
+ * `allowedDays`. Samples are never stale, since they stand still by
+ * design.
+ */
+export interface SeriesStaleness {
+  cadence: SeriesCadence;
+  days: number;
+  allowedDays: number;
+}
+
 /** A series joined with its latest observation and movements: one table row. */
 export interface MarketRow {
   series: MarketSeries;
@@ -178,6 +193,8 @@ export interface MarketRow {
   changes: SeriesChanges;
   /** Latest value in the reference unit; null when already published in it. */
   normalisedValue: number | null;
+  /** Set when the latest observation is overdue; null otherwise. */
+  staleness: SeriesStaleness | null;
 }
 
 /** Average price per campaign, for the detail page comparison. */

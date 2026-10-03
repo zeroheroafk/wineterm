@@ -10,6 +10,7 @@ import {
   TH_RIGHT,
 } from "@/components/markets/cells";
 import { SourceTypeTag, VerificationTag } from "@/components/markets/tags";
+import { StaleLabel } from "@/components/markets/StaleLabel";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { EmptyState } from "@/components/ui/states";
@@ -137,8 +138,13 @@ export function GrapePricesTable({ rows }: { rows: MarketRow[] }) {
               <td className={`${TD} hidden sm:table-cell`}>
                 <VerificationTag status={row.series.verification} />
               </td>
-              <td className={`${TD} tnum font-mono text-xs text-ink-soft`}>
+              <td className={`${TD} tnum font-mono text-xs ${row.staleness ? "text-ochre-deep" : "text-ink-soft"}`}>
                 {formatDate(row.latest.date)}
+                {row.staleness ? (
+                  <span className="ml-1.5 inline-block align-middle">
+                    <StaleLabel staleness={row.staleness} latestDate={row.latest.date} />
+                  </span>
+                ) : null}
               </td>
             </tr>
           ))}
