@@ -70,8 +70,8 @@ from the sitemap and marked noindex.
   Vercel builds use the project's production domain and local builds
   use `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
-  the Supabase project. With both set, the forms store briefing signups
-  and contact messages; `/trade` and the homepage trade panel show
+  the Supabase project. With both set, the forms store briefing signups,
+  price alert requests and contact messages; `/trade` and the homepage trade panel show
   Eurostat figures, the Markets pages, the homepage key prices and the
   market strip add MAPA's national wine prices to the illustrative series,
   the Markets pages add the Spanish and French regional prices, the
@@ -117,6 +117,12 @@ inserting form submissions, which it can never read back, and to reading
 market data. New tables get no grants by default, so each migration
 grants exactly what a table needs.
 
+Form submissions land in `newsletter_subscribers` (Weekly Briefing
+signups), `price_alerts` (a series page's request to hear of a new
+price, or of the price crossing a level) and `contact_messages`. Nothing
+is sent yet: delivery of the briefing and of the alerts starts with an
+e-mail provider at launch, and the rows stay `pending` until then.
+
 The trade pages do not page through `trade_flows`: the functions
 `trade_latest_month`, `trade_totals`, `trade_destinations`,
 `trade_top_flows` and `trade_monthly` aggregate it in the database and
@@ -135,6 +141,17 @@ Spain's rows of `supply_figures` the same way (tag `supply-data`).
 
 Real data providers that will replace the fixtures, with their coverage,
 access and licence status, are catalogued in `docs/data-sources.md`.
+
+### The Weekly Briefing
+
+The editions on `/insights/weekly-briefing`, the Insights card and the
+homepage's lead briefing are written from the price series by
+`src/services/briefing`: each edition is dated a Friday and reads the
+real bulk wine series as they stood that day, the national averages,
+the regional markets quoted in the week with the largest moves, and the
+monthly prices published during the week, composing the headline and
+the summary from those figures. Without real series the pages show the
+sample editions in `src/fixtures/insights.ts`, labelled as such.
 
 ### Imports
 

@@ -46,6 +46,7 @@ export type Database = {
       }
       import_runs: {
         Row: {
+          alerted_at: string | null
           dispatched_at: string | null
           error: string | null
           finished_at: string | null
@@ -61,6 +62,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          alerted_at?: string | null
           dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
@@ -76,6 +78,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          alerted_at?: string | null
           dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
@@ -286,6 +289,44 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      price_alerts: {
+        Row: {
+          condition: string
+          created_at: string
+          email: string
+          id: string
+          series_code: string
+          status: string
+          threshold: number | null
+        }
+        Insert: {
+          condition?: string
+          created_at?: string
+          email: string
+          id?: string
+          series_code: string
+          status?: string
+          threshold?: number | null
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          email?: string
+          id?: string
+          series_code?: string
+          status?: string
+          threshold?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_alerts_series_code_fkey"
+            columns: ["series_code"]
+            isOneToOne: false
+            referencedRelation: "market_series"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       sources: {
         Row: {

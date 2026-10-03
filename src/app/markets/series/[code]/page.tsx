@@ -9,6 +9,7 @@ import { ChartFrame } from "@/components/market/ChartFrame";
 import { PriceLineChart } from "@/components/market/PriceLineChart";
 import { CampaignComparisonTable } from "@/components/markets/CampaignComparisonTable";
 import { MaybePercent } from "@/components/markets/cells";
+import { PriceAlertForm } from "@/components/markets/PriceAlertForm";
 import { RelatedMarketsList } from "@/components/markets/RelatedMarketsList";
 import { stalenessNote } from "@/components/markets/StaleLabel";
 import {
@@ -348,6 +349,11 @@ export default async function MarketDetailPage({
               </dl>
             </div>
           </div>
+
+          {/* Samples take no alerts: nothing real would ever fire. */}
+          {sample ? null : (
+            <PriceAlertForm series={series} latestValue={latest.value} />
+          )}
 
           {related.length > 0 ? (
             <div>
