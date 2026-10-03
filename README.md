@@ -235,6 +235,36 @@ job only logs a warning. If legacy keys are ever disabled, redeploy the
 function with JWT verification off: it trusts only runs the database
 queued, not the caller.
 
+### Alerts
+
+The job `check-imports` runs `private.check_imports()` every morning at
+07:13 UTC, after the import jobs, and sends one message when something
+went wrong: a failed run not yet reported (unless a later run of the
+same source and scope succeeded), a run queued or running for more than
+a day, or a source without a successful run for longer than its schedule
+allows (`private.import_schedule`: five days for MAPA's weekly prices,
+nine for INFOVI and DRAAF, 35 for Comext), which catches a pg_cron job
+that stopped firing or missing Vault secrets. Each failed run is
+reported once (`import_runs.alerted_at`) and each silence once, until a
+success clears it. `select private.check_imports();` runs the check at
+once and returns the message, or null when there is nothing to report.
+
+Where the message goes is set in Vault, one or both:
+
+- `alert_webhook_url`: posted as JSON `{"text": ..., "content": ...}`,
+  which Slack and Discord incoming webhooks and most automation
+  services accept.
+- `resend_api_key` and `alert_email_to`: sent as an e-mail through
+  [Resend](https://resend.com), from `alert_email_from` when set and
+  from Resend's onboarding sender otherwise.
+
+Without either, the check only logs a warning in the Postgres logs.
+
+Migrations that drop objects (`drop_unused_trade_price_series`,
+`drop_unused_indexes`) cannot be applied through the Supabase MCP
+server, which waits for a confirmation that never arrives: apply them
+with the Supabase CLI or the SQL editor.
+
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise
 `import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie` and
