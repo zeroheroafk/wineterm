@@ -52,7 +52,9 @@ export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
             </>
           ) : null}
         </p>
-        <ArrowLink href={briefing.outlookHref}>Read the market outlook</ArrowLink>
+        <ArrowLink href={briefing.outlookHref}>
+          {briefing.outlookLabel ?? "Read the market outlook"}
+        </ArrowLink>
       </footer>
     </article>
   );

@@ -9,6 +9,7 @@ import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
+import { getBriefingService } from "@/services/briefing/service";
 import { getEditorialService } from "@/services/editorial";
 import { getOutlookService } from "@/services/outlook/service";
 
@@ -21,13 +22,17 @@ export const metadata: Metadata = {
 export default async function InsightsPage() {
   const editorial = getEditorialService();
   const outlook = getOutlookService();
-  const [edition, analysis, news, briefings] = await Promise.all([
+  const [edition, analysis, news, liveBriefing, sampleBriefings] = await Promise.all([
     outlook.getCurrentEdition(),
     editorial.getArticlesByKind("analysis", 4),
     editorial.getArticlesByKind("news", 5),
+    getBriefingService().getCurrentEdition(),
     editorial.getBriefingEditions(),
   ]);
-  const currentBriefing = briefings.find((b) => b.isCurrent) ?? briefings[0];
+  const currentBriefing =
+    liveBriefing ??
+    sampleBriefings.find((b) => b.isCurrent) ??
+    sampleBriefings[0];
 
   return (
     <Container className="pb-16">
@@ -41,7 +46,13 @@ export default async function InsightsPage() {
       />
 
       <div className="mt-8">
-        <DevContentNotice text="Development content: the Market Outlook and Weekly Briefing editions below are illustrative placeholders demonstrating the editorial format, not published reporting." />
+        <DevContentNotice
+          text={
+            liveBriefing
+              ? "Development content: the Market Outlook below is an illustrative placeholder demonstrating the editorial format, not published reporting. The Weekly Briefing is written from the price series."
+              : "Development content: the Market Outlook and Weekly Briefing editions below are illustrative placeholders demonstrating the editorial format, not published reporting."
+          }
+        />
       </div>
 
       <section className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">

@@ -24,6 +24,7 @@ import {
   stripPriceCodes,
   supplySnapshotText,
 } from "@/fixtures/home";
+import { getBriefingService } from "@/services/briefing/service";
 import { getEditorialService } from "@/services/editorial";
 import { getHarvestService } from "@/services/harvest/service";
 import {
@@ -358,6 +359,26 @@ class LiveHomeService extends FixtureHomeService {
       markets,
       keyPriceCodes.filter((_, index) => rows[index] !== null),
     );
+  }
+
+  /**
+   * The current Weekly Briefing, written from the real series: the
+   * national averages as the summary, the rest as the development. The
+   * sample while no real series exists.
+   */
+  async getLeadBriefing(): Promise<MarketBriefing> {
+    const edition = await getBriefingService().getCurrentEdition();
+    if (!edition) return super.getLeadBriefing();
+    const [summary, ...rest] = edition.summary.split(/(?<=\.) (?=Of the |New monthly )/);
+    return {
+      headline: edition.headline,
+      summary,
+      development: rest.join(" ") || undefined,
+      updatedAt: edition.date,
+      status: "final",
+      outlookHref: "/insights/weekly-briefing",
+      outlookLabel: "Read the weekly briefing",
+    };
   }
 
   async getMarketStrip(): Promise<StripQuote[]> {

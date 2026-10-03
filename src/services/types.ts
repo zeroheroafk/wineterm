@@ -283,6 +283,8 @@ export interface MarketBriefing {
   updatedAt: string;
   status: DataStatus;
   outlookHref: string;
+  /** Label of the closing link; "Read the market outlook" when unset. */
+  outlookLabel?: string;
 }
 
 /**

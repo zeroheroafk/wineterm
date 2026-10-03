@@ -174,8 +174,12 @@ function daysBetween(fromIso: string, toMs: number): number {
  * weeks still counts as weekly), or null for a history too short to
  * tell.
  */
-export function cadenceOf(history: SeriesObservation[]): SeriesCadence | null {
-  const recent = history.slice(-13);
+export function cadenceOf(
+  history: SeriesObservation[],
+  /** How many of the latest observations to read; the whole history with Infinity. */
+  window = 13,
+): SeriesCadence | null {
+  const recent = Number.isFinite(window) ? history.slice(-window) : history;
   if (recent.length < 2) return null;
   const gaps = recent
     .slice(1)
@@ -371,7 +375,7 @@ export function mergeCatalogues(
 }
 
 /** Every series, once per request: the imported ones, then the samples. */
-const loadCatalogue = cache(async (): Promise<CatalogueEntry[]> => {
+export const loadCatalogue = cache(async (): Promise<CatalogueEntry[]> => {
   const imported = getSupabase() ? await loadDatabaseCatalogue() : [];
   return mergeCatalogues(imported, fixtureCatalogue());
 });
