@@ -38,18 +38,16 @@ Status legend:
    declared balance on `/supply`, its stocks on `/supply/stocks` and the
    wine made since 1 August on `/supply/production`. Commercial reuse of
    both is allowed under Law 37/2007.
-4. **Portugal: IVV.** Monthly trade synthesis in Excel validated; the
-   production files are password-protected.
-5. **Harvest: official national forecasts. On `/harvest`.** Agreste,
+4. **Harvest: official national forecasts. On `/harvest`.** Agreste,
    IVV and MAPA's crop estimates, entered by hand from each release; the
    OIV world outlook still to add.
-6. **Gaps to cover with partners or desk estimates:** grape prices,
-   must and concentrate prices, and Portuguese bulk wine prices.
-7. **French regional bulk prices: DRAAF Occitanie. Imported.** Monthly
+5. **Gaps to cover with partners or desk estimates:** grape prices and
+   must and concentrate prices.
+6. **French regional bulk prices: DRAAF Occitanie. Imported.** Monthly
    prices of wine without GI and PGI wine by colour in
    Languedoc-Roussillon and Midi-Pyrénées since August 2023, refreshed
    weekly.
-8. **Bulk price estimates from trade: WineTerm. Computed.** Until
+7. **Bulk price estimates from trade: WineTerm. Computed.** Until
    reusable current prices exist for Portugal, France and Italy, the
    monthly average price of each country's bulk wine exports, from the
    Comext figures, is its national bulk price. See "WineTerm estimates
@@ -299,8 +297,9 @@ Status legend:
   frequency **to validate**. Link: [wine data](https://www.ivv.gov.pt/estatisticas/dados-do-vinho/).
 - **SIMA (GPP): not usable.** Its production market quotations do not
   include wine. Link: [regsima](https://regsima.gpp.pt/regsima/consulta/mercados?tm=8).
-- Portuguese bulk wine prices are therefore a **gap** until the IVV
-  reports are checked or a partner reports prices.
+- Portuguese bulk wine prices therefore stay WineTerm's estimate from
+  the trade figures. Portugal is not a focus market, so the IVV reports
+  are not on the list to check.
 
 ## Markets: grapes, must and concentrates
 
@@ -410,6 +409,8 @@ Status legend:
   password-protected, so they cannot be imported as published.
   Validated.
 - **Licence:** **to confirm**.
+- **Not pursued:** Portugal is not a focus market; its harvest forecast
+  stays on `/harvest` and its trade comes from Comext.
 - Link: [wine data](https://www.ivv.gov.pt/estatisticas/dados-do-vinho/).
 
 ## Trade
@@ -517,12 +518,11 @@ when a new release appears. Checked on 30 September 2026.
 3. Check the Agri-food prices' lag again every few months, and import
    France and Italy if they catch up.
 4. Read the licence pages still marked **to confirm** (Agri-food portal,
-   IVV, FranceAgriMer) and record the attribution text
-   in `sources` before importing from them.
+   FranceAgriMer) and record the attribution text in `sources` before
+   importing from them.
 5. Regional prices beyond Occitanie and Spain: France's other basins
    (FranceAgriMer, whose licence is still to confirm, or the other
    regional offices); Italy: ask the chambers of commerce for permission,
-   or wait for the Agri-food portal to catch up; Portugal: no regional
-   source found; ask the IVV.
+   or wait for the Agri-food portal to catch up.
 6. Ask the Bologna and Alessandria-Asti chambers of commerce for
    permission to republish their wine, must and grape prices.

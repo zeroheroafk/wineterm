@@ -35,8 +35,8 @@ export default function AboutPage() {
             </p>
             <p>
               Coverage starts with the professional European market, with
-              particularly deep coverage of Spain and Portugal and
-              comparative series for France and Italy. The platform is built
+              particularly deep coverage of Spain and comparative series for
+              France, Italy and Portugal. The platform is built
               for repeated working use by wineries, winegrowers,
               cooperatives, bulk buyers and sellers, brokers, bottlers,
               importers and exporters, industry suppliers and analysts.

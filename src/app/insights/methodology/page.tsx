@@ -107,8 +107,8 @@ export default function MethodologyPage() {
             WineTerm maintains price series for bulk wine, grapes, and must
             and concentrates; supply balances covering stocks, production,
             availability, use and trade; harvest field reporting; and customs
-            trade aggregates. Coverage starts with Spain and Portugal, with
-            comparative series for France and Italy.
+            trade aggregates. Coverage starts with Spain, with comparative
+            series for France, Italy and Portugal.
           </p>
           <p>
             Every observation carries its source, unit, observation date,
