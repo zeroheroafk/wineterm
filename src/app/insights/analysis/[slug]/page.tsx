@@ -7,7 +7,9 @@ import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
 import { ArrowLink } from "@/components/ui/ArrowLink";
+import { JsonLd } from "@/components/ui/JsonLd";
 import { formatDate } from "@/lib/format";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { getEditorialService } from "@/services/editorial";
 import type { ArticleDetail, CitationText } from "@/services/types";
 
@@ -32,6 +34,14 @@ export async function generateMetadata({
   return {
     title: article.headline,
     description: article.standfirst,
+    openGraph: {
+      type: "article",
+      title: article.headline,
+      description: article.standfirst,
+      publishedTime: article.publishedAt,
+      section: article.section,
+      authors: [SITE_NAME],
+    },
   };
 }
 
@@ -76,6 +86,21 @@ export default async function AnalysisArticlePage({
 
   return (
     <Container className="pb-16">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: article.headline,
+          description: article.standfirst,
+          articleSection: article.section,
+          datePublished: article.publishedAt,
+          inLanguage: "en-GB",
+          mainEntityOfPage: `${SITE_URL}${article.href}`,
+          image: `${SITE_URL}/opengraph-image`,
+          author: { "@id": `${SITE_URL}/#organization` },
+          publisher: { "@id": `${SITE_URL}/#organization` },
+        }}
+      />
       <Breadcrumbs
         items={[
           { label: "Insights", href: "/insights" },

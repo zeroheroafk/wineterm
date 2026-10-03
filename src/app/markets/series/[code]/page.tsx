@@ -19,8 +19,10 @@ import {
 import { TimeRangeControls } from "@/components/markets/TimeRangeControls";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { JsonLd } from "@/components/ui/JsonLd";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime, formatPrice } from "@/lib/format";
+import { SITE_URL } from "@/lib/site";
 import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
 import { getSource } from "@/services/markets/sources";
@@ -46,9 +48,11 @@ export async function generateMetadata({
   const { code } = await params;
   const series = await getMarketsService().getSeries(code);
   if (!series) return { title: "Market not found" };
+  const description = `${series.product}. ${series.region}, ${COUNTRY_NAMES[series.country]}. Price series in ${series.unit}.`;
   return {
     title: series.name,
-    description: `${series.product}. ${series.region}, ${COUNTRY_NAMES[series.country]}. Price series in ${series.unit}.`,
+    description,
+    openGraph: { title: series.name, description },
   };
 }
 
@@ -93,8 +97,36 @@ export default async function MarketDetailPage({
       ? null
       : Math.round(latest.value * UNIT_TO_REFERENCE[series.unit] * 100) / 100;
 
+  const fullHistory = await markets.getHistory(code, "max");
+
   return (
     <Container className="pb-16">
+      {/* Samples are not described as datasets: nothing should index
+          them as prices. */}
+      {sample ? null : (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Dataset",
+            name: series.name,
+            description: `${series.product}. ${series.methodology}`,
+            url: `${SITE_URL}/markets/series/${series.code}`,
+            identifier: series.code,
+            keywords: [kindMeta.label, COUNTRY_NAMES[series.country], series.region],
+            temporalCoverage: `${fullHistory[0]?.date ?? latest.date}/${latest.date}`,
+            spatialCoverage: `${series.region}, ${COUNTRY_NAMES[series.country]}`,
+            variableMeasured: `Price, ${series.unit}`,
+            creator: {
+              "@type": "Organization",
+              name: source.name,
+              ...(source.url ? { url: source.url } : {}),
+            },
+            publisher: { "@id": `${SITE_URL}/#organization` },
+            dateModified: latest.updatedAt,
+            isAccessibleForFree: true,
+          }}
+        />
+      )}
       <Breadcrumbs
         items={[
           { label: "Markets", href: "/markets" },

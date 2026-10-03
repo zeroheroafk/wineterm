@@ -84,9 +84,25 @@ from the sitemap and marked noindex.
   trade volumes missing litres. Without them, submissions are discarded
   and the reply says so, and trade and markets show only the illustrative
   fixtures.
-- `SITE_INDEXABLE`: set to `true` to let search engines index the site.
-  Until then every page is marked noindex, because most figures are
-  still illustrative fixtures.
+- `SITE_INDEXABLE`: set to `true` in the production environment to let
+  search engines index the site. Until then every page is marked
+  noindex, which keeps preview and development builds out of search
+  results.
+
+### Going live
+
+1. Add the domain to the Vercel project and set `SITE_URL` to it, so
+   the canonical links, the sitemap, the Open Graph images and the
+   structured data carry the public address.
+2. Set `SITE_INDEXABLE=true` for production only.
+3. Submit `/sitemap.xml` in Google Search Console.
+
+Every page has an Open Graph image: the site's own, and one per series
+page that shows the latest price (`opengraph-image.tsx` beside each
+route, rendered with `next/og`). Filtered views of the markets tables
+canonicalise to the unfiltered page. The layout carries Organization
+and WebSite structured data, analysis articles an Article record and
+real series pages a Dataset record; samples carry none.
 
 ## Database
 

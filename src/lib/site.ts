@@ -1,3 +1,8 @@
+export const SITE_NAME = "WineTerm";
+
+export const SITE_DESCRIPTION =
+  "Prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade.";
+
 /**
  * Canonical origin for absolute URLs: metadataBase, the sitemap and
  * robots.txt. SITE_URL sets it once the production domain exists; until
@@ -12,8 +17,8 @@ export const SITE_URL = (
 ).replace(/\/+$/, "");
 
 /**
- * Search engines may index the site only once SITE_INDEXABLE=true is set,
- * when real data has replaced the illustrative fixtures. Until then every
- * page carries noindex, so sample figures never surface in search results.
+ * Search engines may index the site only once SITE_INDEXABLE=true is set
+ * in the production environment. Until then every page carries noindex,
+ * so preview and development builds never surface in search results.
  */
 export const SITE_INDEXABLE = process.env.SITE_INDEXABLE === "true";
