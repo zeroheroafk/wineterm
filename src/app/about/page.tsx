@@ -100,8 +100,7 @@ export default function AboutPage() {
           <div className="border border-rule bg-paper px-5 py-4">
             <h2 className="wt-label text-wine">Get in touch</h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-              Data partnerships, directory listings, coverage suggestions or
-              corrections.
+              Data partnerships, coverage suggestions or corrections.
             </p>
             <div className="mt-3">
               <ButtonLink href="/contact" variant="secondary">

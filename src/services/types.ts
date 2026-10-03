@@ -190,11 +190,7 @@ export interface PriceSeries {
   updatedAt: string;
 }
 
-export type ArticleKind =
-  | "news"
-  | "analysis"
-  | "weekly-briefing"
-  | "monthly-report";
+export type ArticleKind = "news" | "analysis" | "weekly-briefing";
 
 export interface Article {
   /** Stable identifier, which is also the article's URL slug. */
@@ -391,54 +387,4 @@ export interface BriefingEdition {
   headline: string;
   summary: string;
   isCurrent: boolean;
-}
-
-/** One monthly market report. */
-export interface MonthlyReport {
-  id: string;
-  /** Display month, e.g. "July 2026". */
-  month: string;
-  title: string;
-  summary: string;
-  /** "scheduled" until report production launches. */
-  status: "scheduled" | "available";
-}
-
-/** Industry coverage topics, matching the Industry navigation. */
-export type IndustryTopic =
-  | "companies"
-  | "deals"
-  | "regulation"
-  | "technology"
-  | "packaging-logistics";
-
-export const INDUSTRY_TOPIC_LABELS: Record<IndustryTopic, string> = {
-  companies: "Companies",
-  deals: "Deals & Investments",
-  regulation: "Regulation",
-  technology: "Technology",
-  "packaging-logistics": "Packaging & Logistics",
-};
-
-/** One industry story, assigned to a coverage topic. */
-export interface IndustryStory {
-  id: string;
-  topic: IndustryTopic;
-  headline: string;
-  summary: string;
-  publishedAt: string;
-}
-
-/** A compact dated headline for the industry rail. */
-export interface IndustryItem {
-  id: string;
-  headline: string;
-  publishedAt: string;
-  href: string;
-}
-
-export interface IndustryDigest {
-  news: IndustryItem[];
-  deals: IndustryItem[];
-  regulation: IndustryItem[];
 }

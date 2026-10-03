@@ -28,6 +28,15 @@ const nextConfig: NextConfig = {
       { source: "/trade/bulk", destination: "/trade", permanent: true },
       { source: "/trade/bottled", destination: "/trade", permanent: true },
       { source: "/trade/sparkling", destination: "/trade", permanent: true },
+      // Sections removed until they have a source or an editorial plan.
+      { source: "/industry", destination: "/insights", permanent: false },
+      { source: "/industry/:topic", destination: "/insights", permanent: false },
+      { source: "/directory", destination: "/about", permanent: false },
+      {
+        source: "/insights/monthly-reports",
+        destination: "/insights",
+        permanent: false,
+      },
     ];
   },
 };

@@ -2,8 +2,10 @@
  * WineTerm information architecture.
  *
  * Single source of truth for the primary navigation, its secondary levels,
- * the footer and breadcrumbs. Routes exist here before their pages are
- * built so the shell is stable while sections come online.
+ * the footer and breadcrumbs. Every route listed here has a page behind
+ * it with real or clearly labelled sample content; sections without a
+ * data source or an editorial plan (industry coverage, the directory,
+ * monthly reports) were taken out rather than shown as placeholders.
  */
 
 export interface NavLeaf {
@@ -109,38 +111,6 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
-    label: "Industry",
-    href: "/industry",
-    code: "IND",
-    items: [
-      {
-        label: "Companies",
-        href: "/industry/companies",
-        description: "Wineries, cooperatives, bottlers and suppliers",
-      },
-      {
-        label: "Deals & Investments",
-        href: "/industry/deals",
-        description: "Transactions, capacity and consolidation",
-      },
-      {
-        label: "Regulation",
-        href: "/industry/regulation",
-        description: "EU and national rules affecting the sector",
-      },
-      {
-        label: "Technology",
-        href: "/industry/technology",
-        description: "Winemaking, vineyard and data technology",
-      },
-      {
-        label: "Packaging & Logistics",
-        href: "/industry/packaging-logistics",
-        description: "Glass, closures, flexitanks and freight",
-      },
-    ],
-  },
-  {
     label: "Insights",
     href: "/insights",
     code: "INS",
@@ -166,22 +136,11 @@ export const primaryNavigation: NavSection[] = [
         description: "The week in wine markets, every Friday",
       },
       {
-        label: "Monthly Reports",
-        href: "/insights/monthly-reports",
-        description: "Structured monthly market reviews",
-      },
-      {
         label: "Methodology",
         href: "/insights/methodology",
         description: "How WineTerm series are collected and defined",
       },
     ],
-  },
-  {
-    label: "Directory",
-    href: "/directory",
-    code: "DIR",
-    items: [],
   },
 ];
 
@@ -208,17 +167,7 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
       { label: "News", href: "/insights/news" },
       { label: "Analysis", href: "/insights/analysis" },
       { label: "Weekly Briefing", href: "/insights/weekly-briefing" },
-      { label: "Monthly Reports", href: "/insights/monthly-reports" },
       { label: "Methodology", href: "/insights/methodology" },
-    ],
-  },
-  {
-    heading: "Industry",
-    items: [
-      { label: "Companies", href: "/industry/companies" },
-      { label: "Deals & Investments", href: "/industry/deals" },
-      { label: "Regulation", href: "/industry/regulation" },
-      { label: "Directory", href: "/directory" },
     ],
   },
   {

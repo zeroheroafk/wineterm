@@ -60,30 +60,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: `${base}/insights/monthly-reports`,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
       url: `${base}/insights/methodology`,
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    { url: `${base}/industry`, changeFrequency: "daily", priority: 0.7 },
-    ...(
-      [
-        "companies",
-        "deals",
-        "regulation",
-        "technology",
-        "packaging-logistics",
-      ] as const
-    ).map((topic) => ({
-      url: `${base}/industry/${topic}`,
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    })),
-    { url: `${base}/directory`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/about`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/contact`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.3 },

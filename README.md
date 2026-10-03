@@ -19,7 +19,7 @@ Portugal first, comparative data for France and Italy).
 ```
 src/
   app/               Routes: home, Markets, Crop & Supply, Trade, Insights,
-                     Industry, Directory, institutional pages, /design-system
+                     institutional pages, /design-system
   components/
     layout/          Global shell: header, navigation, footer, breadcrumbs
     ui/              Section headers, buttons, filters, tabs, labels, states

@@ -11,7 +11,6 @@
 import type {
   DataSource,
   HarvestCondition,
-  IndustryDigest,
   MarketBriefing,
   StripQuote,
 } from "@/services/types";
@@ -124,54 +123,3 @@ export const harvestMonitorRegions: {
   { reportId: "hr-lan", condition: "mixed" },
   { reportId: "hr-pug", condition: "good" },
 ];
-
-export const industryDigest: IndustryDigest = {
-  news: [
-    {
-      id: "in-1",
-      headline: "Glass and dry goods costs stabilise after two volatile years",
-      publishedAt: "2026-08-20T10:00:00Z",
-      href: "/industry/packaging-logistics",
-    },
-    {
-      id: "in-2",
-      headline: "Flexitank availability improves on the main Atlantic routes",
-      publishedAt: "2026-08-19T09:00:00Z",
-      href: "/industry/packaging-logistics",
-    },
-    {
-      id: "in-3",
-      headline: "Vineyard labour costs keep rising across southern Europe",
-      publishedAt: "2026-08-18T08:00:00Z",
-      href: "/industry",
-    },
-  ],
-  deals: [
-    {
-      id: "id-1",
-      headline: "Cooperative consolidation continues across central Spain",
-      publishedAt: "2026-08-20T12:00:00Z",
-      href: "/industry/deals",
-    },
-    {
-      id: "id-2",
-      headline: "Bottling capacity investment shifts closer to export ports",
-      publishedAt: "2026-08-17T11:00:00Z",
-      href: "/industry/deals",
-    },
-  ],
-  regulation: [
-    {
-      id: "ir-1",
-      headline: "EU committee weighs crisis distillation criteria for 2026/27",
-      publishedAt: "2026-08-20T14:00:00Z",
-      href: "/industry/regulation",
-    },
-    {
-      id: "ir-2",
-      headline: "Vineyard planting authorisations under review in two regions",
-      publishedAt: "2026-08-16T09:00:00Z",
-      href: "/industry/regulation",
-    },
-  ],
-};

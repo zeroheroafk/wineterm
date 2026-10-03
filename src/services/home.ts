@@ -18,7 +18,6 @@ import {
   HOME_UPDATED_AT,
   ILLUSTRATIVE_PRICE_SOURCE,
   harvestMonitorRegions,
-  industryDigest,
   keyPriceCodes,
   leadBriefing,
   stripOtherQuotes,
@@ -52,7 +51,6 @@ import {
   type DataSource,
   type DataStatus,
   type HarvestRegion,
-  type IndustryDigest,
   type MarketBriefing,
   type PriceQuote,
   type PriceUnit,
@@ -72,7 +70,6 @@ export interface HomeService {
   /** The latest analysis with its full text, when one is published. */
   getLeadAnalysis(): Promise<ArticleDetail | null>;
   getSecondaryAnalysis(): Promise<Article[]>;
-  getIndustryDigest(): Promise<IndustryDigest>;
   /** When the key prices were last updated. */
   getLastUpdated(): Promise<string>;
 }
@@ -302,10 +299,6 @@ class FixtureHomeService implements HomeService {
   async getSecondaryAnalysis(): Promise<Article[]> {
     const latest = await getEditorialService().getArticlesByKind("analysis", 3);
     return latest.slice(1);
-  }
-
-  async getIndustryDigest(): Promise<IndustryDigest> {
-    return industryDigest;
   }
 
   async getLastUpdated(): Promise<string> {

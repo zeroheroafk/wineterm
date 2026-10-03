@@ -1,10 +1,6 @@
 import { ShareChart } from "@/components/charts/ShareChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
-import {
-  IndustryHeadlineList,
-  latestIndustryHeadlines,
-} from "@/components/editorial/IndustryHeadlineList";
 import { Container } from "@/components/layout/Container";
 import {
   HarvestMonitor,
@@ -27,9 +23,6 @@ import { getHomeService } from "@/services/home";
 // hourly.
 export const revalidate = 3600;
 
-/** Headlines in the industry rail; the Industry section carries the rest. */
-const INDUSTRY_HEADLINES = 5;
-
 export default async function Home() {
   const home = getHomeService();
   const [
@@ -41,7 +34,6 @@ export default async function Home() {
     trade,
     leadAnalysis,
     secondaryAnalysis,
-    digest,
     updatedAt,
   ] = await Promise.all([
     home.getMarketStrip(),
@@ -52,7 +44,6 @@ export default async function Home() {
     home.getTradeOverview(),
     home.getLeadAnalysis(),
     home.getSecondaryAnalysis(),
-    home.getIndustryDigest(),
     home.getLastUpdated(),
   ]);
 
@@ -121,11 +112,11 @@ export default async function Home() {
             variant="editorial"
             id="home-analysis"
             kicker="Insights"
-            title="Analysis and industry"
+            title="Analysis"
             action={{ label: "All analysis", href: "/insights/analysis" }}
           />
-          <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-0">
-            <div className="min-w-0 lg:pr-10">
+          <div className="mt-6">
+            <div className="min-w-0">
               {leadAnalysis ? (
                 <ArticlePreview
                   article={leadAnalysis}
@@ -152,23 +143,7 @@ export default async function Home() {
                 </div>
               ) : null}
             </div>
-            <aside
-              aria-labelledby="home-industry"
-              className="min-w-0 border-t border-rule pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8"
-            >
-              <IndustryHeadlineList
-                title="Industry news"
-                titleId="home-industry"
-                items={latestIndustryHeadlines(digest, INDUSTRY_HEADLINES)}
-                action={{ label: "All industry news", href: "/industry" }}
-              />
-            </aside>
           </div>
-          <p className="mt-6 text-[0.8125rem] leading-relaxed text-ink-soft">
-            Development content: the industry headlines above are illustrative
-            placeholders demonstrating the editorial format, not published
-            reporting.
-          </p>
         </section>
 
         <section aria-labelledby="home-supply" className="mt-14">

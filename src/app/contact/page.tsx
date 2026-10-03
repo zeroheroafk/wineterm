@@ -10,12 +10,11 @@ import { sendContactMessage } from "@/lib/actions";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contact WineTerm about data partnerships, directory listings, coverage suggestions or corrections.",
+    "Contact WineTerm about data partnerships, coverage suggestions or corrections.",
 };
 
 const SUBJECTS = [
   "Data partnership",
-  "Directory listing",
   "Coverage suggestion",
   "Correction",
   "Other",
@@ -28,7 +27,7 @@ export default function ContactPage() {
       <PageHeader
         kicker="WineTerm"
         title="Contact"
-        description="Data partnerships, directory listings, coverage suggestions and corrections. Messages reach the market desk directly."
+        description="Data partnerships, coverage suggestions and corrections. Messages reach the market desk directly."
       />
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -121,7 +120,7 @@ export default function ContactPage() {
             <h2 className="wt-label text-wine">What to expect</h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">
               The desk reads everything. Corrections are handled first, then
-              data partnerships and directory requests. During the
+              data partnerships. During the
               development period, responses may take a few days.
             </p>
           </div>

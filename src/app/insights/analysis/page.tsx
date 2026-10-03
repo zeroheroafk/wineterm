@@ -24,7 +24,7 @@ export default async function AnalysisPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={primaryNavigation[3]}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Analysis" },

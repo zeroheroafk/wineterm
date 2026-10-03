@@ -15,29 +15,28 @@ import { getOutlookService } from "@/services/outlook/service";
 export const metadata: Metadata = {
   title: "Insights",
   description:
-    "WineTerm editorial: the Market Outlook, analysis, news, the Weekly Briefing and monthly reports for the professional wine trade.",
+    "WineTerm editorial: the Market Outlook, analysis, news and the Weekly Briefing for the professional wine trade.",
 };
 
 export default async function InsightsPage() {
   const editorial = getEditorialService();
   const outlook = getOutlookService();
-  const [edition, analysis, news, briefings, reports] = await Promise.all([
+  const [edition, analysis, news, briefings] = await Promise.all([
     outlook.getCurrentEdition(),
     editorial.getArticlesByKind("analysis", 4),
     editorial.getArticlesByKind("news", 5),
     editorial.getBriefingEditions(),
-    editorial.getMonthlyReports(),
   ]);
   const currentBriefing = briefings.find((b) => b.isCurrent) ?? briefings[0];
 
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={primaryNavigation[3]}
         crumbs={[{ label: "Insights" }]}
         kicker="Insights"
         title="Insights"
-        description="Interpretation over the platform's data: the Market Outlook, analysis and news, the Weekly Briefing and monthly reports."
+        description="Interpretation over the platform's data: the Market Outlook, analysis and news, and the Weekly Briefing."
         activeHref="/insights"
       />
 
@@ -143,27 +142,6 @@ export default async function InsightsPage() {
                   No news published yet. Reporting starts at launch.
                 </p>
               )}
-            </div>
-
-            <div>
-              <SectionHeader
-                kicker="Reports"
-                title="Monthly reports"
-                action={{ label: "All reports", href: "/insights/monthly-reports" }}
-              />
-              <ul className="mt-5">
-                {reports.map((report) => (
-                  <li
-                    key={report.id}
-                    className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
-                  >
-                    <p className="text-sm font-medium text-ink">{report.title}</p>
-                    <p className="wt-label mt-1 text-ink-soft">
-                      Publishes at launch
-                    </p>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>
