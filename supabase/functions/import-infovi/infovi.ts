@@ -578,6 +578,6 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
         figure(measure, "wine", "white", "bulk", whiteBulk),
         figure(measure, "wine", "white", "packaged", whitePackaged),
       ]),
-    ...(own ?[figure("exits-own-operations", "wine", "all", "all", own.values[2])] : []),
+    ...(own ? [figure("exits-own-operations", "wine", "all", "all", own.values[2])] : []),
   ];
 }
