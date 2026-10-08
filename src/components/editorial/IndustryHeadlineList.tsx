@@ -2,30 +2,7 @@ import Link from "next/link";
 
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { formatDate } from "@/lib/format";
-import type { IndustryDigest, IndustryItem } from "@/services/types";
-
-export interface TopicIndustryItem extends IndustryItem {
-  /** Short topic name shown in the meta line, e.g. "Regulation". */
-  topic: string;
-}
-
-const DIGEST_TOPICS: { key: keyof IndustryDigest; topic: string }[] = [
-  { key: "news", topic: "News" },
-  { key: "deals", topic: "Deals" },
-  { key: "regulation", topic: "Regulation" },
-];
-
-/** The digest's groups merged into one list, newest first. */
-export function latestIndustryHeadlines(
-  digest: IndustryDigest,
-  limit: number,
-): TopicIndustryItem[] {
-  return DIGEST_TOPICS.flatMap(({ key, topic }) =>
-    digest[key].map((item) => ({ ...item, topic })),
-  )
-    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
-    .slice(0, limit);
-}
+import type { IndustryItem } from "@/services/types";
 
 /**
  * Compact dated headline list for the industry rail: one selective list
@@ -41,7 +18,7 @@ export function IndustryHeadlineList({
 }: {
   title: string;
   titleId: string;
-  items: TopicIndustryItem[];
+  items: IndustryItem[];
   action: { label: string; href: string };
 }) {
   return (

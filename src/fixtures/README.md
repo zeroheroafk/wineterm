@@ -13,7 +13,8 @@ the trade figures, is imported
 and Extremadura samples of wine without GI once MAPA's market prices
 are. The sample Market Outlook edition
 stays on the fixtures it was written against.
-Published articles are not fixtures: they live in `src/content`.
+Published articles, monthly reports and Industry stories are not
+fixtures: they live in `src/content`.
 
 Rules:
 

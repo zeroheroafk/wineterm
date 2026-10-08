@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { DevContentNotice } from "@/components/editorial/DevContentNotice";
 import { StoryList } from "@/components/editorial/StoryList";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
@@ -71,22 +70,19 @@ export default async function IndustryTopicPage({
         activeHref={`/industry/${key}`}
       />
 
-      <div className="mt-8">
-        <DevContentNotice />
-      </div>
-
       <div className="mt-8 max-w-3xl">
         <StoryList stories={stories} headingLevel={2} />
       </div>
 
       <p className="wt-label mt-8 max-w-3xl leading-relaxed text-ink-soft">
-        Coverage in this area expands at launch. For the market context
-        behind these stories, see the{" "}
+        Each story is WineTerm&apos;s summary of a report published
+        elsewhere, linked to its source. For the market figures behind
+        them, see the{" "}
         <Link
-          href="/outlook"
+          href="/insights/monthly-reports"
           className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
         >
-          Market Outlook
+          monthly reports
         </Link>
         .
       </p>

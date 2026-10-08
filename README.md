@@ -29,6 +29,7 @@ src/
   services/          Typed service layer: Supabase for trade and imported
                      prices, fixtures elsewhere
   content/           Published editorial content: the Insights articles
+                     and monthly reports, and the Industry stories
   fixtures/          Illustrative sample data only; see fixtures/README.md
 ```
 
@@ -44,8 +45,11 @@ Portugal, France and Italy: WineTerm's monthly estimate, the average
 price of the country's bulk exports, computed in the database from the
 Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
 month-end wine stocks and wine made since 1 August. Insights articles
-are published content in `src/content/articles`, one file per article,
-each read at `/insights/analysis/<id>`. Everything else
+and monthly reports are published content in `src/content/articles`,
+one file per article, read at `/insights/analysis/<id>` and
+`/insights/monthly-reports/<id>`. Industry stories, WineTerm's summaries
+of reports published elsewhere with a link to each, are in
+`src/content/industry.ts`. Everything else
 still uses the fixtures, and nothing
 in `src/fixtures` is real market data: every fixture observation carries
 the Illustrative status, which is how the site tells samples from real

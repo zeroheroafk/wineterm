@@ -429,13 +429,19 @@ export const INDUSTRY_TOPIC_LABELS: Record<IndustryTopic, string> = {
   "packaging-logistics": "Packaging & Logistics",
 };
 
-/** One industry story, assigned to a coverage topic. */
+/**
+ * One industry story, assigned to a coverage topic: WineTerm's own
+ * headline and summary of a report published elsewhere, which it links.
+ */
 export interface IndustryStory {
   id: string;
   topic: IndustryTopic;
   headline: string;
   summary: string;
+  /** When the source published the report, e.g. "2026-09-30". */
   publishedAt: string;
+  /** The publication that reported it, and the report's address. */
+  source: { name: string; url: string };
 }
 
 /** A compact dated headline for the industry rail. */
@@ -444,10 +450,6 @@ export interface IndustryItem {
   headline: string;
   publishedAt: string;
   href: string;
-}
-
-export interface IndustryDigest {
-  news: IndustryItem[];
-  deals: IndustryItem[];
-  regulation: IndustryItem[];
+  /** Short topic name shown in the meta line, e.g. "Regulation". */
+  topic: string;
 }
