@@ -2,18 +2,17 @@
  * Editorial content service.
  *
  * Typed interface, swappable for a CMS later. Serves the published
- * articles in src/content for the Insights section, and the Weekly
- * Briefing editions and monthly reports, which are still fixtures.
+ * articles and monthly reports in src/content for the Insights section,
+ * and the Weekly Briefing editions, which are still fixtures.
  */
 
 import { publishedArticles } from "@/content/articles";
-import { briefingEditions, monthlyReports } from "@/fixtures/insights";
+import { briefingEditions } from "@/fixtures/insights";
 import type {
   Article,
   ArticleDetail,
   ArticleKind,
   BriefingEdition,
-  MonthlyReport,
 } from "@/services/types";
 
 export interface EditorialService {
@@ -22,7 +21,6 @@ export interface EditorialService {
   /** One article with its full text, by id. */
   getArticle(id: string): Promise<ArticleDetail | null>;
   getBriefingEditions(): Promise<BriefingEdition[]>;
-  getMonthlyReports(): Promise<MonthlyReport[]>;
 }
 
 class StaticEditorialService implements EditorialService {
@@ -45,10 +43,6 @@ class StaticEditorialService implements EditorialService {
 
   async getBriefingEditions(): Promise<BriefingEdition[]> {
     return [...briefingEditions].sort((a, b) => b.date.localeCompare(a.date));
-  }
-
-  async getMonthlyReports(): Promise<MonthlyReport[]> {
-    return monthlyReports;
   }
 }
 

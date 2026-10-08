@@ -1,15 +1,15 @@
 /**
- * ILLUSTRATIVE FIXTURE DATA: Weekly Briefing editions and monthly reports
- * for the Insights section.
+ * ILLUSTRATIVE FIXTURE DATA: Weekly Briefing editions for the Insights
+ * section.
  *
  * Development placeholders demonstrating the editorial surfaces. None of
- * these briefings or reports is published journalism; pages that render
+ * these briefings is published journalism; pages that render
  * them carry a visible development-content notice. Headlines reference no
- * real company, transaction or person. Published articles live in
- * src/content. See src/fixtures/README.md.
+ * real company, transaction or person. Published articles and monthly
+ * reports live in src/content. See src/fixtures/README.md.
  */
 
-import type { BriefingEdition, MonthlyReport } from "@/services/types";
+import type { BriefingEdition } from "@/services/types";
 
 export const briefingEditions: BriefingEdition[] = [
   {
@@ -43,24 +43,5 @@ export const briefingEditions: BriefingEdition[] = [
     summary:
       "A closing review of 2025/26: what moved, what did not, and the positions the market carries into the new campaign.",
     isCurrent: false,
-  },
-];
-
-export const monthlyReports: MonthlyReport[] = [
-  {
-    id: "mr-2026-07",
-    month: "July 2026",
-    title: "Market Report, July 2026",
-    summary:
-      "Campaign closing review: prices by market and category, the supply balance as declared, trade by customs heading, and the setup for 2026/27.",
-    status: "scheduled",
-  },
-  {
-    id: "mr-2026-06",
-    month: "June 2026",
-    title: "Market Report, June 2026",
-    summary:
-      "Late-campaign conditions: stock coverage by country, export performance at eleven months, and early vineyard indicators for the coming harvest.",
-    status: "scheduled",
   },
 ];

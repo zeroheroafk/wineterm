@@ -26,7 +26,7 @@ export default async function InsightsPage() {
     editorial.getArticlesByKind("analysis", 4),
     editorial.getArticlesByKind("news", 5),
     editorial.getBriefingEditions(),
-    editorial.getMonthlyReports(),
+    editorial.getArticlesByKind("monthly-report", 3),
   ]);
   const currentBriefing = briefings.find((b) => b.isCurrent) ?? briefings[0];
 
@@ -157,9 +157,14 @@ export default async function InsightsPage() {
                     key={report.id}
                     className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
                   >
-                    <p className="text-sm font-medium text-ink">{report.title}</p>
+                    <Link
+                      href={report.href}
+                      className="text-sm font-medium text-ink hover:text-wine"
+                    >
+                      {report.headline}
+                    </Link>
                     <p className="wt-label mt-1 text-ink-soft">
-                      Publishes at launch
+                      <time dateTime={report.publishedAt}>{formatDate(report.publishedAt)}</time>
                     </p>
                   </li>
                 ))}

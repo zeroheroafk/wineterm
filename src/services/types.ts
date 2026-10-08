@@ -214,6 +214,8 @@ export type CitationText = string | { title: string };
 
 /** One paragraph of an article, with the sources it cites at its end. */
 export interface ArticleParagraph {
+  /** A subheading set before the paragraph, opening a section. */
+  heading?: string;
   text: string;
   /** Numbers of the sources cited, counting from 1. */
   cites?: number[];
@@ -247,11 +249,27 @@ export interface ArticleChart {
   afterParagraph: number;
 }
 
+/**
+ * A table of figures an article cites, set after one of its paragraphs.
+ * Cells are printed as written, so they carry their own units and signs.
+ */
+export interface ArticleTable {
+  title: string;
+  /** Headings of the figure columns, after the row labels'. */
+  columns: string[];
+  rows: { label: string; cells: string[] }[];
+  /** Numbers of the sources the figures come from, counting from 1. */
+  cites: number[];
+  /** The paragraph the table follows, counting from 0. */
+  afterParagraph: number;
+}
+
 /** A published article: its preview fields, full text and sources. */
 export interface ArticleDetail extends Article {
   body: ArticleParagraph[];
   sources: ArticleSource[];
   chart?: ArticleChart;
+  tables?: ArticleTable[];
 }
 
 /** A short dated commentary block attached to a market table. */
@@ -394,15 +412,6 @@ export interface BriefingEdition {
 }
 
 /** One monthly market report. */
-export interface MonthlyReport {
-  id: string;
-  /** Display month, e.g. "July 2026". */
-  month: string;
-  title: string;
-  summary: string;
-  /** "scheduled" until report production launches. */
-  status: "scheduled" | "available";
-}
 
 /** Industry coverage topics, matching the Industry navigation. */
 export type IndustryTopic =
