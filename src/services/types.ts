@@ -411,8 +411,6 @@ export interface BriefingEdition {
   isCurrent: boolean;
 }
 
-/** One monthly market report. */
-
 /** Industry coverage topics, matching the Industry navigation. */
 export type IndustryTopic =
   | "companies"
