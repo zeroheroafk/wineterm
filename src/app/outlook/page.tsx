@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
@@ -21,7 +22,7 @@ import { formatDate } from "@/lib/format";
 import { getIllustrativeHarvestService } from "@/services/harvest/service";
 import { getIllustrativeHomeService } from "@/services/home";
 import { getSource } from "@/services/markets/sources";
-import { getOutlookService } from "@/services/outlook/service";
+import { getOutlookService, OUTLOOK_PUBLISHED } from "@/services/outlook/service";
 import { getSupplyService } from "@/services/supply/service";
 import { getIllustrativeTradeService } from "@/services/trade/service";
 
@@ -50,6 +51,7 @@ const STANCE_STYLES = {
 } as const;
 
 export default async function OutlookPage() {
+  if (!OUTLOOK_PUBLISHED) notFound();
   const outlook = getOutlookService();
   const supply = getSupplyService();
   // The edition is an illustrative sample written against the fixtures,

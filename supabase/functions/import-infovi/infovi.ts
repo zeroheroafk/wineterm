@@ -5,8 +5,9 @@
  * tables of stocks at the end of the month (table 5), wine made from
  * 1 August to the end of the month (table 2.2), wine that came in during
  * the month from Spain and from other countries (tables 3.1 and 3.2) and
- * wine that went out, by destination (tables 4.0 and 4.6). No database
- * access here.
+ * wine that went out, by destination (tables 4.0 and 4.6), the exits
+ * abroad also by colour and presentation (tables 4.3 and 4.4). No
+ * database access here.
  */
 
 import * as XLSX from "npm:xlsx@0.18.5";
@@ -79,9 +80,9 @@ export interface Figure {
   /** Stocks on the last day of the month, wine made since 1 August, or a flow in the month. */
   measure: "closing-stocks" | "production-to-date" | Flow;
   product: "wine" | "must";
-  /** "all" for flows, which WineTerm reads as totals. */
+  /** "all" for the totals of flows; exits abroad also come by colour. */
   colour: "red-rose" | "white" | "all";
-  /** Bulk or packaged, for wine stocks; "all" where the table has no split. */
+  /** Bulk or packaged, for wine stocks and exits abroad; "all" for totals and where the table has no split. */
   presentation: "bulk" | "packaged" | "all";
   volume_hl: number;
 }
@@ -294,12 +295,14 @@ const CAMPAIGN_PRODUCTION_SHEET = /^2\s*[.,]\s*2\b/;
 const DOMESTIC_ENTRIES_SHEET = /^3\s*[.,]\s*1\b/;
 const FOREIGN_ENTRIES_SHEET = /^3\s*[.,]\s*2\b/;
 const EXITS_SHEET = /^4\s*\.\s*(?:resumen|salidas)\b/i;
+const EU_EXITS_SHEET = /^4\s*[.,]\s*3\b/;
+const THIRD_COUNTRY_EXITS_SHEET = /^4\s*[.,]\s*4\b/;
 const OWN_OPERATIONS_SHEET = /^4\s*[.,]\s*6\b/;
 
 /**
  * The national totals of a table of one month's flows, after checking
- * its title, its period and the headings above them. Null when the
- * workbook has no such table.
+ * its title, its period unless `period` is null, and the headings above
+ * them. Null when the workbook has no such table.
  */
 function flowTotals(
   workbook: XLSX.WorkBook,
@@ -307,13 +310,12 @@ function flowTotals(
   titlePattern: RegExp,
   headings: readonly (readonly [number, RegExp])[],
   table: string,
-  month: number,
-  year: number,
+  period: { month: number; year: number } | null,
 ): Totals | null {
   const rows = sheet(workbook, sheetPattern);
   if (!rows) return null;
   expectTitle(rows, titlePattern, table);
-  expectPeriod(rows, table, month, year);
+  if (period) expectPeriod(rows, table, period.month, period.year);
   const found = totals(rows, table);
   for (const [offset, pattern] of headings) {
     expectHeading(found, offset, pattern, table);
@@ -335,12 +337,15 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
       DOMESTIC_ENTRIES_SHEET,
       FOREIGN_ENTRIES_SHEET,
       EXITS_SHEET,
+      EU_EXITS_SHEET,
+      THIRD_COUNTRY_EXITS_SHEET,
       OWN_OPERATIONS_SHEET,
     ].some((p) => p.test(name.trim()))
   );
   const workbook = XLSX.read(data, { type: "array", sheets: wanted });
   const label = `${MONTHS[month - 1]} ${year}`;
   const period = `${year}-${String(month).padStart(2, "0")}-01`;
+  const dated = { month, year };
 
   // Table 5: wine by colour and presentation, then must that is not
   // concentrated, by colour, then the total of wine and, in most months,
@@ -439,8 +444,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
     /^cuadro 3\.1 entradas de vino procedentes de espana\b/,
     [...BY_COLOUR_AND_PRESENTATION, [5, /^total vino$/]],
     domesticTable,
-    month,
-    year,
+    dated,
   );
   if (!domestic) throw new Error(`The ${label} workbook has no table 3.1`);
   const domesticEntries = domestic.values[4];
@@ -461,8 +465,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
       [7, /^total entradas de vino$/],
     ],
     foreignTable,
-    month,
-    year,
+    dated,
   );
   if (!foreign) throw new Error(`The ${label} workbook has no table 3.2`);
   const [, , , , euEntries, thirdCountryEntries, foreignEntries] = foreign.values;
@@ -490,8 +493,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
       [7, /^total$/],
     ],
     exitsTable,
-    month,
-    year,
+    dated,
   );
   if (!exits) throw new Error(`The ${label} workbook has no table 4.0`);
   const [domesticExits, distillation, vinegar, withinSpain, euExits, thirdCountryExits, abroad] =
@@ -501,6 +503,44 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
   if (hasHeading(exits, 8, /^total salidas$/)) {
     expectSum([withinSpain, abroad], exits.values[7], exitsTable);
   }
+
+  // Tables 4.3 and 4.4: wine that went out to the rest of the EU and to
+  // third countries, by colour and presentation, then the total. Their
+  // titles are sometimes left over from the month before or misspelt
+  // ("pebrero 2019"), so the total must be table 4.0's instead.
+  const abroadByKind = (
+    sheetPattern: RegExp,
+    titlePattern: RegExp,
+    number: string,
+    total: number,
+  ): number[] => {
+    const table = `Table ${number} of ${label}`;
+    const found = flowTotals(
+      workbook,
+      sheetPattern,
+      titlePattern,
+      [...BY_COLOUR_AND_PRESENTATION, [5, /^total vino$/]],
+      table,
+      null,
+    );
+    if (!found) throw new Error(`The ${label} workbook has no table ${number}`);
+    const parts = found.values.slice(0, 4);
+    expectSum(parts, found.values[4], table);
+    expectSum(parts, total, `${table}, against table 4.0`);
+    return parts;
+  };
+  const euByKind = abroadByKind(
+    EU_EXITS_SHEET,
+    /^cuadro 4\.3\.? salidas de vino a paises de la ue\b/,
+    "4.3",
+    euExits,
+  );
+  const thirdCountriesByKind = abroadByKind(
+    THIRD_COUNTRY_EXITS_SHEET,
+    /^cuadro 4\.4\.? salidas de vino a terceros paises\b/,
+    "4.4",
+    thirdCountryExits,
+  );
 
   // Table 4.6: wine taken out for the declarants' own operations, red and
   // rosé, white, then the total. Published since July 2021, and missing
@@ -517,8 +557,7 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
       [3, /^total vino$/],
     ],
     ownTable,
-    month,
-    year,
+    dated,
   );
   if (own) expectSum(own.values.slice(0, 2), own.values[2], ownTable);
 
@@ -532,6 +571,13 @@ export function figures(file: ArrayBuffer, year: number, month: number): Figure[
     figure("exits-vinegar", "wine", "all", "all", vinegar),
     figure("exits-eu", "wine", "all", "all", euExits),
     figure("exits-third-countries", "wine", "all", "all", thirdCountryExits),
-    ...(own ? [figure("exits-own-operations", "wine", "all", "all", own.values[2])] : []),
+    ...([["exits-eu", euByKind], ["exits-third-countries", thirdCountriesByKind]] as const)
+      .flatMap(([measure, [redBulk, redPackaged, whiteBulk, whitePackaged]]) => [
+        figure(measure, "wine", "red-rose", "bulk", redBulk),
+        figure(measure, "wine", "red-rose", "packaged", redPackaged),
+        figure(measure, "wine", "white", "bulk", whiteBulk),
+        figure(measure, "wine", "white", "packaged", whitePackaged),
+      ]),
+    ...(own ?[figure("exits-own-operations", "wine", "all", "all", own.values[2])] : []),
   ];
 }

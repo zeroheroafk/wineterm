@@ -4,9 +4,9 @@ import Link from "next/link";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
+import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
-import { getOutlookService } from "@/services/outlook/service";
 
 export const metadata: Metadata = {
   title: "Analysis",
@@ -15,9 +15,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AnalysisPage() {
-  const [articles, edition] = await Promise.all([
-    getEditorialService().getArticlesByKind("analysis"),
-    getOutlookService().getCurrentEdition(),
+  const editorial = getEditorialService();
+  const [articles, [briefing]] = await Promise.all([
+    editorial.getArticlesByKind("analysis"),
+    editorial.getArticlesByKind("weekly-briefing", 1),
   ]);
   const [lead, ...rest] = articles;
 
@@ -53,26 +54,27 @@ export default async function AnalysisPage() {
           ) : null}
         </div>
         <aside>
-          <Link
-            href="/outlook"
-            className="group block border border-rule border-t-2 border-t-wine bg-paper px-5 py-4"
-          >
-            <p className="wt-label text-wine">
-              Market Outlook
-              <span aria-hidden="true" className="mx-2 text-rule">
-                &middot;
-              </span>
-              {edition.edition}
-            </p>
-            <p className="wt-headline mt-2 text-xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
-              {edition.headline}
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-              The desk&apos;s structured view over the next one to three
-              months, with the data each conclusion rests on.
-            </p>
-            <p className="wt-label mt-3 text-wine">Read the outlook &rarr;</p>
-          </Link>
+          {briefing ? (
+            <Link
+              href={briefing.href}
+              className="group block border border-rule border-t-2 border-t-wine bg-paper px-5 py-4"
+            >
+              <p className="wt-label text-wine">
+                Weekly Briefing
+                <span aria-hidden="true" className="mx-2 text-rule">
+                  &middot;
+                </span>
+                {formatDate(briefing.publishedAt)}
+              </p>
+              <p className="wt-headline mt-2 text-xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
+                {briefing.headline}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                {briefing.standfirst}
+              </p>
+              <p className="wt-label mt-3 text-wine">Read the briefing &rarr;</p>
+            </Link>
+          ) : null}
         </aside>
       </div>
     </Container>

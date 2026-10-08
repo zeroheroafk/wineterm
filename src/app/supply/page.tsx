@@ -8,6 +8,7 @@ import {
   SpainBalanceHistoryTable,
   SpainBalanceNotes,
   SpainBalanceTable,
+  SpainExitsAbroadTable,
 } from "@/components/supply/SpainBalanceTables";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -80,6 +81,23 @@ export default async function SupplyPage() {
                 included.
               </p>
             </div>
+          </div>
+        </section>
+      ) : null}
+
+      {spain?.latest.exitsAbroad ? (
+        <section id="spain-exits-abroad" className="mt-10 scroll-mt-6">
+          <SectionHeader
+            kicker="Spain"
+            title="Exits abroad, bulk and packaged"
+            description="The wine declarants sent to the rest of the EU and to third countries since 1 August, by presentation and colour, as declared to the Ministry of Agriculture. Customs statistics on the Trade page count every exporter, not only declarants."
+          />
+          <div className="mt-5 max-w-4xl">
+            <SpainExitsAbroadTable
+              latest={spain.latest}
+              lines={spain.latest.exitsAbroad}
+              previous={spain.previous}
+            />
           </div>
         </section>
       ) : null}

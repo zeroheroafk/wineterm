@@ -18,15 +18,14 @@ import {
   HOME_UPDATED_AT,
   ILLUSTRATIVE_PRICE_SOURCE,
   harvestMonitorRegions,
-  industryDigest,
   keyPriceCodes,
-  leadBriefing,
   stripOtherQuotes,
   stripPriceCodes,
   supplySnapshotText,
 } from "@/fixtures/home";
 import { getEditorialService } from "@/services/editorial";
 import { getHarvestService } from "@/services/harvest/service";
+import { getIndustryService } from "@/services/industry";
 import {
   getIllustrativeMarketsService,
   getMarketsService,
@@ -52,7 +51,8 @@ import {
   type DataSource,
   type DataStatus,
   type HarvestRegion,
-  type IndustryDigest,
+  INDUSTRY_TOPIC_LABELS,
+  type IndustryItem,
   type MarketBriefing,
   type PriceQuote,
   type PriceUnit,
@@ -63,7 +63,8 @@ import {
 
 export interface HomeService {
   getMarketStrip(): Promise<StripQuote[]>;
-  getLeadBriefing(): Promise<MarketBriefing>;
+  /** The latest Weekly Briefing, when one is published. */
+  getLeadBriefing(): Promise<MarketBriefing | null>;
   /** One price per real series, then the samples still shown. */
   getKeyPrices(): Promise<PriceQuote[]>;
   getSupplySnapshot(): Promise<SupplySnapshot>;
@@ -72,7 +73,8 @@ export interface HomeService {
   /** The latest analysis with its full text, when one is published. */
   getLeadAnalysis(): Promise<ArticleDetail | null>;
   getSecondaryAnalysis(): Promise<Article[]>;
-  getIndustryDigest(): Promise<IndustryDigest>;
+  /** The latest industry stories, each linked where its topic lists it. */
+  getIndustryHeadlines(limit: number): Promise<IndustryItem[]>;
   /** When the key prices were last updated. */
   getLastUpdated(): Promise<string>;
 }
@@ -247,8 +249,17 @@ class FixtureHomeService implements HomeService {
     );
   }
 
-  async getLeadBriefing(): Promise<MarketBriefing> {
-    return leadBriefing;
+  async getLeadBriefing(): Promise<MarketBriefing | null> {
+    const [latest] = await getEditorialService().getArticlesByKind("weekly-briefing", 1);
+    return latest
+      ? {
+          headline: latest.headline,
+          summary: latest.standfirst,
+          updatedAt: latest.publishedAt,
+          status: "final",
+          href: latest.href,
+        }
+      : null;
   }
 
   async getKeyPrices(): Promise<PriceQuote[]> {
@@ -304,8 +315,15 @@ class FixtureHomeService implements HomeService {
     return latest.slice(1);
   }
 
-  async getIndustryDigest(): Promise<IndustryDigest> {
-    return industryDigest;
+  async getIndustryHeadlines(limit: number): Promise<IndustryItem[]> {
+    const stories = await getIndustryService().getLatestStories(limit);
+    return stories.map((story) => ({
+      id: story.id,
+      headline: story.headline,
+      publishedAt: story.publishedAt,
+      href: `/industry/${story.topic}#${story.id}`,
+      topic: INDUSTRY_TOPIC_LABELS[story.topic],
+    }));
   }
 
   async getLastUpdated(): Promise<string> {

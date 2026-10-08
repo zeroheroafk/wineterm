@@ -1,10 +1,7 @@
 import { ShareChart } from "@/components/charts/ShareChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
-import {
-  IndustryHeadlineList,
-  latestIndustryHeadlines,
-} from "@/components/editorial/IndustryHeadlineList";
+import { IndustryHeadlineList } from "@/components/editorial/IndustryHeadlineList";
 import { Container } from "@/components/layout/Container";
 import {
   HarvestMonitor,
@@ -41,7 +38,7 @@ export default async function Home() {
     trade,
     leadAnalysis,
     secondaryAnalysis,
-    digest,
+    industry,
     updatedAt,
   ] = await Promise.all([
     home.getMarketStrip(),
@@ -52,7 +49,7 @@ export default async function Home() {
     home.getTradeOverview(),
     home.getLeadAnalysis(),
     home.getSecondaryAnalysis(),
-    home.getIndustryDigest(),
+    home.getIndustryHeadlines(INDUSTRY_HEADLINES),
     home.getLastUpdated(),
   ]);
 
@@ -92,7 +89,7 @@ export default async function Home() {
               </ButtonLink>
             </div>
           </div>
-          <LeadBriefing briefing={briefing} />
+          {briefing ? <LeadBriefing briefing={briefing} /> : null}
         </section>
 
         <section aria-labelledby="home-prices">
@@ -159,16 +156,11 @@ export default async function Home() {
               <IndustryHeadlineList
                 title="Industry news"
                 titleId="home-industry"
-                items={latestIndustryHeadlines(digest, INDUSTRY_HEADLINES)}
+                items={industry}
                 action={{ label: "All industry news", href: "/industry" }}
               />
             </aside>
           </div>
-          <p className="mt-6 text-[0.8125rem] leading-relaxed text-ink-soft">
-            Development content: the industry headlines above are illustrative
-            placeholders demonstrating the editorial format, not published
-            reporting.
-          </p>
         </section>
 
         <section aria-labelledby="home-supply" className="mt-14">

@@ -3,7 +3,8 @@
  * the Ministry of Agriculture's INFOVI summaries into
  * public.supply_figures: stocks of wine and must at the end of each month,
  * wine made since 1 August, and wine that came in or went out during the
- * month by origin and destination, national totals in hectolitres, from
+ * month by origin and destination, the exits abroad also by colour and
+ * presentation, national totals in hectolitres, from
  * the monthly workbooks of one year.
  *
  * The database decides what runs: private.start_infovi_imports() queues

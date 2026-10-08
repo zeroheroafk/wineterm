@@ -161,6 +161,14 @@ export interface CampaignProduction {
   totalMhl: number;
 }
 
+/** Wine of one colour and presentation that went out of Spain, Mhl. */
+export interface ExitsAbroadLine {
+  colour: "red-rose" | "white";
+  presentation: "bulk" | "packaged";
+  euMhl: number;
+  thirdCountriesMhl: number;
+}
+
 /**
  * Spain's wine balance from 1 August to the end of one month of a
  * campaign, as declared to the Ministry of Agriculture (INFOVI), Mhl.
@@ -187,6 +195,12 @@ export interface SpainCampaignBalance {
   exitsVinegarMhl: number;
   exitsEuMhl: number;
   exitsThirdCountriesMhl: number;
+  /**
+   * Exits to the rest of the EU and to third countries by colour, bulk
+   * then packaged; they add up to the two exits abroad. Null when a month
+   * of the period lacks the split.
+   */
+  exitsAbroad: ExitsAbroadLine[] | null;
   /**
    * Taken out for the declarants' own operations. Null when a month of
    * the period has no such table: the ministry publishes it since July

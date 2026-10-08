@@ -214,6 +214,8 @@ export type CitationText = string | { title: string };
 
 /** One paragraph of an article, with the sources it cites at its end. */
 export interface ArticleParagraph {
+  /** A subheading set before the paragraph, opening a section. */
+  heading?: string;
   text: string;
   /** Numbers of the sources cited, counting from 1. */
   cites?: number[];
@@ -247,11 +249,27 @@ export interface ArticleChart {
   afterParagraph: number;
 }
 
+/**
+ * A table of figures an article cites, set after one of its paragraphs.
+ * Cells are printed as written, so they carry their own units and signs.
+ */
+export interface ArticleTable {
+  title: string;
+  /** Headings of the figure columns, after the row labels'. */
+  columns: string[];
+  rows: { label: string; cells: string[] }[];
+  /** Numbers of the sources the figures come from, counting from 1. */
+  cites: number[];
+  /** The paragraph the table follows, counting from 0. */
+  afterParagraph: number;
+}
+
 /** A published article: its preview fields, full text and sources. */
 export interface ArticleDetail extends Article {
   body: ArticleParagraph[];
   sources: ArticleSource[];
   chart?: ArticleChart;
+  tables?: ArticleTable[];
 }
 
 /** A short dated commentary block attached to a market table. */
@@ -286,7 +304,8 @@ export interface MarketBriefing {
   development?: string;
   updatedAt: string;
   status: DataStatus;
-  outlookHref: string;
+  /** Where the full text is read. */
+  href: string;
 }
 
 /**
@@ -384,26 +403,6 @@ export interface TradeOverview {
   updatedAt: string;
 }
 
-/** One edition of the Weekly Briefing. */
-export interface BriefingEdition {
-  id: string;
-  date: string;
-  headline: string;
-  summary: string;
-  isCurrent: boolean;
-}
-
-/** One monthly market report. */
-export interface MonthlyReport {
-  id: string;
-  /** Display month, e.g. "July 2026". */
-  month: string;
-  title: string;
-  summary: string;
-  /** "scheduled" until report production launches. */
-  status: "scheduled" | "available";
-}
-
 /** Industry coverage topics, matching the Industry navigation. */
 export type IndustryTopic =
   | "companies"
@@ -420,13 +419,19 @@ export const INDUSTRY_TOPIC_LABELS: Record<IndustryTopic, string> = {
   "packaging-logistics": "Packaging & Logistics",
 };
 
-/** One industry story, assigned to a coverage topic. */
+/**
+ * One industry story, assigned to a coverage topic: WineTerm's own
+ * headline and summary of a report published elsewhere, which it links.
+ */
 export interface IndustryStory {
   id: string;
   topic: IndustryTopic;
   headline: string;
   summary: string;
+  /** When the source published the report, e.g. "2026-09-30". */
   publishedAt: string;
+  /** The publication that reported it, and the report's address. */
+  source: { name: string; url: string };
 }
 
 /** A compact dated headline for the industry rail. */
@@ -435,10 +440,6 @@ export interface IndustryItem {
   headline: string;
   publishedAt: string;
   href: string;
-}
-
-export interface IndustryDigest {
-  news: IndustryItem[];
-  deals: IndustryItem[];
-  regulation: IndustryItem[];
+  /** Short topic name shown in the meta line, e.g. "Regulation". */
+  topic: string;
 }

@@ -45,7 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/supply/stocks`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${base}/harvest`, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/trade`, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${base}/outlook`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/insights`, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/insights/news`, changeFrequency: "daily", priority: 0.7 },
     {

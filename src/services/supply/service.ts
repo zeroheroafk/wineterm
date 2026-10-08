@@ -205,7 +205,7 @@ class FixtureSupplyService implements SupplyService {
   }
 }
 
-type FigureRow = Database["public"]["Tables"]["supply_figures"]["Row"];
+export type FigureRow = Database["public"]["Tables"]["supply_figures"]["Row"];
 
 const INFOVI = "mapa-infovi";
 /** The Data API returns at most this many rows per request. */
@@ -262,15 +262,21 @@ function volume(
   return found.length > 0 ? found.reduce((sum, row) => sum + row.volume_hl, 0) : null;
 }
 
-/** Wine of one measure, hl, by month ("2026-07"): held at its end, or made up to it. */
+/**
+ * Wine of one measure, hl, by month ("2026-07"): held at its end, made up
+ * to it, or moved during it. A month's total, stored with colour and
+ * presentation "all", stands for its parts; without one the parts add up.
+ */
 function wineByMonth(rows: FigureRow[], measure: FigureRow["measure"]): Map<string, number> {
-  const byMonth = new Map<string, number>();
+  const parts = new Map<string, number>();
+  const totals = new Map<string, number>();
   for (const row of rows) {
     if (row.measure !== measure || row.product !== "wine") continue;
     const month = row.period.slice(0, 7);
+    const byMonth = row.colour === "all" && row.presentation === "all" ? totals : parts;
     byMonth.set(month, (byMonth.get(month) ?? 0) + row.volume_hl);
   }
-  return byMonth;
+  return new Map([...parts, ...totals]);
 }
 
 function wineStocksByMonth(rows: FigureRow[]): Map<string, number> {
@@ -333,8 +339,136 @@ const BALANCE_FLOWS = [
   "exits-third-countries",
 ] as const;
 
+/** Colours and presentations of the exits abroad, in display order. */
+const ABROAD_KINDS = [
+  ["red-rose", "bulk"],
+  ["white", "bulk"],
+  ["red-rose", "packaged"],
+  ["white", "packaged"],
+] as const;
+
 const SPAIN_METHODOLOGY =
   "Month-end stocks declared to the Ministry of Agriculture (INFOVI) by producers of 1,000 hl or more and by warehouse holders, published about six weeks after the month ends. Smaller producers do not declare monthly: at 31 July 2024 the annual declaration counted another 1.5 Mhl in their hands.";
+
+/**
+ * Spain's declared wine balance from its INFOVI figures: the latest
+ * campaign to date, the one before to the same month and the completed
+ * campaigns. Null until a campaign's entries and exits are all declared.
+ */
+export function spainBalance(rows: FigureRow[]): SpainBalance | null {
+  const stocks = wineStocksByMonth(rows);
+  const made = wineByMonth(rows, "production-to-date");
+  const flows = BALANCE_FLOWS.map((measure) => wineByMonth(rows, measure));
+  const ownOperations = wineByMonth(rows, "exits-own-operations");
+  const latestMonth = [...flows[0].keys()].sort().at(-1);
+  if (!latestMonth) return null;
+
+  // From 1 August to the end of `throughMonth`, or null unless the
+  // stocks at both ends and every month's entries and exits are declared.
+  const balance = (campaign: string, throughMonth: string): SpainCampaignBalance | null => {
+    const months = campaignMonths(campaign).filter((month) => month <= throughMonth);
+    const sum = (byMonth: Map<string, number>) =>
+      months.every((month) => byMonth.has(month))
+        ? months.reduce((total, month) => total + byMonth.get(month)!, 0)
+        : null;
+    const opening = stocks.get(`${campaign.slice(0, 4)}-07`);
+    const closing = stocks.get(throughMonth);
+    const madeToDate = made.get(throughMonth);
+    const sums = flows.map(sum);
+    if (
+      opening === undefined ||
+      closing === undefined ||
+      madeToDate === undefined ||
+      sums.includes(null)
+    ) {
+      return null;
+    }
+    const [
+      entriesDomestic,
+      entriesEu,
+      entriesThirdCountries,
+      exitsDomestic,
+      exitsDistillation,
+      exitsVinegar,
+      exitsEu,
+      exitsThirdCountries,
+    ] = sums as number[];
+    const own = sum(ownOperations);
+    const abroad = ABROAD_KINDS.map(([colour, presentation]) => {
+      const kind = (measure: FigureRow["measure"]) => {
+        const volumes = months.map((month) =>
+          volume(rows, month, { measure, product: "wine", colour, presentation })
+        );
+        return volumes.includes(null)
+          ? null
+          : (volumes as number[]).reduce((a, b) => a + b, 0);
+      };
+      return { colour, presentation, eu: kind("exits-eu"), thirdCountries: kind("exits-third-countries") };
+    });
+    const availability =
+      opening + madeToDate + entriesDomestic + entriesEu + entriesThirdCountries;
+    const exits =
+      exitsDomestic +
+      exitsDistillation +
+      exitsVinegar +
+      exitsEu +
+      exitsThirdCountries +
+      (own ?? 0);
+    const mhl = (hl: number) => hl / HL_PER_MHL;
+    return {
+      campaign,
+      throughMonth,
+      openingMhl: mhl(opening),
+      madeMhl: mhl(madeToDate),
+      entriesDomesticMhl: mhl(entriesDomestic),
+      entriesEuMhl: mhl(entriesEu),
+      entriesThirdCountriesMhl: mhl(entriesThirdCountries),
+      availabilityMhl: mhl(availability),
+      exitsDomesticMhl: mhl(exitsDomestic),
+      exitsDistillationMhl: mhl(exitsDistillation),
+      exitsVinegarMhl: mhl(exitsVinegar),
+      exitsEuMhl: mhl(exitsEu),
+      exitsThirdCountriesMhl: mhl(exitsThirdCountries),
+      exitsAbroad: abroad.every(({ eu, thirdCountries }) => eu !== null && thirdCountries !== null)
+        ? abroad.map(({ colour, presentation, eu, thirdCountries }) => ({
+            colour,
+            presentation,
+            euMhl: mhl(eu!),
+            thirdCountriesMhl: mhl(thirdCountries!),
+          }))
+        : null,
+      exitsOwnOperationsMhl: own === null ? null : mhl(own),
+      exitsMhl: mhl(exits),
+      computedClosingMhl: mhl(availability - exits),
+      closingMhl: mhl(closing),
+      unaccountedMhl: mhl(closing - (availability - exits)),
+      netDomesticExitsMhl: mhl(exitsDomestic - entriesDomestic),
+    };
+  };
+
+  const campaign = campaignOfMonth(latestMonth);
+  const latest = balance(campaign, latestMonth);
+  if (!latest) return null;
+  const history = [...flows[0].keys()]
+    .filter((month) => month.endsWith("-07"))
+    .sort((a, b) => b.localeCompare(a))
+    .map((july) => balance(campaignOfMonth(july), july))
+    .filter((row): row is SpainCampaignBalance => row !== null);
+  const latestRows = rows.filter(
+    (row) =>
+      row.period.startsWith(latestMonth) &&
+      (row.measure.startsWith("entries-") || row.measure.startsWith("exits-")),
+  );
+  return {
+    latestMonth,
+    latest,
+    previous: balance(campaignBefore(campaign), yearBefore(latestMonth)),
+    history,
+    sourceId: INFOVI,
+    publishedAt: latestRows.map((row) => row.published_at).sort().at(-1)!,
+    updatedAt: rows.map((row) => row.updated_at).sort().at(-1)!,
+  };
+}
 
 /** The fixtures, with Spain's stocks from INFOVI where they are imported. */
 class LiveSupplyService extends FixtureSupplyService {
@@ -480,100 +614,7 @@ class LiveSupplyService extends FixtureSupplyService {
   }
 
   async getSpainBalance(): Promise<SpainBalance | null> {
-    const rows = await spainFigures();
-    const stocks = wineStocksByMonth(rows);
-    const made = wineByMonth(rows, "production-to-date");
-    const flows = BALANCE_FLOWS.map((measure) => wineByMonth(rows, measure));
-    const ownOperations = wineByMonth(rows, "exits-own-operations");
-    const latestMonth = [...flows[0].keys()].sort().at(-1);
-    if (!latestMonth) return null;
-
-    // From 1 August to the end of `throughMonth`, or null unless the
-    // stocks at both ends and every month's entries and exits are declared.
-    const balance = (campaign: string, throughMonth: string): SpainCampaignBalance | null => {
-      const months = campaignMonths(campaign).filter((month) => month <= throughMonth);
-      const sum = (byMonth: Map<string, number>) =>
-        months.every((month) => byMonth.has(month))
-          ? months.reduce((total, month) => total + byMonth.get(month)!, 0)
-          : null;
-      const opening = stocks.get(`${campaign.slice(0, 4)}-07`);
-      const closing = stocks.get(throughMonth);
-      const madeToDate = made.get(throughMonth);
-      const sums = flows.map(sum);
-      if (
-        opening === undefined ||
-        closing === undefined ||
-        madeToDate === undefined ||
-        sums.includes(null)
-      ) {
-        return null;
-      }
-      const [
-        entriesDomestic,
-        entriesEu,
-        entriesThirdCountries,
-        exitsDomestic,
-        exitsDistillation,
-        exitsVinegar,
-        exitsEu,
-        exitsThirdCountries,
-      ] = sums as number[];
-      const own = sum(ownOperations);
-      const availability =
-        opening + madeToDate + entriesDomestic + entriesEu + entriesThirdCountries;
-      const exits =
-        exitsDomestic +
-        exitsDistillation +
-        exitsVinegar +
-        exitsEu +
-        exitsThirdCountries +
-        (own ?? 0);
-      const mhl = (hl: number) => hl / HL_PER_MHL;
-      return {
-        campaign,
-        throughMonth,
-        openingMhl: mhl(opening),
-        madeMhl: mhl(madeToDate),
-        entriesDomesticMhl: mhl(entriesDomestic),
-        entriesEuMhl: mhl(entriesEu),
-        entriesThirdCountriesMhl: mhl(entriesThirdCountries),
-        availabilityMhl: mhl(availability),
-        exitsDomesticMhl: mhl(exitsDomestic),
-        exitsDistillationMhl: mhl(exitsDistillation),
-        exitsVinegarMhl: mhl(exitsVinegar),
-        exitsEuMhl: mhl(exitsEu),
-        exitsThirdCountriesMhl: mhl(exitsThirdCountries),
-        exitsOwnOperationsMhl: own === null ? null : mhl(own),
-        exitsMhl: mhl(exits),
-        computedClosingMhl: mhl(availability - exits),
-        closingMhl: mhl(closing),
-        unaccountedMhl: mhl(closing - (availability - exits)),
-        netDomesticExitsMhl: mhl(exitsDomestic - entriesDomestic),
-      };
-    };
-
-    const campaign = campaignOfMonth(latestMonth);
-    const latest = balance(campaign, latestMonth);
-    if (!latest) return null;
-    const history = [...flows[0].keys()]
-      .filter((month) => month.endsWith("-07"))
-      .sort((a, b) => b.localeCompare(a))
-      .map((july) => balance(campaignOfMonth(july), july))
-      .filter((row): row is SpainCampaignBalance => row !== null);
-    const latestRows = rows.filter(
-      (row) =>
-        row.period.startsWith(latestMonth) &&
-        (row.measure.startsWith("entries-") || row.measure.startsWith("exits-")),
-    );
-    return {
-      latestMonth,
-      latest,
-      previous: balance(campaignBefore(campaign), yearBefore(latestMonth)),
-      history,
-      sourceId: INFOVI,
-      publishedAt: latestRows.map((row) => row.published_at).sort().at(-1)!,
-      updatedAt: rows.map((row) => row.updated_at).sort().at(-1)!,
-    };
+    return spainBalance(await spainFigures());
   }
 }
 

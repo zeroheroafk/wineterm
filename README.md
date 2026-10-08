@@ -29,6 +29,7 @@ src/
   services/          Typed service layer: Supabase for trade and imported
                      prices, fixtures elsewhere
   content/           Published editorial content: the Insights articles
+                     and monthly reports, and the Industry stories
   fixtures/          Illustrative sample data only; see fixtures/README.md
 ```
 
@@ -44,8 +45,11 @@ Portugal, France and Italy: WineTerm's monthly estimate, the average
 price of the country's bulk exports, computed in the database from the
 Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
 month-end wine stocks and wine made since 1 August. Insights articles
-are published content in `src/content/articles`, one file per article,
-each read at `/insights/analysis/<id>`. Everything else
+and monthly reports are published content in `src/content/articles`,
+one file per article, read at `/insights/analysis/<id>` and
+`/insights/monthly-reports/<id>`. Industry stories, WineTerm's summaries
+of reports published elsewhere with a link to each, are in
+`src/content/industry.ts`. Everything else
 still uses the fixtures, and nothing
 in `src/fixtures` is real market data: every fixture observation carries
 the Illustrative status, which is how the site tells samples from real
@@ -59,6 +63,10 @@ npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
 npm run build      # production build
 ```
+
+The Market Outlook (`/outlook`) is withheld until a real edition is
+written: its only edition is a sample, so the page answers 404 and no
+page links it (`OUTLOOK_PUBLISHED` in `src/services/outlook/service.ts`).
 
 `/design-system` documents the tokens and component set. It is excluded
 from the sitemap and marked noindex.
@@ -215,13 +223,15 @@ outcome on the run.
   stocks at the end of each month by colour, bulk and packaged, stocks of
   must that is not concentrated, wine made since 1 August, and the wine
   that came in during the month from Spain and from abroad and went out
-  by destination, national totals in hectolitres. They cover producers of
+  by destination, with the exits abroad also by colour, bulk and
+  packaged, national totals in hectolitres. They cover producers of
   1,000 hl or more and warehouse holders. The ministry publishes a
   workbook per month, from 2018, about six weeks after the month ends;
   `infovi.ts` finds each by its link label on the year's page, anchors on
-  the TOTAL row of tables 5, 2.2, 3.1, 3.2, 4.0 and 4.6, checks each
-  table's title and the headings above its totals, and that the parts add
-  up to the printed totals. September 2018's entries and exits are
+  the TOTAL row of tables 5, 2.2, 3.1, 3.2, 4.0, 4.3, 4.4 and 4.6, checks
+  each table's title and the headings above its totals, and that the parts
+  add up to the printed totals. A stored total with colour and
+  presentation `all` stands for its parts, which are stored beside it. September 2018's entries and exits are
   skipped, because that month's tables contradict one another. A run
   covers one year; the job `import-infovi` starts the
   current year every Monday, and the previous one until mid-March. For a

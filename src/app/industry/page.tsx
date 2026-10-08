@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { DevContentNotice } from "@/components/editorial/DevContentNotice";
 import { StoryList } from "@/components/editorial/StoryList";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
@@ -53,10 +52,6 @@ export default async function IndustryPage() {
         activeHref="/industry"
       />
 
-      <div className="mt-8">
-        <DevContentNotice />
-      </div>
-
       <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <div>
           <SectionHeader kicker="Latest" title="Latest coverage" />
@@ -92,6 +87,10 @@ export default async function IndustryPage() {
             ))}
           </ul>
           <p className="wt-label mt-4 leading-relaxed text-ink-soft">
+            Each story is WineTerm&apos;s summary of a report published
+            elsewhere, linked to its source.
+          </p>
+          <p className="wt-label mt-3 leading-relaxed text-ink-soft">
             Company profiles and the professional directory open with the
             Directory section at launch.
           </p>

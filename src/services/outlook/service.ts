@@ -18,6 +18,13 @@ class FixtureOutlookService implements OutlookService {
 
 let service: OutlookService | null = null;
 
+/**
+ * Whether /outlook is served. The only edition is a sample written against
+ * the fixtures, so the page is withheld, and no page links it, until a real
+ * edition is written.
+ */
+export const OUTLOOK_PUBLISHED = false;
+
 export function getOutlookService(): OutlookService {
   service ??= new FixtureOutlookService();
   return service;
