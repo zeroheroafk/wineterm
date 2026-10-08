@@ -65,8 +65,8 @@ Status legend:
     and Valencia, plus Rioja DOP and Rueda DOP.
   - France has 8 series.
   - On 30 September 2026 the newest week ended on 6 July 2025 for Spain
-    and Italy and on 2 November 2025 for France. There are gaps in
-    2020/21.
+    and Italy and on 2 November 2025 for France, and still did on
+    8 October 2026. There are gaps in 2020/21.
 - **Access:** `GET https://api.tech.ec.europa.eu/agrifood/api/wine/prices`
   with `memberStateCodes` (e.g. `ES,FR`), `weeks` (week 1 is the first
   week of August) or `beginDate`/`endDate` (`dd/mm/yyyy`). Validated.
@@ -76,8 +76,15 @@ Status legend:
     `description`, `unit` and `price`. `price` is a string such as
     `"€47.78"`, the unit reads `"Euro / HL."` and dates are
     `dd/mm/yyyy`, so each field needs parsing.
-- **Licence:** European Commission reuse policy. **Licence to confirm**
-  on the portal.
+- **Licence:** the portal states none of its own; its footer links the
+  Commission's legal notice, read on 8 October 2026: "content owned by
+  the EU on this website is licensed under the Creative Commons
+  Attribution 4.0 International (CC BY 4.0) licence. This means that
+  reuse is allowed, provided appropriate credit is given and changes are
+  indicated." The prices are the member states' notifications, and
+  whether they count as content owned by the EU is not stated, so credit
+  "European Union, Agri-food Data Portal (DG AGRI)" and the notifying
+  member state, and note any conversion.
 - **Feeds:** `market_series` and `market_observations` for ES, FR and IT
   reference wines, source classification `official`, if the lag is
   acceptable.
@@ -280,7 +287,19 @@ Status legend:
   Excel and weekly bulk market summaries. Confirmed from the site.
 - **Not usable automatically:** requests from Supabase end in a redirect
   loop, so VISIONet cannot be read by a scheduled job as it stands.
-- **Licence:** **to confirm**.
+- **Weekly bulk market report** ("Marché à la P°", PDF): a slide export
+  of about 30 pages with Vin de France prices by variety (rosé EUR 80.11
+  and Merlot red EUR 75.29/hl in week 31 of 2025/26); the regional
+  charts are images, so only one page reads as text. The monthly
+  "Note de conjoncture" is mostly images too.
+- **Licence: conflicting.** The legal notice, read on 8 October 2026,
+  puts information under the Licence Ouverte, commercial reuse included,
+  only where the logo or the words "LICENCE OUVERTE" appear on the page
+  or the document's last page, and warns that without them it may not be
+  reusable; the site's footer says every text is under etalab-2.0 unless
+  stated otherwise. The PDFs checked carry no licence mark. Attribution
+  under the licence: source and date of last update. Ask FranceAgriMer
+  (prada@franceagrimer.fr) before importing.
 - Links: [VISIONet](https://visionet.franceagrimer.fr/),
   [wine quotations](https://www.franceagrimer.fr/filieres-Vin-et-cidre/Vin/Eclairer/Outils/VISIO-Donnees-en-ligne/Cotations).
 
@@ -293,14 +312,51 @@ Status legend:
   licence. Italian prices come from the Agri-food portal meanwhile.
 - Link: [wine prices](https://www.ismeamercati.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/954).
 
-### Portugal: IVV and SIMA
+### France: other regions and interprofessions
 
-- **IVV** publishes sectoral price reports for still wines; format and
-  frequency **to validate**. Link: [wine data](https://www.ivv.gov.pt/estatisticas/dados-do-vinho/).
+Checked on 8 October 2026; the regional offices' sites
+(`*.agriculture.gouv.fr`) refused connections from the development
+environment, so what follows rests on their pages as indexed.
+
+- **Inter Rhône (Côtes du Rhône): not usable.** Weekly transaction
+  pages and a monthly bulletin, current, published as images; the legal
+  notice reserves the site for "un usage strictement personnel" and
+  forbids use of its data "à des fins commerciales". Link:
+  [weekly transactions](https://www.syndicat-cotesdurhone.com/liste-articles/transactions-hebdomadaires).
+- **DRAAF Bourgogne-Franche-Comté:** a monthly PDF of the economic
+  situation with bulk PDO volumes, price changes by appellation in
+  percent and an index of bulk PDO prices (January 2010 = 100), from the
+  BIVB; no prices in EUR/hl. **To validate.**
+- **CIVB (Bordeaux):** reported to have suspended its bulk quotations;
+  no current series found. **InterLoire, CIVP:** no public bulk price
+  series found. The other regional offices (Nouvelle-Aquitaine, PACA,
+  Auvergne-Rhône-Alpes, Grand Est, Centre-Val de Loire): no current bulk
+  price series found. All **to validate** once their sites can be read.
+
+### Portugal: IVV, INE and SIMA
+
+- **IVV: no market price series.** Checked on 8 October 2026: its only
+  price file is an annual series of 2000 to 2006 ("Evolução do Preço de
+  Vinhos e Aguardentes"); the "Relatório de Análise Setorial 01" of
+  30 June 2026 gives 2025 export unit values (bulk over 10 l: EUR 0.79/l;
+  bulk without PDO/PGI EUR 0.77/l). The monthly "Síntese Estatística"
+  workbook (July 2026, no password) has, in sheet 18, the average price
+  of exports of wine without PDO/PGI over 10 l by colour and EU or
+  non-EU destination, cumulative from January (EUR 0.87/l in January to
+  July 2026); its figures are INE's. That is an export unit value like
+  WineTerm's estimate from Comext, not a market price.
+- **IVV licence: none published.** The site has no terms of use or
+  reuse page, only "© 2026 Instituto da Vinha e do Vinho, I.P.". Ask the
+  IVV in writing before importing.
+- **INE, agricultural producer price index** (indicator 0014466, JSON
+  API, monthly from January 2020, June 2026 the latest): lines for wine
+  and for wine without PDO/PGI, an index (2020 = 100), not a price;
+  listed under CC BY on dados.gov.pt. Link:
+  [indicator](https://www.ine.pt/ine/json_indicador/pindicaMeta.jsp?varcd=0014466&lang=PT).
 - **SIMA (GPP): not usable.** Its production market quotations do not
   include wine. Link: [regsima](https://regsima.gpp.pt/regsima/consulta/mercados?tm=8).
-- Portuguese bulk wine prices are therefore a **gap** until the IVV
-  reports are checked or a partner reports prices.
+- Portuguese bulk wine prices therefore remain a **gap**; WineTerm's
+  monthly estimate from Comext stands for them.
 
 ## Markets: grapes, must and concentrates
 
@@ -420,7 +476,7 @@ Status legend:
   is a trade report. The production and stock workbooks (xls) are
   password-protected, so they cannot be imported as published.
   Validated.
-- **Licence:** **to confirm**.
+- **Licence:** none published; see "Portugal: IVV, INE and SIMA" above.
 - Link: [wine data](https://www.ivv.gov.pt/estatisticas/dados-do-vinho/).
 
 ## Trade
@@ -525,13 +581,13 @@ when a new release appears. Checked on 30 September 2026.
    November.
 2. Check the Agri-food prices' lag again every few months, and import
    France and Italy if they catch up.
-3. Read the licence pages still marked **to confirm** (Agri-food portal,
-   IVV, FranceAgriMer) and record the attribution text
-   in `sources` before importing from them.
+3. Ask FranceAgriMer and the IVV in writing for permission to republish
+   their figures: FranceAgriMer's licence depends on a mark its wine
+   documents lack, and the IVV publishes no terms.
 4. Regional prices beyond Occitanie and Spain: France's other basins
-   (FranceAgriMer, whose licence is still to confirm, or the other
-   regional offices); Italy: ask the chambers of commerce for permission,
-   or wait for the Agri-food portal to catch up; Portugal: no regional
-   source found; ask the IVV.
+   (FranceAgriMer, once it allows reuse; the other regional offices'
+   sites could not be read on 8 October 2026); Italy: ask the chambers
+   of commerce for permission, or wait for the Agri-food portal to catch
+   up; Portugal: no regional source exists.
 5. Ask the Bologna and Alessandria-Asti chambers of commerce for
    permission to republish their wine, must and grape prices.
