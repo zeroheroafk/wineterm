@@ -346,7 +346,10 @@ Status legend:
   EU and to third countries (table 4.0) or for the declarants' own
   operations (table 4.6, published since July 2021 and missing for March
   2022), as totals with colour and presentation `all`. 1,700 figures,
-  January 2018 to July 2026.
+  January 2018 to July 2026. Since 8 October 2026 also the exits to the
+  rest of the EU and to third countries by colour and presentation
+  (tables 4.3 and 4.4), stored beside their totals; a month's total
+  stands for its parts, which add up to it.
 - **Access:** one xlsx workbook per month with 12 or 13 sheets, listed on
   one page per year: `vitivinicultura/infovi_2018` to `infovi_2024`, then
   `vitivinicultura/datos_infovi_anteriores/infovi_2025` and `infovi_2026`;
@@ -363,7 +366,9 @@ Status legend:
   table 2.2, and their table 2.1 covers the same period; November 2018
   carries tables 3 and 4 twice, identical; sheet names and titles vary
   ("3,1. ENTRADAS España", "cuadro 4. salidas" or "cuadro 4.0 salidas",
-  "septiembre - 2023"). The import anchors on the TOTAL row, checks each
+  "septiembre - 2023"); table 4.3 of June 2018 is titled May, and table
+  4.4 of February 2019 reads "pebrero", so tables 4.3 and 4.4 are dated
+  by their totals, which must equal table 4.0's. The import anchors on the TOTAL row, checks each
   table's title and the headings above its totals and that the parts add
   up to the printed totals, and dates each workbook by table 5's title.
 - **September 2018 is inconsistent:** its summary of exits (table 4.0)
@@ -378,6 +383,10 @@ Status legend:
   1,000 hl or more plus warehouse holders in the annual stock declaration
   (29,622,887 hl). July 2026's entries and exits match the report's
   tables 3.1, 3.2, 4.0 and 4.6 to the hectolitre (exits 4,230,678 hl).
+  On 8 October 2026 all 104 workbooks to August 2026 read again with
+  tables 4.3 and 4.4: in every month with flows their parts add up to
+  table 4.0's exits to the EU and to third countries. August 2026: 0.75
+  Mhl to the EU and 0.32 Mhl to third countries, 60% of it bulk.
   Opening stocks plus wine made plus entries minus exits land within 0.2%
   of the declared closing stocks in most months since July 2021, and
   within 0.9% in every one (July 2026: 1,485 hl apart); before, when own
@@ -397,7 +406,9 @@ Status legend:
   must is not in table 2.2, so the totals sit below Spain's headline
   production of wine and must. On `/supply`, Spain's declared balance:
   the latest campaign to date against the one before to the same month,
-  and the completed campaigns from 2019/20.
+  and the completed campaigns from 2019/20, then the exits abroad by
+  presentation and colour, and bulk wine's share of them by campaign
+  (59.8 to 61.9% from 2019/20 to 2025/26).
 - Links: [INFOVI 2024](https://www.mapa.gob.es/es/agricultura/temas/producciones-agricolas/vitivinicultura/infovi_2024),
   [wine balance](https://www.mapa.gob.es/es/estadistica/temas/estadisticas-agrarias/agricultura/balance-del-vino).
 
@@ -512,17 +523,15 @@ when a new release appears. Checked on 30 September 2026.
    estimates, MAPA's wine and must once the harvest is in, Italy's
    results in mid-November and the OIV's world estimate in October or
    November.
-2. Split Spain's exits to other countries into bulk and packaged, by
-   colour, from INFOVI tables 4.3 and 4.4.
-3. Check the Agri-food prices' lag again every few months, and import
+2. Check the Agri-food prices' lag again every few months, and import
    France and Italy if they catch up.
-4. Read the licence pages still marked **to confirm** (Agri-food portal,
+3. Read the licence pages still marked **to confirm** (Agri-food portal,
    IVV, FranceAgriMer) and record the attribution text
    in `sources` before importing from them.
-5. Regional prices beyond Occitanie and Spain: France's other basins
+4. Regional prices beyond Occitanie and Spain: France's other basins
    (FranceAgriMer, whose licence is still to confirm, or the other
    regional offices); Italy: ask the chambers of commerce for permission,
    or wait for the Agri-food portal to catch up; Portugal: no regional
    source found; ask the IVV.
-6. Ask the Bologna and Alessandria-Asti chambers of commerce for
+5. Ask the Bologna and Alessandria-Asti chambers of commerce for
    permission to republish their wine, must and grape prices.

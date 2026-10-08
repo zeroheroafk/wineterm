@@ -215,13 +215,15 @@ outcome on the run.
   stocks at the end of each month by colour, bulk and packaged, stocks of
   must that is not concentrated, wine made since 1 August, and the wine
   that came in during the month from Spain and from abroad and went out
-  by destination, national totals in hectolitres. They cover producers of
+  by destination, with the exits abroad also by colour, bulk and
+  packaged, national totals in hectolitres. They cover producers of
   1,000 hl or more and warehouse holders. The ministry publishes a
   workbook per month, from 2018, about six weeks after the month ends;
   `infovi.ts` finds each by its link label on the year's page, anchors on
-  the TOTAL row of tables 5, 2.2, 3.1, 3.2, 4.0 and 4.6, checks each
-  table's title and the headings above its totals, and that the parts add
-  up to the printed totals. September 2018's entries and exits are
+  the TOTAL row of tables 5, 2.2, 3.1, 3.2, 4.0, 4.3, 4.4 and 4.6, checks
+  each table's title and the headings above its totals, and that the parts
+  add up to the printed totals. A stored total with colour and
+  presentation `all` stands for its parts, which are stored beside it. September 2018's entries and exits are
   skipped, because that month's tables contradict one another. A run
   covers one year; the job `import-infovi` starts the
   current year every Monday, and the previous one until mid-March. For a
