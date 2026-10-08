@@ -89,7 +89,7 @@ export default async function Home() {
               </ButtonLink>
             </div>
           </div>
-          <LeadBriefing briefing={briefing} />
+          {briefing ? <LeadBriefing briefing={briefing} /> : null}
         </section>
 
         <section aria-labelledby="home-prices">

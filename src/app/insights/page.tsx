@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
-import { DevContentNotice } from "@/components/editorial/DevContentNotice";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
@@ -10,7 +9,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
-import { getOutlookService } from "@/services/outlook/service";
 
 export const metadata: Metadata = {
   title: "Insights",
@@ -20,15 +18,14 @@ export const metadata: Metadata = {
 
 export default async function InsightsPage() {
   const editorial = getEditorialService();
-  const outlook = getOutlookService();
-  const [edition, analysis, news, briefings, reports] = await Promise.all([
-    outlook.getCurrentEdition(),
+  const [analysis, news, briefings, reports] = await Promise.all([
     editorial.getArticlesByKind("analysis", 4),
     editorial.getArticlesByKind("news", 5),
-    editorial.getBriefingEditions(),
+    editorial.getArticlesByKind("weekly-briefing", 1),
     editorial.getArticlesByKind("monthly-report", 3),
   ]);
-  const currentBriefing = briefings.find((b) => b.isCurrent) ?? briefings[0];
+  const [briefing] = briefings;
+  const [report] = reports;
 
   return (
     <Container className="pb-16">
@@ -37,54 +34,54 @@ export default async function InsightsPage() {
         crumbs={[{ label: "Insights" }]}
         kicker="Insights"
         title="Insights"
-        description="Interpretation over the platform's data: the Market Outlook, analysis and news, the Weekly Briefing and monthly reports."
+        description="Interpretation over the platform's data: analysis and news, the Weekly Briefing and monthly reports."
         activeHref="/insights"
       />
 
-      <div className="mt-8">
-        <DevContentNotice text="Development content: the Market Outlook and Weekly Briefing editions below are illustrative placeholders demonstrating the editorial format, not published reporting." />
-      </div>
-
       <section className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <Link
-          href="/outlook"
-          className="group block border border-rule border-t-2 border-t-wine bg-paper px-5 py-4"
-        >
-          <p className="wt-label text-wine">
-            Market Outlook
-            <span aria-hidden="true" className="mx-2 text-rule">
-              &middot;
-            </span>
-            {edition.edition}
-          </p>
-          <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
-            {edition.headline}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            {edition.summaryParagraphs[0]}
-          </p>
-          <p className="wt-label mt-3 text-wine">Read the outlook &rarr;</p>
-        </Link>
+        {briefing ? (
+          <Link
+            href={briefing.href}
+            className="group block border border-rule border-t-2 border-t-wine bg-paper px-5 py-4"
+          >
+            <p className="wt-label text-wine">
+              Weekly Briefing
+              <span aria-hidden="true" className="mx-2 text-rule">
+                &middot;
+              </span>
+              {formatDate(briefing.publishedAt)}
+            </p>
+            <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
+              {briefing.headline}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              {briefing.standfirst}
+            </p>
+            <p className="wt-label mt-3 text-wine">Read the briefing &rarr;</p>
+          </Link>
+        ) : null}
 
-        <Link
-          href="/insights/weekly-briefing"
-          className="group block border border-rule bg-paper px-5 py-4"
-        >
-          <p className="wt-label text-wine">
-            Weekly Briefing
-            <span aria-hidden="true" className="mx-2 text-rule">
-              &middot;
-            </span>
-            {formatDate(currentBriefing.date)}
-          </p>
-          <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
-            {currentBriefing.headline}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            {currentBriefing.summary}
-          </p>
-          <p className="wt-label mt-3 text-wine">All editions &rarr;</p>
-        </Link>
+        {report ? (
+          <Link
+            href={report.href}
+            className="group block border border-rule bg-paper px-5 py-4"
+          >
+            <p className="wt-label text-wine">
+              Monthly Report
+              <span aria-hidden="true" className="mx-2 text-rule">
+                &middot;
+              </span>
+              {formatDate(report.publishedAt)}
+            </p>
+            <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
+              {report.headline}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              {report.standfirst}
+            </p>
+            <p className="wt-label mt-3 text-wine">Read the report &rarr;</p>
+          </Link>
+        ) : null}
       </section>
 
       <section className="mt-12">

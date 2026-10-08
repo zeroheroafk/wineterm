@@ -19,7 +19,6 @@ import {
   ILLUSTRATIVE_PRICE_SOURCE,
   harvestMonitorRegions,
   keyPriceCodes,
-  leadBriefing,
   stripOtherQuotes,
   stripPriceCodes,
   supplySnapshotText,
@@ -64,7 +63,8 @@ import {
 
 export interface HomeService {
   getMarketStrip(): Promise<StripQuote[]>;
-  getLeadBriefing(): Promise<MarketBriefing>;
+  /** The latest Weekly Briefing, when one is published. */
+  getLeadBriefing(): Promise<MarketBriefing | null>;
   /** One price per real series, then the samples still shown. */
   getKeyPrices(): Promise<PriceQuote[]>;
   getSupplySnapshot(): Promise<SupplySnapshot>;
@@ -249,8 +249,17 @@ class FixtureHomeService implements HomeService {
     );
   }
 
-  async getLeadBriefing(): Promise<MarketBriefing> {
-    return leadBriefing;
+  async getLeadBriefing(): Promise<MarketBriefing | null> {
+    const [latest] = await getEditorialService().getArticlesByKind("weekly-briefing", 1);
+    return latest
+      ? {
+          headline: latest.headline,
+          summary: latest.standfirst,
+          updatedAt: latest.publishedAt,
+          status: "final",
+          href: latest.href,
+        }
+      : null;
   }
 
   async getKeyPrices(): Promise<PriceQuote[]> {

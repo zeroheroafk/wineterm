@@ -304,7 +304,8 @@ export interface MarketBriefing {
   development?: string;
   updatedAt: string;
   status: DataStatus;
-  outlookHref: string;
+  /** Where the full text is read. */
+  href: string;
 }
 
 /**
@@ -400,15 +401,6 @@ export interface TradeOverview {
   status: DataStatus;
   source: DataSource;
   updatedAt: string;
-}
-
-/** One edition of the Weekly Briefing. */
-export interface BriefingEdition {
-  id: string;
-  date: string;
-  headline: string;
-  summary: string;
-  isCurrent: boolean;
 }
 
 /** Industry coverage topics, matching the Industry navigation. */

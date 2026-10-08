@@ -146,11 +146,6 @@ export const primaryNavigation: NavSection[] = [
     code: "INS",
     items: [
       {
-        label: "Market Outlook",
-        href: "/outlook",
-        description: "The desk's view over the next one to three months",
-      },
-      {
         label: "News",
         href: "/insights/news",
         description: "Reporting for the professional wine trade",

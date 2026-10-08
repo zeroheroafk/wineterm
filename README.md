@@ -64,6 +64,10 @@ npm run typecheck  # tsc --noEmit
 npm run build      # production build
 ```
 
+The Market Outlook (`/outlook`) is withheld until a real edition is
+written: its only edition is a sample, so the page answers 404 and no
+page links it (`OUTLOOK_PUBLISHED` in `src/services/outlook/service.ts`).
+
 `/design-system` documents the tokens and component set. It is excluded
 from the sitemap and marked noindex.
 

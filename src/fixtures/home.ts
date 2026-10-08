@@ -11,7 +11,6 @@
 import type {
   DataSource,
   HarvestCondition,
-  MarketBriefing,
   StripQuote,
 } from "@/services/types";
 
@@ -64,22 +63,6 @@ export const stripOtherQuotes: StripQuote[] = [
     status: "illustrative",
   },
 ];
-
-/**
- * Written against the sample data: the key prices' weekly changes and the
- * first production estimates (src/fixtures/supply.ts), which put Spain
- * above its five-year average and Portugal below it.
- */
-export const leadBriefing: MarketBriefing = {
-  headline: "Old-vintage cover tightens as the new Iberian crop comes into view",
-  summary:
-    "Buyers moved earlier than usual this week to cover generic red positions ahead of the harvest, while first estimates put the new crop above the five-year average in Spain and below it in Portugal.",
-  development:
-    "White availability stays comfortable for now; Lisboa whites eased on quiet export demand.",
-  updatedAt: HOME_UPDATED_AT,
-  status: "illustrative",
-  outlookHref: "/outlook",
-};
 
 /**
  * The sample series shown as key bulk wine prices, in table order. Their

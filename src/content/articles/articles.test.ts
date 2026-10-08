@@ -1,5 +1,5 @@
 /**
- * Consistency checks for the published articles and monthly reports:
+ * Consistency checks for the published articles, briefings and reports:
  * each is served at the address its preview links to, every citation
  * names a listed source and every source is cited, a chart shows the
  * figures the paragraph it follows states, and every table row fills its
@@ -16,7 +16,11 @@ describe("published articles", () => {
   it("have unique ids and link to their own page", () => {
     const ids = publishedArticles.map((article) => article.id);
     assert.equal(new Set(ids).size, ids.length);
-    const sections = { analysis: "analysis", "monthly-report": "monthly-reports" };
+    const sections = {
+      analysis: "analysis",
+      "monthly-report": "monthly-reports",
+      "weekly-briefing": "weekly-briefing",
+    };
     for (const article of publishedArticles) {
       assert.ok(article.kind in sections, `${article.id} is a ${article.kind}`);
       const section = sections[article.kind as keyof typeof sections];

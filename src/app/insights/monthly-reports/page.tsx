@@ -54,13 +54,6 @@ export default async function MonthlyReportsPage() {
       <p className="wt-label mt-6 max-w-3xl leading-relaxed text-ink-soft">
         Between reports, the{" "}
         <Link
-          href="/outlook"
-          className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
-        >
-          Market Outlook
-        </Link>{" "}
-        carries the desk&apos;s structured view, and the{" "}
-        <Link
           href="/insights/weekly-briefing"
           className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
         >
