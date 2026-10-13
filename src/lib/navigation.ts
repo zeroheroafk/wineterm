@@ -21,9 +21,9 @@ export interface NavSection {
   items: NavLeaf[];
 }
 
-export const primaryNavigation: NavSection[] = [
+const sections: NavSection[] = [
   {
-    label: "Markets",
+    label: "Prices",
     href: "/markets",
     code: "MKT",
     items: [
@@ -50,7 +50,7 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
-    label: "Crop & Supply",
+    label: "Production & Stocks",
     href: "/supply",
     code: "SUP",
     items: [
@@ -141,7 +141,7 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
-    label: "Insights",
+    label: "News & Analysis",
     href: "/insights",
     code: "INS",
     items: [
@@ -184,6 +184,34 @@ export const primaryNavigation: NavSection[] = [
     items: [],
   },
 ];
+
+export const [pricesNavigation, supplyNavigation, tradeNavigation,
+  industryNavigation, editorialNavigation, directoryNavigation] = sections;
+
+// Industry reporting belongs to the editorial area. Methodology remains a
+// contextual/utility link; the empty directory stays in the footer.
+editorialNavigation.items = [
+  { label: "Analysis", href: "/insights/analysis", description: "Understand changes in prices, supply and trade" },
+  { label: "News", href: "/insights/news", description: "Published reporting for the wine trade" },
+  { label: "Industry", href: "/industry", description: "Companies, investments, regulation and technology" },
+  ...editorialNavigation.items.filter((item) =>
+    !["/insights/analysis", "/insights/news", "/insights/methodology"].includes(item.href)),
+];
+
+export const primaryNavigation: NavSection[] = [
+  { label: "Overview", href: "/", code: "HOME", items: [] },
+  pricesNavigation, supplyNavigation, tradeNavigation, editorialNavigation,
+];
+
+/** Match child routes too, including sections hosted outside their root. */
+export function isNavigationActive(section: NavSection, pathname: string): boolean {
+  const matches = (href: string) => {
+    const route = href.split("#")[0];
+    return route === "/" ? pathname === "/" :
+      pathname === route || pathname.startsWith(`${route}/`);
+  };
+  return matches(section.href) || section.items.some((item) => matches(item.href));
+}
 
 export interface BreadcrumbItem {
   label: string;

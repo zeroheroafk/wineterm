@@ -8,12 +8,12 @@ import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { editorialNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 import { getOutlookService } from "@/services/outlook/service";
 
 export const metadata: Metadata = {
-  title: "Insights",
+  title: "News & Analysis",
   description:
     "WineTerm editorial: the Market Outlook, analysis, news, the Weekly Briefing and monthly reports for the professional wine trade.",
 };
@@ -33,59 +33,13 @@ export default async function InsightsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
-        crumbs={[{ label: "Insights" }]}
-        kicker="Insights"
-        title="Insights"
-        description="Interpretation over the platform's data: the Market Outlook, analysis and news, the Weekly Briefing and monthly reports."
+        section={editorialNavigation}
+        crumbs={[{ label: "News & Analysis" }]}
+        kicker="News & Analysis"
+        title="News & Analysis"
+        description="Published analysis and news to help you understand wine prices, supply and trade."
         activeHref="/insights"
       />
-
-      <div className="mt-8">
-        <DevContentNotice text="Development content: the Market Outlook and Weekly Briefing editions below are illustrative placeholders demonstrating the editorial format, not published reporting." />
-      </div>
-
-      <section className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <Link
-          href="/outlook"
-          className="group block border border-rule border-t-2 border-t-wine bg-paper px-5 py-4"
-        >
-          <p className="wt-label text-wine">
-            Market Outlook
-            <span aria-hidden="true" className="mx-2 text-rule">
-              &middot;
-            </span>
-            {edition.edition}
-          </p>
-          <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
-            {edition.headline}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            {edition.summaryParagraphs[0]}
-          </p>
-          <p className="wt-label mt-3 text-wine">Read the outlook &rarr;</p>
-        </Link>
-
-        <Link
-          href="/insights/weekly-briefing"
-          className="group block border border-rule bg-paper px-5 py-4"
-        >
-          <p className="wt-label text-wine">
-            Weekly Briefing
-            <span aria-hidden="true" className="mx-2 text-rule">
-              &middot;
-            </span>
-            {formatDate(currentBriefing.date)}
-          </p>
-          <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
-            {currentBriefing.headline}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            {currentBriefing.summary}
-          </p>
-          <p className="wt-label mt-3 text-wine">All editions &rarr;</p>
-        </Link>
-      </section>
 
       <section className="mt-12">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
@@ -144,30 +98,79 @@ export default async function InsightsPage() {
                 </p>
               )}
             </div>
-
-            <div>
-              <SectionHeader
-                kicker="Reports"
-                title="Monthly reports"
-                action={{ label: "All reports", href: "/insights/monthly-reports" }}
-              />
-              <ul className="mt-5">
-                {reports.map((report) => (
-                  <li
-                    key={report.id}
-                    className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
-                  >
-                    <p className="text-sm font-medium text-ink">{report.title}</p>
-                    <p className="wt-label mt-1 text-ink-soft">
-                      Publishes at launch
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </section>
+
+      <details className="mt-10 border-t border-rule pt-4">
+        <summary className="cursor-pointer py-3 text-base font-medium text-ochre-deep">Preview upcoming publications · illustrative content</summary>
+        <div className="mt-8">
+          <DevContentNotice text="Development content: the Market Outlook and Weekly Briefing editions below are illustrative placeholders demonstrating the editorial format, not published reporting." />
+        </div>
+
+        <section className="mt-4 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <Link
+            href="/outlook"
+            className="group block border border-rule border-t-2 border-t-wine bg-paper px-5 py-4"
+          >
+            <p className="wt-label text-wine">
+              Market Outlook
+              <span aria-hidden="true" className="mx-2 text-rule">
+                &middot;
+              </span>
+              {edition.edition}
+            </p>
+            <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
+              {edition.headline}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              {edition.summaryParagraphs[0]}
+            </p>
+            <p className="wt-label mt-3 text-wine">Read the outlook &rarr;</p>
+          </Link>
+
+          <Link
+            href="/insights/weekly-briefing"
+            className="group block border border-rule bg-paper px-5 py-4"
+          >
+            <p className="wt-label text-wine">
+              Weekly Briefing
+              <span aria-hidden="true" className="mx-2 text-rule">
+                &middot;
+              </span>
+              {formatDate(currentBriefing.date)}
+            </p>
+            <h2 className="wt-headline mt-2 text-2xl leading-snug font-semibold text-ink group-hover:text-wine-deep">
+              {currentBriefing.headline}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              {currentBriefing.summary}
+            </p>
+            <p className="wt-label mt-3 text-wine">All editions &rarr;</p>
+          </Link>
+        </section>
+
+          <div className="mt-8">
+            <SectionHeader
+              kicker="Reports"
+              title="Monthly reports"
+              action={{ label: "All reports", href: "/insights/monthly-reports" }}
+            />
+            <ul className="mt-5">
+              {reports.map((report) => (
+                <li
+                  key={report.id}
+                  className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
+                >
+                  <p className="text-sm font-medium text-ink">{report.title}</p>
+                  <p className="wt-label mt-1 text-ink-soft">
+                    Publishes at launch
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+      </details>
 
       <section className="mt-12">
         <NewsletterSignup variant="inline" />

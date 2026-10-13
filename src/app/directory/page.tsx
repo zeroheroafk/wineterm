@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { ButtonLink } from "@/components/ui/Button";
-import { primaryNavigation } from "@/lib/navigation";
+import { directoryNavigation } from "@/lib/navigation";
 
 export const metadata: Metadata = {
   title: "Directory",
@@ -48,7 +48,7 @@ export default function DirectoryPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[5]}
+        section={directoryNavigation}
         crumbs={[{ label: "Directory" }]}
         kicker="Directory"
         title="Professional directory"

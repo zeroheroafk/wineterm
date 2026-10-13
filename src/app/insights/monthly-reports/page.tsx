@@ -4,7 +4,7 @@ import Link from "next/link";
 import { DevContentNotice } from "@/components/editorial/DevContentNotice";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { editorialNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 
 export const metadata: Metadata = {
@@ -19,12 +19,12 @@ export default async function MonthlyReportsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={editorialNavigation}
         crumbs={[
-          { label: "Insights", href: "/insights" },
+          { label: "News & Analysis", href: "/insights" },
           { label: "Monthly Reports" },
         ]}
-        kicker="Insights"
+        kicker="News & Analysis"
         title="Monthly Reports"
         description="A structured review of each month: prices by market and category, the supply balance, stocks and trade, in one dated document professionals can file and cite."
         activeHref="/insights/monthly-reports"

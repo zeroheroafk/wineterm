@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { primaryNavigation } from "@/lib/navigation";
+import { isNavigationActive, primaryNavigation } from "@/lib/navigation";
 
 const ITEM_BASE =
   "flex h-11 items-center gap-1.5 border-b-2 px-3 text-[0.9375rem] font-medium transition-colors";
@@ -19,7 +19,7 @@ const ITEM_IDLE =
 /**
  * Desktop primary navigation with dropdown panels.
  *
- * Buttons toggle on click, panels also open on hover, and everything
+ * Links navigate directly; adjacent buttons toggle panels. Everything
  * closes on Escape, outside click or route change.
  */
 export function MainNav() {
@@ -57,7 +57,7 @@ export function MainNav() {
     >
       <ul className="-mx-3 flex items-stretch">
         {primaryNavigation.map((section) => {
-          const active = pathname.startsWith(section.href);
+          const active = isNavigationActive(section, pathname);
           const expanded = open === section.label;
           const hasItems = section.items.length > 0;
 
@@ -65,37 +65,9 @@ export function MainNav() {
             <li
               key={section.label}
               className="relative"
-              onMouseEnter={() => hasItems && setOpen(section.label)}
-              onMouseLeave={() =>
-                setOpen((current) =>
-                  current === section.label ? null : current,
-                )
-              }
+
             >
-              {hasItems ? (
-                <button
-                  type="button"
-                  aria-expanded={expanded}
-                  aria-current={active ? "true" : undefined}
-                  onClick={() =>
-                    setOpen((current) =>
-                      current === section.label ? null : section.label,
-                    )
-                  }
-                  className={`${ITEM_BASE} ${
-                    active ? ITEM_CURRENT : expanded ? ITEM_OPEN : ITEM_IDLE
-                  }`}
-                >
-                  {section.label}
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 8 6"
-                    className={`h-1.5 w-2 fill-current transition-transform ${expanded ? "rotate-180" : ""}`}
-                  >
-                    <path d="M0 0h8L4 6Z" />
-                  </svg>
-                </button>
-              ) : (
+              <div className="flex items-stretch">
                 <Link
                   href={section.href}
                   aria-current={active ? "page" : undefined}
@@ -103,10 +75,34 @@ export function MainNav() {
                 >
                   {section.label}
                 </Link>
-              )}
+                {hasItems ? (
+                  <button
+                    type="button"
+                    aria-expanded={expanded}
+                    aria-controls={`nav-${section.code}`}
+                    aria-label={`${expanded ? "Close" : "Open"} ${section.label} menu`}
+                    onClick={() =>
+                      setOpen((current) =>
+                        current === section.label ? null : section.label,
+                      )
+                    }
+                    className={`${ITEM_BASE} -ml-2 px-2 ${
+                      active ? ITEM_CURRENT : expanded ? ITEM_OPEN : ITEM_IDLE
+                    }`}
+                  >
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 8 6"
+                      className={`h-1.5 w-2 fill-current transition-transform ${expanded ? "rotate-180" : ""}`}
+                    >
+                      <path d="M0 0h8L4 6Z" />
+                    </svg>
+                  </button>
+                ) : null}
+              </div>
 
               {hasItems && expanded ? (
-                <div className="absolute left-0 top-full z-40 w-80 border border-rule border-t-2 border-t-wine bg-paper">
+                <div id={`nav-${section.code}`} className="absolute left-0 top-full z-40 w-80 border border-rule border-t-2 border-t-wine bg-paper">
                   <div className="border-b border-rule px-4 py-2.5">
                     <Link
                       href={section.href}

@@ -147,11 +147,7 @@ export default async function BulkWinePage({
       <MarketsPageHeader
         crumb="Bulk Wine Prices"
         title="Bulk Wine Prices"
-        description={
-          hasReal
-            ? "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. National averages are listed first, then prices in regional reference markets, then the illustrative samples, marked as such. How each price is established is set out in the methodology."
-            : "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Development figures are illustrative samples."
-        }
+        description={hasReal ? "Published bulk wine prices by country, region and wine category. Sample data is kept in a separate section below." : "Explore the price tools using illustrative samples. Published market prices are not connected yet."}
         activeHref="/markets/bulk-wine"
       />
 
@@ -166,7 +162,16 @@ export default async function BulkWinePage({
       </div>
 
       <div className="mt-5">
-        <BulkPricesTable rows={rows} />
+        {rows.some((row) => !isIllustrative(row)) || rows.length === 0 ? (
+          <BulkPricesTable rows={rows.filter((row) => !isIllustrative(row))} />
+        ) : null}
+        {rows.some(isIllustrative) ? (
+          <details open={!rows.some((row) => !isIllustrative(row)) || undefined} className="mt-6 border-t border-rule pt-4">
+            <summary className="cursor-pointer py-3 text-base font-semibold text-ochre-deep">Illustrative sample prices ({rows.filter(isIllustrative).length})</summary>
+            <p className="mb-4 text-sm leading-relaxed text-ink-soft">Demonstration data only. These figures are not published market prices.</p>
+            <BulkPricesTable rows={rows.filter(isIllustrative)} />
+          </details>
+        ) : null}
         {realSources.length > 0 ? (
           <div className="mt-2">
             <SourceLine source={realSources} />

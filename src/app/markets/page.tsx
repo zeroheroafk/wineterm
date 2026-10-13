@@ -71,6 +71,7 @@ export default async function MarketsPage() {
   };
 
   const recent = [...bulkRows, ...grapeRows, ...mustRows]
+    .filter((row) => !isIllustrative(row))
     .sort((a, b) => b.latest.date.localeCompare(a.latest.date))
     .slice(0, 6);
   const hasReal = [...bulkRows, ...grapeRows, ...mustRows].some(
@@ -80,12 +81,8 @@ export default async function MarketsPage() {
   return (
     <Container className="pb-16">
       <MarketsPageHeader
-        title="Markets"
-        description={
-          hasReal
-            ? "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. National bulk wine averages lead; the other series are illustrative samples, marked as such. How each price is established is set out in the methodology."
-            : "Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source, status and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength; development figures are illustrative samples."
-        }
+        title="Prices"
+        description="Find prices for bulk wine, grapes, must and concentrates. Choose a product below, or compare compatible series."
         activeHref="/markets"
       />
 
@@ -163,9 +160,9 @@ export default async function MarketsPage() {
       <section className="mt-12">
         <SectionHeader
           kicker="Latest observations"
-          title="Recently updated series"
+          title="Recently updated published prices"
         />
-        <ScrollRegion className="mt-5 border border-rule bg-paper">
+        {recent.length > 0 ? <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               Most recently observed series across all market sections
@@ -182,7 +179,7 @@ export default async function MarketsPage() {
                   Price
                 </th>
                 <th scope="col" className={TH_RIGHT}>
-                  Wk %
+                  Weekly %
                 </th>
                 <th scope="col" className={TH}>
                   Date
@@ -232,7 +229,7 @@ export default async function MarketsPage() {
               ))}
             </tbody>
           </table>
-        </ScrollRegion>
+        </ScrollRegion> : <p className="mt-5 text-base text-ink-soft">No published prices are connected yet. Product pages contain clearly labelled illustrative samples.</p>}
         {recent.some((row) => row.series.perDegree) ? (
           <p className="wt-label mt-2 text-ink-soft">
             Samples recorded per hectolitre-degree are shown in EUR/hl at the

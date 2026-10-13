@@ -12,7 +12,7 @@ import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatMonthYear, formatPrice } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { supplyNavigation } from "@/lib/navigation";
 import { getSource } from "@/services/markets/sources";
 import { getSupplyService } from "@/services/supply/service";
 import {
@@ -84,12 +84,12 @@ export default async function StocksPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[1]}
+        section={supplyNavigation}
         crumbs={[
-          { label: "Crop & Supply", href: "/supply" },
+          { label: "Production & Stocks", href: "/supply" },
           { label: "Stocks" },
         ]}
-        kicker="Crop & Supply"
+        kicker="Production & Stocks"
         title="Stocks"
         description={
           mixed

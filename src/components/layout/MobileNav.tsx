@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { primaryNavigation } from "@/lib/navigation";
+import { isNavigationActive, primaryNavigation } from "@/lib/navigation";
 
 /**
  * Mobile navigation: a toggle button in the header row and a full-width
@@ -57,7 +57,7 @@ export function MobileNav() {
             {primaryNavigation.map((section) => {
               const isExpanded = expanded === section.label;
               const hasItems = section.items.length > 0;
-              const active = pathname.startsWith(section.href);
+              const active = isNavigationActive(section, pathname);
 
               return (
                 <li key={section.label}>

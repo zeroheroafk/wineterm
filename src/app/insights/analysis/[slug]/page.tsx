@@ -78,7 +78,7 @@ export default async function AnalysisArticlePage({
     <Container className="pb-16">
       <Breadcrumbs
         items={[
-          { label: "Insights", href: "/insights" },
+          { label: "News & Analysis", href: "/insights" },
           { label: "Analysis", href: "/insights/analysis" },
           { label: article.headline },
         ]}

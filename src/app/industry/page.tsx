@@ -6,7 +6,7 @@ import { StoryList } from "@/components/editorial/StoryList";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { industryNavigation } from "@/lib/navigation";
 import { getIndustryService } from "@/services/industry";
 import {
   INDUSTRY_TOPIC_LABELS,
@@ -45,7 +45,7 @@ export default async function IndustryPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[3]}
+        section={industryNavigation}
         crumbs={[{ label: "Industry" }]}
         kicker="Industry"
         title="Industry"

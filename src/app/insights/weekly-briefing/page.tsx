@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { editorialNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 
 export const metadata: Metadata = {
@@ -23,12 +23,12 @@ export default async function WeeklyBriefingPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={editorialNavigation}
         crumbs={[
-          { label: "Insights", href: "/insights" },
+          { label: "News & Analysis", href: "/insights" },
           { label: "Weekly Briefing" },
         ]}
-        kicker="Insights"
+        kicker="News & Analysis"
         title="Weekly Briefing"
         description="The week in wine markets, every Friday: prices, supply signals, harvest conditions and trade developments, written for professionals."
         activeHref="/insights/weekly-briefing"
