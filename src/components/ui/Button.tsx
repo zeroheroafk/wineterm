@@ -12,7 +12,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
 };
 
 const BASE_CLASSES =
-  "inline-flex h-9 items-center justify-center gap-2 px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-9 rounded items-center justify-center gap-2 px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Button({
   variant = "primary",

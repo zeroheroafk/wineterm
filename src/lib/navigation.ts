@@ -199,17 +199,31 @@ editorialNavigation.items = [
 ];
 
 export const primaryNavigation: NavSection[] = [
-  { label: "Overview", href: "/", code: "HOME", items: [] },
-  pricesNavigation, supplyNavigation, tradeNavigation, editorialNavigation,
+  { label: "Home", href: "/", code: "HOME", items: [] },
+  pricesNavigation,
+  { label: "News", href: "/insights/news", code: "NEWS", items: [] },
+  { ...editorialNavigation, label: "Insights" },
+  { label: "Reports", href: "/insights/monthly-reports", code: "REPORTS", items: [
+    { label: "Monthly reports", href: "/insights/monthly-reports" },
+    { label: "Weekly briefing", href: "/insights/weekly-briefing" },
+  ] },
+  { ...industryNavigation, label: "Companies" },
+  { ...supplyNavigation, label: "Supply" },
+  tradeNavigation,
+  { label: "Contact", href: "/contact", code: "CONTACT", items: [] },
 ];
 
-/** Match child routes too, including sections hosted outside their root. */
+/** Prefer the most specific primary route; also recognise detached pages. */
 export function isNavigationActive(section: NavSection, pathname: string): boolean {
   const matches = (href: string) => {
     const route = href.split("#")[0];
     return route === "/" ? pathname === "/" :
       pathname === route || pathname.startsWith(`${route}/`);
   };
+  if (pathname === "/insights/weekly-briefing") return section.code === "REPORTS";
+  const direct = primaryNavigation.filter((item) => matches(item.href))
+    .sort((a, b) => b.href.length - a.href.length)[0];
+  if (direct) return section.code === direct.code;
   return matches(section.href) || section.items.some((item) => matches(item.href));
 }
 
