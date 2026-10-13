@@ -10,20 +10,20 @@
 
 :root {
   /* Surfaces */
-  --wt-ground: #f7f6f0; /* main page background */
+  --wt-ground: #f7f4ef; /* main page background */
   --wt-paper: #ffffff; /* raised paper surface */
 
   /* Text */
-  --wt-ink: #191b16; /* primary text */
-  --wt-ink-soft: #606159; /* secondary text, about 5.9:1 on ground */
+  --wt-ink: #211b1e; /* primary text */
+  --wt-ink-soft: #655d60; /* secondary text, about 5.9:1 on ground */
 
   /* Brand */
-  --wt-wine: #507d32; /* OliveTerm-inspired publication accent */
-  --wt-wine-deep: #344624; /* deep olive */
-  --wt-wine-wash: #e8eedf; /* light olive surface */
+  --wt-wine: #782f45; /* WineTerm burgundy */
+  --wt-wine-deep: #472031; /* deep wine */
+  --wt-wine-wash: #f0e5e9; /* wine tint */
 
   /* Lines */
-  --wt-feature: #171b15; /* dark editorial feature */
+  --wt-feature: #21171d; /* dark editorial feature */
   --wt-rule: #d3d1c7; /* borders and rules */
 
   /* Market movement */
@@ -103,13 +103,13 @@ body {
   letter-spacing: -0.015em;
 }
 
-/* Keyboard focus: a square olive-coloured ring, no rounded halo. */
+/* Keyboard focus: a square wine-coloured ring, no rounded halo. */
 :focus-visible {
   outline: 2px solid var(--wt-wine);
   outline-offset: 1px;
 }
 
-/* On the dark olive surfaces the wine ring disappears; use a light one. */
+/* On the dark wine surfaces the wine ring disappears; use a light one. */
 .wt-on-dark :focus-visible {
   outline-color: var(--wt-wine-wash);
 }
@@ -119,7 +119,7 @@ body {
   color: var(--wt-wine-deep);
 }
 
-/* Compact publication modules, following the OliveTerm reference. */
+/* Compact publication modules, with WineTerm typography and spacing. */
 .wt-desk-heading {
   display: flex;
   align-items: baseline;

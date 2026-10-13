@@ -198,6 +198,16 @@ editorialNavigation.items = [
     !["/insights/analysis", "/insights/news", "/insights/methodology"].includes(item.href)),
 ];
 
+export const marketDataNavigation: NavSection = {
+  label: "Market data", href: "/data", code: "DATA", items: [
+    { label: "Production", href: "/supply/production" },
+    { label: "Stocks", href: "/supply/stocks" },
+    { label: "Supply balance", href: "/supply" },
+    { label: "Harvest outlook", href: "/harvest" },
+    { label: "Imports & exports", href: "/trade" },
+  ],
+};
+
 export const primaryNavigation: NavSection[] = [
   { label: "Home", href: "/", code: "HOME", items: [] },
   pricesNavigation,
@@ -208,8 +218,7 @@ export const primaryNavigation: NavSection[] = [
     { label: "Weekly briefing", href: "/insights/weekly-briefing" },
   ] },
   { ...industryNavigation, label: "Companies" },
-  { ...supplyNavigation, label: "Supply" },
-  tradeNavigation,
+  marketDataNavigation,
   { label: "Contact", href: "/contact", code: "CONTACT", items: [] },
 ];
 
@@ -237,6 +246,7 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
   {
     heading: "Data",
     items: [
+      { label: "Market data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
       { label: "Grape Prices", href: "/markets/grapes" },
       { label: "Production", href: "/supply/production" },
