@@ -25,7 +25,7 @@ import {
   LoadingState,
   TableSkeleton,
 } from "@/components/ui/states";
-import { primaryNavigation } from "@/lib/navigation";
+import { pricesNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 import { getMarketDataService } from "@/services/market-data";
 import type { DataStatus } from "@/services/types";
@@ -100,7 +100,7 @@ export default async function DesignSystemPage() {
     editorial.getLatestArticles(1),
   ]);
 
-  const markets = primaryNavigation[0];
+  const markets = pricesNavigation;
 
   return (
     <Container className="pb-16">

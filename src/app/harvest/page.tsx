@@ -10,7 +10,7 @@ import { CountryLabel } from "@/components/ui/CountryLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { supplyNavigation } from "@/lib/navigation";
 import { getHarvestService } from "@/services/harvest/service";
 import { getSource } from "@/services/markets/sources";
 
@@ -33,12 +33,12 @@ export default async function HarvestPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[1]}
+        section={supplyNavigation}
         crumbs={[
-          { label: "Crop & Supply", href: "/supply" },
+          { label: "Production & Stocks", href: "/supply" },
           { label: "Harvest" },
         ]}
-        kicker="Crop & Supply"
+        kicker="Production & Stocks"
         title="Harvest monitor"
         description="The 2026 campaign in Spain, Portugal, France and Italy. Production forecasts are the official ones, as each country's forecasters published them; the summary, regional reports and timeline are illustrative samples."
         activeHref="/harvest"

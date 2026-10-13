@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { editorialNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 import { getOutlookService } from "@/services/outlook/service";
 
@@ -24,12 +24,12 @@ export default async function AnalysisPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={editorialNavigation}
         crumbs={[
-          { label: "Insights", href: "/insights" },
+          { label: "News & Analysis", href: "/insights" },
           { label: "Analysis" },
         ]}
-        kicker="Insights"
+        kicker="News & Analysis"
         title="Analysis"
         description="Interpretation of what the data means: prices, supply, stocks, harvest and trade, written against the platform's own series."
         activeHref="/insights/analysis"

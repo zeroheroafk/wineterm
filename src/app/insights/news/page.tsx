@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { EmptyState } from "@/components/ui/states";
-import { primaryNavigation } from "@/lib/navigation";
+import { editorialNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 
 export const metadata: Metadata = {
@@ -21,9 +21,9 @@ export default async function NewsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
-        crumbs={[{ label: "Insights", href: "/insights" }, { label: "News" }]}
-        kicker="Insights"
+        section={editorialNavigation}
+        crumbs={[{ label: "News & Analysis", href: "/insights" }, { label: "News" }]}
+        kicker="News & Analysis"
         title="News"
         description="Short reporting for the professional trade: what moved, where and why, across markets, supply, harvest, trade and regulation."
         activeHref="/insights/news"

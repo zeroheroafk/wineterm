@@ -10,24 +10,25 @@
 
 :root {
   /* Surfaces */
-  --wt-ground: #f6f2eb; /* main page background */
-  --wt-paper: #fcfaf5; /* raised paper surface */
+  --wt-ground: #f7f4ef; /* main page background */
+  --wt-paper: #ffffff; /* raised paper surface */
 
   /* Text */
-  --wt-ink: #1d1a18; /* primary text */
-  --wt-ink-soft: #625c55; /* secondary text, about 5.9:1 on ground */
+  --wt-ink: #211b1e; /* primary text */
+  --wt-ink-soft: #655d60; /* secondary text, about 5.9:1 on ground */
 
   /* Brand */
-  --wt-wine: #6b2737; /* main burgundy */
-  --wt-wine-deep: #421724; /* dark burgundy */
-  --wt-wine-wash: #e8dadd; /* light burgundy surface */
+  --wt-wine: #782f45; /* WineTerm burgundy */
+  --wt-wine-deep: #472031; /* deep wine */
+  --wt-wine-wash: #f0e5e9; /* wine tint */
 
   /* Lines */
-  --wt-rule: #d6cfc5; /* borders and rules */
+  --wt-feature: #21171d; /* dark editorial feature */
+  --wt-rule: #d3d1c7; /* borders and rules */
 
   /* Market movement */
-  --wt-up: #3f6b4b; /* positive movement */
-  --wt-down: #a8443a; /* negative movement */
+  --wt-up: #507d32; /* positive movement */
+  --wt-down: #df403a; /* negative movement */
 
   /* Accent */
   --wt-ochre: #a67c3d; /* restrained ochre accent: rules, swatches, charts */
@@ -35,6 +36,7 @@
 }
 
 @theme inline {
+  --color-feature: var(--wt-feature);
   --color-ground: var(--wt-ground);
   --color-paper: var(--wt-paper);
   --color-ink: var(--wt-ink);
@@ -75,9 +77,9 @@ body {
 /* Small uppercase market/meta label, used across the whole interface. */
 .wt-label {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  line-height: 1.2;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -97,8 +99,8 @@ body {
 
 /* Editorial headline defaults. */
 .wt-headline {
-  font-family: var(--font-serif);
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  letter-spacing: -0.015em;
 }
 
 /* Keyboard focus: a square wine-coloured ring, no rounded halo. */
@@ -107,7 +109,7 @@ body {
   outline-offset: 1px;
 }
 
-/* On the dark burgundy surfaces the wine ring disappears; use a light one. */
+/* On the dark wine surfaces the wine ring disappears; use a light one. */
 .wt-on-dark :focus-visible {
   outline-color: var(--wt-wine-wash);
 }
@@ -116,3 +118,32 @@ body {
   background: var(--wt-wine-wash);
   color: var(--wt-wine-deep);
 }
+
+/* Compact publication modules, with WineTerm typography and spacing. */
+.wt-desk-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 2px solid var(--wt-ink-soft);
+  padding-bottom: .55rem;
+  font-size: .9375rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.wt-desk-heading a {
+  flex-shrink: 0;
+  font-size: .6875rem;
+  font-weight: 400;
+  color: var(--wt-wine);
+  text-transform: none;
+}
+.wt-desk-heading a:hover { text-decoration: underline; }
+.wt-desk-meta {
+  font-family: var(--font-mono);
+  font-size: .625rem;
+  line-height: 1.6;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+}
+.wt-desk-list > * + * { border-top: 1px solid var(--wt-rule); }

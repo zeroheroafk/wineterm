@@ -74,7 +74,7 @@ export default async function OutlookPage() {
     <Container className="pb-16">
       <Breadcrumbs
         items={[
-          { label: "Insights", href: "/insights" },
+          { label: "News & Analysis", href: "/insights" },
           { label: "Market Outlook" },
         ]}
       />

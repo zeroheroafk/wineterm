@@ -64,7 +64,7 @@ export function GrapePricesTable({ rows }: { rows: MarketRow[] }) {
               Norm. EUR/kg
             </th>
             <th scope="col" className={`${TH_RIGHT} hidden md:table-cell`}>
-              YoY %
+              Annual %
             </th>
             <th scope="col" className={TH}>
               Source type

@@ -8,7 +8,7 @@ import { TradeFlowsRelationTable } from "@/components/trade/TradeFlowsRelationTa
 import { TradePartnersTable } from "@/components/trade/TradePartnersTable";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
-import { primaryNavigation } from "@/lib/navigation";
+import { tradeNavigation } from "@/lib/navigation";
 import { getTradeService } from "@/services/trade/service";
 import {
   TRADE_CATEGORIES,
@@ -45,7 +45,7 @@ export default async function TradePage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[2]}
+        section={tradeNavigation}
         crumbs={[{ label: "Trade" }]}
         kicker="Trade"
         title="Imports and exports"

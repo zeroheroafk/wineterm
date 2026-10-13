@@ -64,7 +64,7 @@ export function MustPricesTable({ rows }: { rows: MarketRow[] }) {
               Range
             </th>
             <th scope="col" className={TH_RIGHT}>
-              Wk %
+              Weekly %
             </th>
             <th scope="col" className={TH}>
               Date

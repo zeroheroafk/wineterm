@@ -21,9 +21,9 @@ export interface NavSection {
   items: NavLeaf[];
 }
 
-export const primaryNavigation: NavSection[] = [
+const sections: NavSection[] = [
   {
-    label: "Markets",
+    label: "Prices",
     href: "/markets",
     code: "MKT",
     items: [
@@ -50,7 +50,7 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
-    label: "Crop & Supply",
+    label: "Production & Stocks",
     href: "/supply",
     code: "SUP",
     items: [
@@ -141,7 +141,7 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
-    label: "Insights",
+    label: "News & Analysis",
     href: "/insights",
     code: "INS",
     items: [
@@ -185,6 +185,57 @@ export const primaryNavigation: NavSection[] = [
   },
 ];
 
+export const [pricesNavigation, supplyNavigation, tradeNavigation,
+  industryNavigation, editorialNavigation, directoryNavigation] = sections;
+
+// Industry reporting belongs to the editorial area. Methodology remains a
+// contextual/utility link; the empty directory stays in the footer.
+editorialNavigation.items = [
+  { label: "Analysis", href: "/insights/analysis", description: "Understand changes in prices, supply and trade" },
+  { label: "News", href: "/insights/news", description: "Published reporting for the wine trade" },
+  { label: "Industry", href: "/industry", description: "Companies, investments, regulation and technology" },
+  ...editorialNavigation.items.filter((item) =>
+    !["/insights/analysis", "/insights/news", "/insights/methodology"].includes(item.href)),
+];
+
+export const marketDataNavigation: NavSection = {
+  label: "Market data", href: "/data", code: "DATA", items: [
+    { label: "Production", href: "/supply/production" },
+    { label: "Stocks", href: "/supply/stocks" },
+    { label: "Supply balance", href: "/supply" },
+    { label: "Harvest outlook", href: "/harvest" },
+    { label: "Imports & exports", href: "/trade" },
+  ],
+};
+
+export const primaryNavigation: NavSection[] = [
+  { label: "Home", href: "/", code: "HOME", items: [] },
+  pricesNavigation,
+  { label: "News", href: "/insights/news", code: "NEWS", items: [] },
+  { ...editorialNavigation, label: "Insights" },
+  { label: "Reports", href: "/insights/monthly-reports", code: "REPORTS", items: [
+    { label: "Monthly reports", href: "/insights/monthly-reports" },
+    { label: "Weekly briefing", href: "/insights/weekly-briefing" },
+  ] },
+  { ...industryNavigation, label: "Companies" },
+  marketDataNavigation,
+  { label: "Contact", href: "/contact", code: "CONTACT", items: [] },
+];
+
+/** Prefer the most specific primary route; also recognise detached pages. */
+export function isNavigationActive(section: NavSection, pathname: string): boolean {
+  const matches = (href: string) => {
+    const route = href.split("#")[0];
+    return route === "/" ? pathname === "/" :
+      pathname === route || pathname.startsWith(`${route}/`);
+  };
+  if (pathname === "/insights/weekly-briefing") return section.code === "REPORTS";
+  const direct = primaryNavigation.filter((item) => matches(item.href))
+    .sort((a, b) => b.href.length - a.href.length)[0];
+  if (direct) return section.code === direct.code;
+  return matches(section.href) || section.items.some((item) => matches(item.href));
+}
+
 export interface BreadcrumbItem {
   label: string;
   href?: string;
@@ -195,6 +246,7 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
   {
     heading: "Data",
     items: [
+      { label: "Market data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
       { label: "Grape Prices", href: "/markets/grapes" },
       { label: "Production", href: "/supply/production" },

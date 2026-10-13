@@ -19,9 +19,12 @@ export function SectionNav({
       className="border-y border-rule bg-paper"
     >
       <div className="flex items-center gap-1 overflow-x-auto">
-        <span className="wt-label shrink-0 border-r border-rule px-3 py-2.5 text-wine">
-          {section.code}
-        </span>
+        {!section.items.some((item) => item.href === section.href) ? (
+          <Link href={section.href} aria-current={activeHref === section.href ? "page" : undefined}
+            className={`shrink-0 border-b-2 px-3 py-3 text-sm ${activeHref === section.href ? "border-wine font-medium text-wine-deep" : "border-transparent text-ink-soft hover:text-ink"}`}>
+            Overview
+          </Link>
+        ) : null}
         {section.items.map((item) => {
           const active = item.href === activeHref;
           return (

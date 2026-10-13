@@ -12,7 +12,7 @@ import { TD, TH } from "@/components/markets/cells";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { editorialNavigation } from "@/lib/navigation";
 import {
   DATA_CLASSIFICATION_LABELS,
   SOURCE_REGISTRY,
@@ -89,12 +89,12 @@ export default function MethodologyPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={editorialNavigation}
         crumbs={[
-          { label: "Insights", href: "/insights" },
+          { label: "News & Analysis", href: "/insights" },
           { label: "Methodology" },
         ]}
-        kicker="Insights"
+        kicker="News & Analysis"
         title="Methodology"
         description="How WineTerm series are collected, classified and defined. This page is the reference for every label used across the platform."
         activeHref="/insights/methodology"

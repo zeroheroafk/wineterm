@@ -1,14 +1,14 @@
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SectionNav } from "@/components/layout/SectionNav";
 import { PageHeader } from "@/components/ui/SectionHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { pricesNavigation } from "@/lib/navigation";
 
-const MARKETS_SECTION = primaryNavigation[0];
+const MARKETS_SECTION = pricesNavigation;
 
 /** Shared header block for Markets routes: breadcrumb, title, section rail. */
 export function MarketsPageHeader({
   crumb,
-  kicker = "Markets",
+  kicker = "Prices",
   title,
   description,
   activeHref,
@@ -25,8 +25,8 @@ export function MarketsPageHeader({
       <Breadcrumbs
         items={
           crumb
-            ? [{ label: "Markets", href: "/markets" }, { label: crumb }]
-            : [{ label: "Markets" }]
+            ? [{ label: "Prices", href: "/markets" }, { label: crumb }]
+            : [{ label: "Prices" }]
         }
       />
       <PageHeader kicker={kicker} title={title} description={description} />

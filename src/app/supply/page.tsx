@@ -13,12 +13,12 @@ import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatMonthYear } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { supplyNavigation } from "@/lib/navigation";
 import { getSource } from "@/services/markets/sources";
 import { getSupplyService } from "@/services/supply/service";
 
 export const metadata: Metadata = {
-  title: "Crop & Supply",
+  title: "Production & Stocks",
   description:
     "The physical balance of the European wine market: stocks, production, availability, use and trade in million hectolitres.",
 };
@@ -39,9 +39,9 @@ export default async function SupplyPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[1]}
-        crumbs={[{ label: "Crop & Supply" }]}
-        kicker="Crop & Supply"
+        section={supplyNavigation}
+        crumbs={[{ label: "Production & Stocks" }]}
+        kicker="Production & Stocks"
         title="Supply balance"
         description={
           spain
