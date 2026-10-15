@@ -44,7 +44,7 @@ export default async function IndustryPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[3]}
+        section={primaryNavigation[4]}
         crumbs={[{ label: "Industry" }]}
         kicker="Industry"
         title="Industry"

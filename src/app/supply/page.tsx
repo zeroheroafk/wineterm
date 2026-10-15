@@ -40,7 +40,7 @@ export default async function SupplyPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[1]}
+        section={primaryNavigation[2]}
         crumbs={[{ label: "Crop & Supply" }]}
         kicker="Crop & Supply"
         title="Supply balance"

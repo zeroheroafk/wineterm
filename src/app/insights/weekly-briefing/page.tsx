@@ -22,7 +22,7 @@ export default async function WeeklyBriefingPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={primaryNavigation[5]}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Weekly Briefing" },

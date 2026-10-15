@@ -24,7 +24,8 @@ Status legend:
 
 1. **Trade: Eurostat Comext. Imported.** Monthly trade in heading 2204
    for Spain, Portugal, France and Italy since January 2021, in euros,
-   net mass and litres, refreshed every month. Feeds `/trade`.
+   net mass and litres, refreshed every month. Feeds `/trade` and the
+   trade snapshot on `/data`.
 2. **Bulk wine prices for ES, FR and IT: EU Agri-food Data Portal.**
    Validated, but on 30 September 2026 its newest prices were about a
    year old, too late for a weekly market view. Portugal is not covered.

@@ -45,7 +45,7 @@ export default async function TradePage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[2]}
+        section={primaryNavigation[3]}
         crumbs={[{ label: "Trade" }]}
         kicker="Trade"
         title="Imports and exports"

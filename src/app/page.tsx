@@ -1,3 +1,4 @@
+import { ShareChart } from "@/components/charts/ShareChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
 import { IndustryHeadlineList } from "@/components/editorial/IndustryHeadlineList";
@@ -17,8 +18,8 @@ const INDUSTRY_HEADLINES = 5;
 /**
  * The homepage, kept to four blocks: the introduction beside the latest
  * Weekly Briefing, the key bulk wine prices, the latest analysis and
- * industry news, and the newsletter signup. Supply, harvest and trade
- * figures live in their own sections, reached from the navigation.
+ * industry news, and the newsletter signup. The supply, harvest and trade
+ * snapshots have their own tab, Market data (/data).
  */
 export default async function Home() {
   const home = getHomeService();
@@ -98,7 +99,18 @@ export default async function Home() {
         <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-0">
           <div className="min-w-0 lg:pr-10">
             {leadAnalysis ? (
-              <ArticlePreview article={leadAnalysis} variant="feature" />
+              <ArticlePreview
+                article={leadAnalysis}
+                variant="feature"
+                visual={
+                  leadAnalysis.chart ? (
+                    <ShareChart
+                      chart={leadAnalysis.chart}
+                      titleId="lead-analysis-chart"
+                    />
+                  ) : undefined
+                }
+              />
             ) : null}
             {secondaryAnalysis.length > 0 ? (
               <div className="mt-8 grid grid-cols-1 gap-7 border-t border-rule pt-6 sm:grid-cols-2 sm:gap-8">

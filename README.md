@@ -18,8 +18,9 @@ Portugal first, comparative data for France and Italy).
 
 ```
 src/
-  app/               Routes: home, Markets, Crop & Supply, Trade, Insights,
-                     Industry, Directory, institutional pages, /design-system
+  app/               Routes: home, Markets, Market data, Crop & Supply, Trade,
+                     Insights, Industry, Directory, institutional pages,
+                     /design-system
   components/
     layout/          Global shell: header, navigation, footer, breadcrumbs
     ui/              Section headers, buttons, filters, tabs, labels, states
@@ -79,9 +80,9 @@ from the sitemap and marked noindex.
   use `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
-  and contact messages; `/trade` shows Eurostat figures, the Markets
-  pages and the homepage key prices add MAPA's national wine prices to
-  the illustrative series,
+  and contact messages; `/trade` and the Market data trade snapshot
+  show Eurostat figures, the Markets pages and the homepage key prices
+  add MAPA's national wine prices to the illustrative series,
   the Markets pages add the Spanish and French regional prices, the
   Markets pages and the homepage show the national bulk prices of
   Portugal, France and Italy computed from the trade figures,

@@ -1,7 +1,8 @@
 /**
  * Homepage data service.
  *
- * Aggregates everything the homepage needs behind one typed interface.
+ * Aggregates everything the homepage needs behind one typed interface,
+ * and the supply, harvest and trade snapshots of the Market data tab.
  * Figures that exist in another domain are read from that domain's
  * service and never copied: the key prices are series of the markets
  * catalogue, the market strip repeats the key prices, the harvest
