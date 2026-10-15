@@ -50,6 +50,28 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
+    label: "Market data",
+    href: "/data",
+    code: "DAT",
+    items: [
+      {
+        label: "Supply",
+        href: "/data#supply",
+        description: "Wine available by country this campaign",
+      },
+      {
+        label: "Harvest",
+        href: "/data#harvest",
+        description: "Stage, condition and expected crop by region",
+      },
+      {
+        label: "Trade",
+        href: "/data#trade",
+        description: "Leading exporters, destinations and product forms",
+      },
+    ],
+  },
+  {
     label: "Crop & Supply",
     href: "/supply",
     code: "SUP",
@@ -190,6 +212,7 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
   {
     heading: "Data",
     items: [
+      { label: "Market Data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
       { label: "Grape Prices", href: "/markets/grapes" },
       { label: "Production", href: "/supply/production" },

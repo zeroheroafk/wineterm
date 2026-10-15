@@ -36,6 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     { url: `${base}/markets/compare`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${base}/data`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/supply`, changeFrequency: "weekly", priority: 0.8 },
     {
       url: `${base}/supply/production`,

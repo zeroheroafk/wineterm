@@ -59,7 +59,7 @@ export default async function IndustryTopicPage({
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[3]}
+        section={primaryNavigation[4]}
         crumbs={[
           { label: "Industry", href: "/industry" },
           { label: INDUSTRY_TOPIC_LABELS[key] },

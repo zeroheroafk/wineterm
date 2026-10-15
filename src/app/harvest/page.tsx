@@ -33,7 +33,7 @@ export default async function HarvestPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[1]}
+        section={primaryNavigation[2]}
         crumbs={[
           { label: "Crop & Supply", href: "/supply" },
           { label: "Harvest" },

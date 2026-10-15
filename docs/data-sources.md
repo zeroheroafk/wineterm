@@ -25,15 +25,15 @@ Status legend:
 1. **Trade: Eurostat Comext. Imported.** Monthly trade in heading 2204
    for Spain, Portugal, France and Italy since January 2021, in euros,
    net mass and litres, refreshed every month. Feeds `/trade` and the
-   homepage trade panel.
+   trade snapshot on `/data`.
 2. **Bulk wine prices for ES, FR and IT: EU Agri-food Data Portal.**
    Validated, but on 30 September 2026 its newest prices were about a
    year old, too late for a weekly market view. Portugal is not covered.
 3. **Spanish bulk wine prices and stocks: MAPA. Imported.** Weekly
    national average prices of white and red wine without PDO/PGI since
    January 2019, and the same prices in seven representative markets
-   since March 2019, refreshed twice a week, feed the Markets pages, the
-   homepage key prices and the market strip. The monthly INFOVI
+   since March 2019, refreshed twice a week, feed the Markets pages and
+   the homepage key prices. The monthly INFOVI
    declarations since January 2018, refreshed weekly, feed Spain's
    declared balance on `/supply`, its stocks on `/supply/stocks` and the
    wine made since 1 August on `/supply/production`. Commercial reuse of

@@ -12,7 +12,12 @@ import {
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { DataNote, SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatPrice } from "@/lib/format";
-import type { DataSource, DataStatus, PriceQuote } from "@/services/types";
+import {
+  countryName,
+  type DataSource,
+  type DataStatus,
+  type PriceQuote,
+} from "@/services/types";
 
 const COLOUR_LABELS = { red: "Red", white: "White", rose: "Rose" } as const;
 
@@ -45,8 +50,9 @@ const SHARED_STATUS_NOTES: Record<DataStatus, string | null> = {
  *
  * "editorial": the homepage table. Market names and prices lead; a unit
  * shared by every row moves into the column heading; a status shared by
- * every row becomes one table-level note instead of a badge per row.
- * Columns that yield on narrow screens reappear as a line under the
+ * every row becomes one table-level note instead of a badge per row;
+ * country codes are dropped when every market is named after its
+ * country. Columns that yield on narrow screens reappear as a line under the
  * market name, so no figure is lost. Changes are signed and coloured
  * like every other movement on the page, without glyphs. A change is on
  * the previous price: a week earlier for weekly series, a month earlier
@@ -188,8 +194,14 @@ function EditorialKeyPrices({
   const samples = quotes.filter((quote) => quote.status === "illustrative");
   const allSamples = quotes.length > 0 && samples.length === quotes.length;
   const showStatusColumn = samples.length > 0 && !allSamples;
-  // Estimates that span every colour leave the wine column empty.
+  // The wine column shows when any price is for one colour; estimates
+  // that span every colour read "All" in it.
   const showWineColumn = quotes.some((quote) => quote.colour);
+  // A market named after its country needs no country code beside it;
+  // codes stay on every row while any market is a region.
+  const showCountryCodes = quotes.some(
+    (quote) => quote.market !== countryName(quote.country),
+  );
   const statusNote = allSamples ? SHARED_STATUS_NOTES.illustrative : null;
   // The annual column ends the visible row until the observed (and status)
   // columns appear; it then drops its right padding to keep the table
@@ -249,18 +261,22 @@ function EditorialKeyPrices({
                 <tr key={quote.id} className="border-b border-rule">
                   <th scope="row" className={`${TD} font-normal`}>
                     <span className="flex items-baseline gap-2">
-                      <span className="hidden sm:inline-flex">
-                        <CountryLabel code={quote.country} variant="plain" />
-                      </span>
+                      {showCountryCodes ? (
+                        <span className="hidden sm:inline-flex">
+                          <CountryLabel code={quote.country} variant="plain" />
+                        </span>
+                      ) : null}
                       <span className="min-w-0">
                         <span className="block text-[0.9375rem] leading-snug font-semibold text-ink">
                           {quote.market}
                         </span>
                         <span className="block text-xs leading-snug text-ink-soft lg:hidden">
-                          <span className="sm:hidden">
-                            <CountryLabel code={quote.country} variant="plain" />{" "}
-                            &middot;{" "}
-                          </span>
+                          {showCountryCodes ? (
+                            <span className="sm:hidden">
+                              <CountryLabel code={quote.country} variant="plain" />{" "}
+                              &middot;{" "}
+                            </span>
+                          ) : null}
                           {colour ? (
                             <span className="md:hidden">{colour} &middot; </span>
                           ) : null}
@@ -282,7 +298,7 @@ function EditorialKeyPrices({
                   </th>
                   {showWineColumn ? (
                     <td className={`${TD} hidden text-sm text-ink-soft md:table-cell`}>
-                      {colour ?? "-"}
+                      {colour ?? "All"}
                     </td>
                   ) : null}
                   <td className={`${TD} text-right whitespace-nowrap`}>
