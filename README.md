@@ -79,9 +79,9 @@ from the sitemap and marked noindex.
   use `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
-  and contact messages; `/trade` and the homepage trade panel show
-  Eurostat figures, the Markets pages, the homepage key prices and the
-  market strip add MAPA's national wine prices to the illustrative series,
+  and contact messages; `/trade` shows Eurostat figures, the Markets
+  pages and the homepage key prices add MAPA's national wine prices to
+  the illustrative series,
   the Markets pages add the Spanish and French regional prices, the
   Markets pages and the homepage show the national bulk prices of
   Portugal, France and Italy computed from the trade figures,

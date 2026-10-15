@@ -163,8 +163,14 @@ function priceUnit(row: MarketRow): PriceUnit | null {
   return PRICE_UNITS.includes(unit) ? unit : null;
 }
 
+/**
+ * The market a price is for: the country for a national average, which
+ * every country has, otherwise the appellation or region.
+ */
 function marketName(row: MarketRow): string {
-  return row.series.appellation ?? row.series.region;
+  const { series } = row;
+  if (series.region === NATIONAL_AVERAGE) return COUNTRY_NAMES[series.country];
+  return series.appellation ?? series.region;
 }
 
 function round2(value: number): number {
@@ -352,17 +358,9 @@ async function importedPrices(): Promise<CataloguePrice[]> {
   );
 }
 
-/**
- * A real quote's strip name: the country for a national average, which
- * every country has, otherwise the market; then the colour, if any.
- */
+/** A real quote's strip name: its market, then the colour, if any. */
 function stripName(row: MarketRow): string {
-  const { series } = row;
-  const market =
-    series.region === NATIONAL_AVERAGE
-      ? COUNTRY_NAMES[series.country]
-      : marketName(row);
-  return [market, series.colour].filter(Boolean).join(" ");
+  return [marketName(row), row.series.colour].filter(Boolean).join(" ");
 }
 
 function sourceOf(row: MarketRow): DataSource {
