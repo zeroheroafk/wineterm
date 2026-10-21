@@ -194,8 +194,10 @@ Status legend:
   Portugal's, 77% of France's and 79% of Italy's since July 2025), and an
   export average for Spain, whose price is MAPA's, were computed first
   and are no longer: their observations were cleared on 2 October 2026,
-  and the migration `drop_unused_trade_price_series`, not yet applied,
-  removes their empty series.
+  and their empty series were removed by hand afterwards. On 21 October
+  2026 the database held only the three national series, while the
+  migration `drop_unused_trade_price_series` was still absent from its
+  migration history: applying it now finds nothing to delete.
 - **In the database:** source `wineterm-trade-estimate` (shown as
   "Eurostat Comext, calculated by WineTerm"), classification `estimated`;
   observations with status `estimate`, dated to the last day of the

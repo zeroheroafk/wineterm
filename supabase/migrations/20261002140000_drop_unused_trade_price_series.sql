@@ -2,10 +2,12 @@
 -- observations: the import averages, Spain's export average and the
 -- export averages that moved to the national codes.
 --
--- Not yet applied: the Supabase MCP server waits for a confirmation of
--- deletes that did not reach the user. Apply it with the Supabase CLI or
--- the SQL editor. Until then the empty series are harmless, since the
--- site lists only series with observations.
+-- The Supabase MCP server waited for a confirmation of these deletes
+-- that never reached the user, so the series were removed by hand
+-- instead: on 21 October 2026 the database held only the three national
+-- series, and this migration was still absent from its migration
+-- history. Applying it with the Supabase CLI records it and deletes
+-- nothing.
 delete from public.market_series as s
  where s.source_id = 'wineterm-trade-estimate'
    and s.code in (
