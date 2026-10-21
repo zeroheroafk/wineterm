@@ -62,9 +62,10 @@ export default async function OutlookPage() {
   const home = getIllustrativeHomeService();
 
   const edition = await outlook.getCurrentEdition();
+  const campaign = await supply.getCurrentCampaign();
   const [balances, forecasts, tradeSummaries, tradePeriod, keyPrices, updatedAt] =
     await Promise.all([
-      supply.getBalances("2026/27"),
+      supply.getBalances(campaign),
       harvest.getCountryForecasts(),
       trade.getCategorySummaries(),
       trade.getPeriod(),
@@ -139,7 +140,7 @@ export default async function OutlookPage() {
           <OutlookSection number={3} id="supply" title="Supply and stocks">
             <OutlookProse paragraphs={edition.supplyAndStocks} />
             <div className="mt-5">
-              <BalanceTable rows={balances} campaign="2026/27" />
+              <BalanceTable rows={balances} campaign={campaign} />
             </div>
           </OutlookSection>
 
@@ -154,7 +155,7 @@ export default async function OutlookPage() {
           <OutlookSection number={5} id="harvest" title="Harvest conditions">
             <OutlookProse paragraphs={edition.harvest} />
             <div className="mt-5">
-              <ForecastRangeTable forecasts={forecasts} />
+              <ForecastRangeTable forecasts={forecasts} campaign={campaign} />
             </div>
             <p className="mt-2">
               <Link

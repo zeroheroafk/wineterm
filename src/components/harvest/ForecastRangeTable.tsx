@@ -22,10 +22,13 @@ const DIRECTION_TEXT = {
  */
 export function ForecastRangeTable({
   forecasts,
+  campaign,
   withCommentary = false,
   note = "First estimates precede the harvest declarations and are revised through the autumn.",
 }: {
   forecasts: CountryHarvestForecast[];
+  /** The campaign the forecasts are for, e.g. "2026/27". */
+  campaign: string;
   withCommentary?: boolean;
   /** What the reader should know about the figures, under the table. */
   note?: string;
@@ -55,7 +58,7 @@ export function ForecastRangeTable({
       <div className="border border-rule bg-paper">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink px-4 py-2">
           <p className="wt-label text-ink">
-            2026/27 production forecasts
+            {campaign} production forecasts
             <span aria-hidden="true" className="mx-2 text-rule">
               &middot;
             </span>

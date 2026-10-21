@@ -16,7 +16,7 @@ import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatMonthYear } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getSource } from "@/services/markets/sources";
-import { getSupplyService } from "@/services/supply/service";
+import { campaignBefore, getSupplyService } from "@/services/supply/service";
 
 export const metadata: Metadata = {
   title: "Crop & Supply",
@@ -30,9 +30,10 @@ export const revalidate = 3600;
 export default async function SupplyPage() {
   const supply = getSupplyService();
   const current = await supply.getCurrentCampaign();
+  const previous = campaignBefore(current);
   const [currentBalances, previousBalances, spain] = await Promise.all([
     supply.getBalances(current),
-    supply.getBalances("2025/26"),
+    supply.getBalances(previous),
     supply.getSpainBalance(),
   ]);
   const spainSource = spain ? getSource(spain.sourceId) : null;
@@ -105,7 +106,7 @@ export default async function SupplyPage() {
       <section id="balance" className="mt-10 scroll-mt-6">
         <SectionHeader
           kicker="Current campaign"
-          title="2026/27 balance, first estimates"
+          title={`${current} balance, first estimates`}
           description={`${spain ? "Illustrative samples. " : ""}Availability is opening stocks plus estimated production plus imports. Closing stocks are derived from the balance identity and revised as declarations arrive.`}
         />
         <div className="mt-5">
@@ -116,11 +117,11 @@ export default async function SupplyPage() {
       <section className="mt-12">
         <SectionHeader
           kicker="Campaign comparison"
-          title="2025/26 balance, provisional"
-          description={`${spain ? "Illustrative samples. " : ""}The previous campaign with the residual line: the difference between the balance-derived closing stocks and the opening stocks the countries actually declared for 2026/27.`}
+          title={`${previous} balance, provisional`}
+          description={`${spain ? "Illustrative samples. " : ""}The previous campaign with the residual line: the difference between the balance-derived closing stocks and the opening stocks the countries actually declared for ${current}.`}
         />
         <div className="mt-5">
-          <BalanceTable rows={previousBalances} campaign="2025/26" />
+          <BalanceTable rows={previousBalances} campaign={previous} />
         </div>
       </section>
 

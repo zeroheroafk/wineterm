@@ -296,7 +296,7 @@ function campaignOfMonth(month: string): string {
 }
 
 /** The campaign before, "2025/26" to "2024/25". */
-function campaignBefore(campaign: string): string {
+export function campaignBefore(campaign: string): string {
   const start = Number(campaign.slice(0, 4)) - 1;
   return `${start}/${String((start + 1) % 100).padStart(2, "0")}`;
 }

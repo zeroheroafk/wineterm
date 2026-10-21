@@ -13,7 +13,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatMonthYear, formatPrice } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
-import { getSupplyService } from "@/services/supply/service";
+import { campaignBefore, getSupplyService } from "@/services/supply/service";
 import { getSource } from "@/services/markets/sources";
 import { COUNTRY_NAMES, PRODUCER_COUNTRIES } from "@/services/types";
 
@@ -32,12 +32,14 @@ function percentChange(current: number, previous: number | null): number | null 
 
 export default async function ProductionPage() {
   const supply = getSupplyService();
-  const [comparisons, history, campaigns, spain] = await Promise.all([
+  const [comparisons, history, campaigns, current, spain] = await Promise.all([
     supply.getProductionComparisons(),
     supply.getProductionByCampaign(),
     supply.getCampaigns(),
+    supply.getCurrentCampaign(),
     supply.getSpainProduction(),
   ]);
+  const previous = campaignBefore(current);
   const source = getSource("sample-supply-stats");
   const spainSource = spain ? getSource(spain.sourceId) : null;
   const [latestCampaign, previousCampaign] = spain?.campaigns ?? [];
@@ -62,7 +64,7 @@ export default async function ProductionPage() {
         description={
           spain
             ? "Campaign production by country, in million hectolitres. Spain's wine made since 1 August is declared to the Ministry of Agriculture every month (INFOVI) and leads the page; the country estimates and history below are illustrative samples."
-            : "Campaign production by country: the 2026/27 first estimates against the previous campaign and the five-year average of completed campaigns. All volumes in million hectolitres; development figures are illustrative samples."
+            : `Campaign production by country: the ${current} first estimates against the previous campaign and the five-year average of completed campaigns. All volumes in million hectolitres; development figures are illustrative samples.`
         }
         activeHref="/supply/production"
       />
@@ -227,7 +229,7 @@ export default async function ProductionPage() {
       <section className="mt-10">
         <SectionHeader
           kicker="Comparison"
-          title="2026/27 estimates in context"
+          title={`${current} estimates in context`}
           description={
             spain
               ? "Illustrative samples: first estimates for each country against the previous campaign and the five-year average."
@@ -245,8 +247,8 @@ export default async function ProductionPage() {
             <GroupedBarChart
               points={chartPoints}
               series={[
-                { key: "current", name: "2026/27 est" },
-                { key: "previous", name: "2025/26" },
+                { key: "current", name: `${current} est` },
+                { key: "previous", name: previous },
                 { key: "fiveYear", name: "5-yr avg" },
               ]}
               unit="Mhl"
@@ -269,10 +271,10 @@ export default async function ProductionPage() {
                   Country
                 </th>
                 <th scope="col" className={TH_RIGHT}>
-                  2026/27 est (Mhl)
+                  {current} est (Mhl)
                 </th>
                 <th scope="col" className={TH_RIGHT}>
-                  2025/26
+                  {previous}
                 </th>
                 <th scope="col" className={`${TH_RIGHT} hidden sm:table-cell`}>
                   5-yr avg

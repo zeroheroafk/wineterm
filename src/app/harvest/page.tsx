@@ -13,20 +13,29 @@ import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getHarvestService } from "@/services/harvest/service";
 import { getSource } from "@/services/markets/sources";
+import { getSupplyService } from "@/services/supply/service";
 
-export const metadata: Metadata = {
-  title: "Harvest",
-  description:
-    "The 2026 European harvest: official production forecasts for Spain, Portugal, France and Italy, with regional stages, progress, weather and yield expectations.",
-};
+/** The year of the harvest that opens a campaign: "2026" for 2026/27. */
+function harvestYear(campaign: string): string {
+  return campaign.slice(0, 4);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const campaign = await getSupplyService().getCurrentCampaign();
+  return {
+    title: "Harvest",
+    description: `The ${harvestYear(campaign)} European harvest: official production forecasts for Spain, Portugal, France and Italy, with regional stages, progress, weather and yield expectations.`,
+  };
+}
 
 export default async function HarvestPage() {
   const harvest = getHarvestService();
-  const [summary, forecasts, regions, timeline] = await Promise.all([
+  const [summary, forecasts, regions, timeline, campaign] = await Promise.all([
     harvest.getSummary(),
     harvest.getCountryForecasts(),
     harvest.getRegionReports(),
     harvest.getTimeline(),
+    getSupplyService().getCurrentCampaign(),
   ]);
   const fieldSource = getSource("sample-harvest-network");
 
@@ -40,7 +49,7 @@ export default async function HarvestPage() {
         ]}
         kicker="Crop & Supply"
         title="Harvest monitor"
-        description="The 2026 campaign in Spain, Portugal, France and Italy. Production forecasts are the official ones, as each country's forecasters published them; the summary, regional reports and timeline are illustrative samples."
+        description={`The ${harvestYear(campaign)} harvest in Spain, Portugal, France and Italy. Production forecasts are the official ones, as each country's forecasters published them; the summary, regional reports and timeline are illustrative samples.`}
         activeHref="/harvest"
       />
 
@@ -53,6 +62,7 @@ export default async function HarvestPage() {
         <div className="mt-5">
           <ForecastRangeTable
             forecasts={forecasts}
+            campaign={campaign}
             note="Each source counts its own scope: France all wine, including wine for brandy; Portugal wine; Spain wine and must. Forecasts are revised as the harvest goes on."
           />
         </div>
