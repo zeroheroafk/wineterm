@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { Container } from "@/components/layout/Container";
-import { MarketCommentaryBlock } from "@/components/market/MarketCommentaryBlock";
 import { GrapePricesTable } from "@/components/markets/GrapePricesTable";
 import {
   MarketFilterPanel,
@@ -11,6 +10,7 @@ import {
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
 import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { UpdatedAt } from "@/components/ui/SourceLine";
+import { EmptyState } from "@/components/ui/states";
 import { getMarketsService } from "@/services/markets/service";
 import {
   filterFromParams,
@@ -39,7 +39,7 @@ export default function GrapePricesPage({
       <MarketsPageHeader
         crumb="Grape Prices"
         title="Grape Prices"
-        description="Grape prices by region, appellation, variety and harvest. Every observation states how it was established: official campaign averages, registered contracts, cooperative settlements, buyer announcements, reported ranges or clearly labelled WineTerm estimates. Development figures are illustrative samples."
+        description="Grape prices by region, appellation, variety and harvest. Every observation states how it was established: official campaign averages, registered contracts, cooperative settlements, buyer announcements, reported ranges or clearly labelled WineTerm estimates."
         activeHref="/markets/grapes"
       />
 
@@ -59,11 +59,21 @@ async function GrapePricesResults({
   const markets = getMarketsService();
   const filter = filterFromParams(params);
 
-  const [rows, options, commentary] = await Promise.all([
+  const [rows, allRows, options] = await Promise.all([
     markets.getRows("grape", filter),
+    markets.getRows("grape"),
     markets.getFilterOptions("grape"),
-    markets.getCommentary("grape"),
   ]);
+  if (allRows.length === 0) {
+    return (
+      <div className="mt-8">
+        <EmptyState
+          title="No grape price series yet"
+          detail="Grape prices are set in contracts and cooperative settlements, and no public series exists for Spain, Portugal, France or Italy that WineTerm may republish. Series are added as a licensed source or a reporting partner provides them."
+        />
+      </div>
+    );
+  }
 
   const updatedAt = rows[0]?.latest.updatedAt;
 
@@ -151,12 +161,6 @@ async function GrapePricesResults({
           EUR/kg from the original unit.
         </p>
       </div>
-
-      {commentary ? (
-        <div className="mt-10 max-w-3xl">
-          <MarketCommentaryBlock commentary={commentary} />
-        </div>
-      ) : null}
     </>
   );
 }

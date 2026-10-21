@@ -1,22 +1,15 @@
 /**
  * Trade service: category summaries, ranked partners, relationships and
- * monthly evolution. Categories are never combined, except that the
- * homepage overview adds up the wine categories, whose volumes are all
- * litres of wine; grape must stays apart.
- *
- * With Supabase configured, figures are Eurostat Comext statistics read
- * through the trade aggregate functions in the database. Without it, they
- * come from the illustrative fixtures.
+ * monthly evolution, from the Eurostat Comext statistics read through the
+ * trade aggregate functions in the database. Categories are never
+ * combined, except that the Market data overview adds up the wine
+ * categories, whose volumes are all litres of wine; grape must stays
+ * apart. Without a database there is no trade service, and the pages say
+ * that no figures are connected.
  */
 
 import { cacheLife, cacheTag } from "next/cache";
 
-import {
-  monthlyExportVolumes,
-  TRADE_UPDATED_AT,
-  tradeCategoryDetails,
-  tradePeriod,
-} from "@/fixtures/trade";
 import type { Database } from "@/lib/database.types";
 import { formatMonthYear } from "@/lib/format";
 import { getSupabase } from "@/lib/supabase";
@@ -24,7 +17,6 @@ import { getSource, type MarketSource } from "@/services/markets/sources";
 import {
   TRADE_CATEGORIES,
   TRADE_CATEGORY_CODES,
-  TRADE_CATEGORY_LABELS,
   type TradeCategory,
   type TradeCategoryDetail,
   type TradeCategorySummary,
@@ -49,46 +41,8 @@ export interface TradeService {
   getCategoryDetail(category: TradeCategory): Promise<TradeCategoryDetail | null>;
   getAllCategoryDetails(): Promise<TradeCategoryDetail[]>;
   getMonthlyExportVolumes(category: TradeCategory): Promise<TradeMonthlyPoint[]>;
-  /** Homepage view: wine exporters, leading destinations and product split. */
+  /** Overview: wine exporters, leading destinations and product split. */
   getOverview(): Promise<TradeOverview>;
-}
-
-class FixtureTradeService implements TradeService {
-  async getPeriod(): Promise<TradePeriod> {
-    return tradePeriod;
-  }
-
-  async getSource(): Promise<MarketSource> {
-    return getSource("sample-customs");
-  }
-
-  async getUpdatedAt(): Promise<string> {
-    return TRADE_UPDATED_AT;
-  }
-
-  async getCategorySummaries(): Promise<TradeCategorySummary[]> {
-    return tradeCategoryDetails.map((d) => d.summary);
-  }
-
-  async getCategoryDetail(
-    category: TradeCategory,
-  ): Promise<TradeCategoryDetail | null> {
-    return tradeCategoryDetails.find((d) => d.category === category) ?? null;
-  }
-
-  async getAllCategoryDetails(): Promise<TradeCategoryDetail[]> {
-    return tradeCategoryDetails;
-  }
-
-  async getMonthlyExportVolumes(
-    category: TradeCategory,
-  ): Promise<TradeMonthlyPoint[]> {
-    return monthlyExportVolumes(category);
-  }
-
-  async getOverview(): Promise<TradeOverview> {
-    return buildTradeOverview(tradePeriod, tradeCategoryDetails);
-  }
 }
 
 type Rows<Name extends keyof Database["public"]["Functions"]> =
@@ -109,7 +63,7 @@ const EUR_PER_MEUR = 1_000_000;
 const MONTHS_CHARTED = 24;
 
 /**
- * The categories that are wine, and are added up on the homepage: their
+ * The categories that are wine, and are added up in the overview: their
  * volumes are all litres of wine. Grape must is never added to them.
  */
 export const WINE_CATEGORIES: TradeCategory[] = [
@@ -127,8 +81,6 @@ const SPLIT_LABELS: Record<TradeCategory, string> = {
   must: "Grape must",
 };
 
-const round1 = (value: number) => Math.round(value * 10) / 10;
-
 /** "Bulk, bottled, bag-in-box and sparkling wine" for the given categories. */
 function wineLabel(categories: TradeCategory[]): string {
   const names = categories.map((category) => SPLIT_LABELS[category].toLowerCase());
@@ -137,88 +89,6 @@ function wineLabel(categories: TradeCategory[]): string {
       ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
       : (names[0] ?? "");
   return `${list.charAt(0).toUpperCase()}${list.slice(1)} wine`;
-}
-
-/**
- * The homepage overview from category details, for trade data without
- * the database aggregates:
- *
- * - exporters: each country's exports summed across the wine categories;
- *   the year-on-year change compares that sum with the same rows' volumes
- *   a year earlier, and is unknown when any of them is;
- * - destinations: the bottled-wine ranking as published, because the
- *   destination lists are short rankings and cannot be summed across
- *   categories without missing partners;
- * - split: each wine category's share of their combined volume.
- */
-export function buildTradeOverview(
-  period: TradePeriod,
-  details: TradeCategoryDetail[],
-): TradeOverview {
-  const wine = WINE_CATEGORIES.flatMap((category) => {
-    const detail = details.find((d) => d.category === category);
-    return detail ? [detail] : [];
-  });
-  const first = wine[0];
-  if (!first) throw new Error("No wine categories in the trade data");
-
-  const totals = new Map<string, { current: number; previous: number | null }>();
-  for (const detail of wine) {
-    for (const row of detail.exporters) {
-      const sum = totals.get(row.country) ?? { current: 0, previous: 0 };
-      sum.current += row.volumeMhl;
-      sum.previous =
-        sum.previous === null || row.yoyPercent === null
-          ? null
-          : sum.previous + row.volumeMhl / (1 + row.yoyPercent / 100);
-      totals.set(row.country, sum);
-    }
-  }
-  const exporters = [...totals.entries()]
-    .map(([country, sum]) => ({
-      country,
-      volumeMhl: round1(sum.current),
-      yoyPercent: change(sum.current, sum.previous),
-    }))
-    .sort((a, b) => b.volumeMhl - a.volumeMhl)
-    .map((row, index) => ({ rank: index + 1, ...row }));
-
-  const bottled = wine.find((detail) => detail.category === "bottled");
-  const destinations = (bottled?.destinations ?? []).map((row) => ({
-    rank: row.rank,
-    country: row.country,
-    volumeMhl: row.volumeMhl,
-    yoyPercent: row.yoyPercent,
-  }));
-
-  const wineMhl = wine.reduce(
-    (sum, detail) => sum + detail.summary.exportVolumeMhl,
-    0,
-  );
-  const split = wine.map((detail) => ({
-    label: SPLIT_LABELS[detail.category],
-    volumeMhl: detail.summary.exportVolumeMhl,
-    sharePercent: wineMhl > 0 ? (detail.summary.exportVolumeMhl / wineMhl) * 100 : 0,
-  }));
-
-  const source = getSource(first.sourceId);
-  return {
-    period: period.label,
-    exporters,
-    exportersLabel: wineLabel(wine.map((detail) => detail.category)),
-    destinations,
-    destinationsLabel: TRADE_CATEGORY_LABELS.bottled,
-    split,
-    splitTotalMhl: round1(wineMhl),
-    scopeNote:
-      "Wine adds the bulk, bottled, bag-in-box and sparkling categories; grape must is a separate subheading and is not included.",
-    status: source.isSample ? "illustrative" : first.summary.status,
-    source: { name: source.name, url: source.url },
-    updatedAt: wine
-      .map((detail) => detail.updatedAt)
-      .sort()
-      .at(-1)!,
-  };
 }
 
 const NOTES: Record<TradeCategory, string> = {
@@ -533,21 +403,10 @@ function detail(snapshot: Snapshot, category: TradeCategory): TradeCategoryDetai
 }
 
 let service: TradeService | null = null;
-let illustrative: TradeService | null = null;
 
-/** Eurostat figures when Supabase is configured, fixtures otherwise. */
-export function getTradeService(): TradeService {
-  service ??= getSupabase()
-    ? new SupabaseTradeService()
-    : new FixtureTradeService();
+/** The Eurostat figures when Supabase is configured; null otherwise. */
+export function getTradeService(): TradeService | null {
+  if (!getSupabase()) return null;
+  service ??= new SupabaseTradeService();
   return service;
-}
-
-/**
- * Always the illustrative fixtures, for sample publications such as the
- * Market Outlook, whose text was written against them.
- */
-export function getIllustrativeTradeService(): TradeService {
-  illustrative ??= new FixtureTradeService();
-  return illustrative;
 }

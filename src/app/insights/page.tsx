@@ -13,7 +13,7 @@ import { getEditorialService } from "@/services/editorial";
 export const metadata: Metadata = {
   title: "Insights",
   description:
-    "WineTerm editorial: the Market Outlook, analysis, news, the Weekly Briefing and monthly reports for the professional wine trade.",
+    "WineTerm editorial: analysis, news, the Weekly Briefing and monthly reports for the professional wine trade.",
 };
 
 export default async function InsightsPage() {

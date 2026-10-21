@@ -57,12 +57,12 @@ export const primaryNavigation: NavSection[] = [
       {
         label: "Supply",
         href: "/data#supply",
-        description: "Wine available by country this campaign",
+        description: "Spain's declared wine balance this campaign",
       },
       {
         label: "Harvest",
         href: "/data#harvest",
-        description: "Stage, condition and expected crop by region",
+        description: "Official production estimates by country",
       },
       {
         label: "Trade",
@@ -89,17 +89,12 @@ export const primaryNavigation: NavSection[] = [
       {
         label: "Availability",
         href: "/supply",
-        description: "Supply balance: stocks, production, use and trade",
+        description: "Spain's declared balance: stocks, production, entries and exits",
       },
       {
-        label: "Harvest Outlook",
+        label: "Harvest",
         href: "/harvest",
-        description: "Forecasts and progress for the coming vintage",
-      },
-      {
-        label: "Weather",
-        href: "/harvest#weather",
-        description: "Growing conditions across key regions",
+        description: "Official production estimates for the vintage",
       },
     ],
   },

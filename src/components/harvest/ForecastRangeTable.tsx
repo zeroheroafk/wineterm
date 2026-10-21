@@ -15,16 +15,17 @@ const DIRECTION_TEXT = {
 } as const;
 
 /**
- * Country production forecasts on a shared scale, with the previous
+ * Country production estimates on a shared scale, with the previous
  * campaign marked. A range shows as a bar and a single figure as a dot:
- * first estimates carry real uncertainty and are shown as published. A
- * country without a forecast says so.
+ * estimates carry real uncertainty and are shown as published, each with
+ * its status, a forecast before the harvest or a provisional figure once
+ * it is in. A country without an estimate says so.
  */
 export function ForecastRangeTable({
   forecasts,
   campaign,
   withCommentary = false,
-  note = "First estimates precede the harvest declarations and are revised through the autumn.",
+  note = "Estimates precede the harvest declarations and are revised through the autumn.",
 }: {
   forecasts: CountryHarvestForecast[];
   /** The campaign the forecasts are for, e.g. "2026/27". */
@@ -58,7 +59,7 @@ export function ForecastRangeTable({
       <div className="border border-rule bg-paper">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink px-4 py-2">
           <p className="wt-label text-ink">
-            {campaign} production forecasts
+            {campaign} production estimates
             <span aria-hidden="true" className="mx-2 text-rule">
               &middot;
             </span>
@@ -67,14 +68,14 @@ export function ForecastRangeTable({
           <span className="wt-label flex items-center gap-4 text-ink-soft">
             {hasRanges ? (
               <span className="flex items-center gap-1.5">
-                <span aria-hidden="true" className="h-2 w-4 bg-wine" /> Forecast
+                <span aria-hidden="true" className="h-2 w-4 bg-wine" /> Estimate
                 range
               </span>
             ) : null}
             {hasPoints ? (
               <span className="flex items-center gap-1.5">
                 <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-wine" />{" "}
-                Forecast
+                Estimate
               </span>
             ) : null}
             <span className="flex items-center gap-1.5">
@@ -136,7 +137,7 @@ export function ForecastRangeTable({
                       <span className="ml-1.5 text-[0.65rem] text-ink-soft">Mhl</span>
                     </>
                   ) : (
-                    <span className="wt-label text-ink-soft">No forecast yet</span>
+                    <span className="wt-label text-ink-soft">No estimate yet</span>
                   )}
                 </span>
                 <span className="flex items-center gap-1.5 text-xs whitespace-nowrap text-ink">

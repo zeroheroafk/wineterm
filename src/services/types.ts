@@ -2,8 +2,8 @@
  * WineTerm domain types.
  *
  * These types define the contract between the interface and the data
- * services. Real data sources can replace the fixture-backed services in
- * src/services without touching any component.
+ * services in src/services, so a data source can be replaced without
+ * touching any component.
  */
 
 /** ISO 3166-1 alpha-2, uppercase. Producer countries plus trade partners. */
@@ -109,12 +109,7 @@ export function describeDegreeBasis(basis: DegreeBasis): string {
  * Lifecycle status of a data series or a single observation.
  * Rendered by the DataStatus component.
  */
-export type DataStatus =
-  | "final"
-  | "provisional"
-  | "estimate"
-  | "forecast"
-  | "illustrative";
+export type DataStatus = "final" | "provisional" | "estimate" | "forecast";
 
 export interface DataSource {
   /** Publishing body, e.g. a ministry or statistics office. */
@@ -175,19 +170,6 @@ export function quoteFromPerDegree(
 export interface PricePoint {
   date: string;
   value: number;
-}
-
-/** A historical series backing a chart. */
-export interface PriceSeries {
-  id: string;
-  code: string;
-  name: string;
-  unit: PriceUnit;
-  country: CountryCode;
-  points: PricePoint[];
-  status: DataStatus;
-  source: DataSource;
-  updatedAt: string;
 }
 
 export type ArticleKind =
@@ -272,30 +254,6 @@ export interface ArticleDetail extends Article {
   tables?: ArticleTable[];
 }
 
-/** A short dated commentary block attached to a market table. */
-export interface MarketCommentary {
-  id: string;
-  market: string;
-  body: string;
-  author: string;
-  publishedAt: string;
-}
-
-/** One entry in the compact market status strip. */
-export interface StripQuote {
-  id: string;
-  /** Short display name, e.g. "CLM red". */
-  name: string;
-  country: CountryCode;
-  value: number;
-  unit: PriceUnit;
-  changePercent: number;
-  observedAt: string;
-  status: DataStatus;
-  /** Publisher of a real quote; illustrative quotes have none. */
-  source?: DataSource;
-}
-
 /** The editorial market briefing that leads the homepage. */
 export interface MarketBriefing {
   headline: string;
@@ -306,57 +264,6 @@ export interface MarketBriefing {
   status: DataStatus;
   /** Where the full text is read. */
   href: string;
-}
-
-/**
- * One producer country's row in the supply snapshot, taken from the
- * campaign's supply balance.
- */
-export interface SupplyCountryRow {
-  country: ProducerCountry;
-  /** Estimated production for the campaign, million hl. */
-  productionMhl: number;
-  /** Opening stocks carried into the campaign, million hl. */
-  openingStocksMhl: number;
-  /** Imports expected over the campaign, as stated in the balance, million hl. */
-  importsMhl: number;
-  /** Opening stocks plus production plus imports, million hl. */
-  availabilityMhl: number;
-  /** Availability against the previous campaign's balance, percent. */
-  vsPreviousPercent: number;
-}
-
-export interface SupplySnapshot {
-  /** Campaign code, e.g. "2026/27". */
-  campaign: string;
-  /** Campaign the comparison column refers to, e.g. "2025/26". */
-  previousCampaign: string;
-  rows: SupplyCountryRow[];
-  /** The desk's one-sentence reading of the rows. */
-  takeaway: string;
-  /** Short definition of the figures; full methodology lives elsewhere. */
-  note: string;
-  status: DataStatus;
-  source: DataSource;
-  updatedAt: string;
-}
-
-export type HarvestStageDirection = "up" | "down" | "flat";
-export type HarvestCondition = "good" | "mixed" | "stressed";
-
-/** One region's row in the harvest monitor. */
-export interface HarvestRegion {
-  id: string;
-  region: string;
-  country: ProducerCountry;
-  /** Current phenological or picking stage. */
-  stage: string;
-  condition: HarvestCondition;
-  conditionNote: string;
-  /** Expected crop against the previous vintage. */
-  expected: HarvestStageDirection;
-  updatedAt: string;
-  status: DataStatus;
 }
 
 /** One ranked row in a trade flow table; any ISO 3166-1 alpha-2 country. */

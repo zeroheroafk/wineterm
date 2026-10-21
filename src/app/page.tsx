@@ -82,9 +82,8 @@ export default async function Home() {
         />
         <div className="mt-4">
           <KeyPricesTable
-            variant="editorial"
             quotes={keyPrices}
-            updatedAt={updatedAt}
+            updatedAt={updatedAt ?? undefined}
             methodologyHref="/insights/methodology#bulk-prices"
           />
         </div>

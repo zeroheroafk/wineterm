@@ -51,9 +51,8 @@ export function SiteFooter() {
             &copy; <CurrentDate options={{ year: "numeric" }} unit="year" />{" "}
             WineTerm. All rights reserved. Content is provided for
             professional information purposes and is not investment advice.
-            During development, figures are illustrative samples, not live
-            market data, unless credited to an official source such as
-            Eurostat or MAPA.
+            Every figure is credited to its source, such as Eurostat or
+            MAPA, or marked as a WineTerm estimate.
           </p>
         </div>
       </Container>

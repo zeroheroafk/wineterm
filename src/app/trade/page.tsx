@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
@@ -8,19 +9,30 @@ import { TradeFlowsRelationTable } from "@/components/trade/TradeFlowsRelationTa
 import { TradePartnersTable } from "@/components/trade/TradePartnersTable";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
+import { EmptyState } from "@/components/ui/states";
 import { primaryNavigation } from "@/lib/navigation";
 import { getTradeService } from "@/services/trade/service";
 import {
   TRADE_CATEGORIES,
   TRADE_CATEGORY_LABELS,
 } from "@/services/trade/types";
-import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Trade",
   description:
     "Wine trade of Spain, Portugal, France and Italy by customs category: bulk, bottled and bag-in-box still wine, sparkling wine and grape must. Volumes, values, unit values and partners.",
 };
+
+const header = (
+  <SectionPageHeader
+    section={primaryNavigation[3]}
+    crumbs={[{ label: "Trade" }]}
+    kicker="Trade"
+    title="Imports and exports"
+    description="Trade of Spain, Portugal, France and Italy with every partner, by customs category. Bulk, bottled and bag-in-box still wine, sparkling wine and grape must are separate subheadings and are never combined. Official Eurostat statistics; volumes are the litres declared for each shipment."
+    activeHref="/trade"
+  />
+);
 
 /**
  * Eurostat publishes monthly; the page is regenerated at most hourly so
@@ -31,6 +43,20 @@ export default async function TradePage() {
   cacheLife("hours");
 
   const trade = getTradeService();
+  if (!trade) {
+    return (
+      <Container className="pb-16">
+        {header}
+        <div className="mt-10">
+          <EmptyState
+            title="No trade figures to show"
+            detail="Trade figures are read from the database, which this build is not connected to."
+          />
+        </div>
+      </Container>
+    );
+  }
+
   const [period, source, updatedAt, summaries, details, monthly] =
     await Promise.all([
       trade.getPeriod(),
@@ -48,18 +74,7 @@ export default async function TradePage() {
 
   return (
     <Container className="pb-16">
-      <SectionPageHeader
-        section={primaryNavigation[3]}
-        crumbs={[{ label: "Trade" }]}
-        kicker="Trade"
-        title="Imports and exports"
-        description={
-          source.isSample
-            ? "Trade of Spain, Portugal, France and Italy by customs category. Bulk, bottled and bag-in-box still wine, sparkling wine and grape must are separate subheadings and are never combined. Development figures are illustrative samples."
-            : "Trade of Spain, Portugal, France and Italy with every partner, by customs category. Bulk, bottled and bag-in-box still wine, sparkling wine and grape must are separate subheadings and are never combined. Official Eurostat statistics; volumes are the litres declared for each shipment."
-        }
-        activeHref="/trade"
-      />
+      {header}
 
       <section className="mt-10">
         <SectionHeader
@@ -145,13 +160,11 @@ export default async function TradePage() {
       ))}
 
       <p className="wt-label mt-10 max-w-3xl leading-relaxed text-ink-soft">
-        Source: {source.name}, {source.cadence.toLowerCase()}.
-        {source.isSample
-          ? ""
-          : " The period ends at the latest month all four countries have published."}{" "}
-        Shares are within each category and direction. Monthly changes
-        compare the latest month with the month before; annual changes
-        compare rolling 12-month periods.
+        Source: {source.name}, {source.cadence.toLowerCase()}. The period
+        ends at the latest month all four countries have published. Shares
+        are within each category and direction. Monthly changes compare the
+        latest month with the month before; annual changes compare rolling
+        12-month periods.
       </p>
     </Container>
   );

@@ -1,7 +1,7 @@
-# Real data sources
+# Data sources
 
-Candidate providers to replace the illustrative fixtures, mapped to the
-WineTerm sections they would feed. Researched on 2026-09-26 through web
+The providers behind each WineTerm section, and the candidates still to
+connect, mapped to the sections they feed. Researched on 2026-09-26 through web
 search, then checked against live responses on 2026-09-26 and 27. The
 development environment could not reach the providers then, so those
 checks ran from Supabase: Edge Functions and `pg_net` requests made from
@@ -174,8 +174,8 @@ Status legend:
   06:29 UTC, re-imports the current year, and the previous one in January.
   See `README.md`, section Database.
 - **Licence:** Law 37/2007, as the other MAPA statistics.
-- **Feeds:** the Markets pages; the Castilla-La Mancha and Extremadura
-  samples of wine without GI give way to these series.
+- **Feeds:** the Markets pages, as Spain's regional prices after the
+  national averages.
 
 ### Spain: Ciudad Real market (Cámara de Comercio)
 
@@ -255,7 +255,7 @@ Status legend:
   basins' averages since 1 August, organic wine and PDO volumes, as prose
   and a PDF; not imported, since the data page gives each month's own
   price.
-- **Feeds:** the Markets pages. The French samples already give way to
+- **Feeds:** the Markets pages, as France's regional prices beside
   WineTerm's national estimate.
 - Links: [data page](https://draaf.occitanie.agriculture.gouv.fr/marche-vrac-des-vins-de-la-region-occitanie-donnees-actualisees-a345.html),
   [monthly report, 48 weeks to 1 July 2026](https://draaf.occitanie.agriculture.gouv.fr/suivi-mensuel-du-marche-des-vins-en-vrac-48-semaines-1er-juillet-2026-11-sur-12-a10100.html).

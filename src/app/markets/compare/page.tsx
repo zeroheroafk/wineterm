@@ -19,10 +19,10 @@ import {
 } from "@/components/markets/ComparePicker";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
 import { ResultsFallback } from "@/components/markets/ResultsFallback";
-import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
+import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatPrice } from "@/lib/format";
-import { getMarketsService, isIllustrative } from "@/services/markets/service";
+import { getMarketsService } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
 import {
   FAMILY_REFERENCE_UNIT,
@@ -42,6 +42,7 @@ export const metadata: Metadata = {
 
 const KINDS: MarketKind[] = ["bulk-wine", "grape", "must"];
 
+/** Suggested comparisons; each is offered only when every series exists. */
 const PRESETS: { label: string; codes: string[] }[] = [
   {
     label: "Spain national averages, white and red (MAPA)",
@@ -63,22 +64,6 @@ const PRESETS: { label: string; codes: string[] }[] = [
     label: "National bulk wine averages: Spain (red), Portugal, France, Italy",
     codes: ["ES-NAT-RED-NGI", "PT-NAT-BULK", "FR-NAT-BULK", "IT-NAT-BULK"],
   },
-  {
-    label: "Iberian generic red",
-    codes: ["ES-CLM-RED-GEN", "ES-EXT-RED-GEN", "PT-ALE-RED-GEN"],
-  },
-  {
-    label: "Generic white, Spain and Portugal",
-    codes: ["ES-CLM-WHT-GEN", "PT-LIS-WHT-GEN"],
-  },
-  {
-    label: "PDO bulk red, quoted per litre",
-    codes: ["ES-RIO-RED-PDO", "PT-DOU-RED-PDO"],
-  },
-  {
-    label: "RCGM, Spain and Italy",
-    codes: ["MU-ES-RCGM-WHT", "MU-IT-RCGM"],
-  },
 ];
 
 /** Every comparable row of the catalogue, across the three market kinds. */
@@ -92,23 +77,17 @@ async function comparableRows(): Promise<MarketRow[]> {
  * from the query string, so they render at request time behind the
  * fallback.
  */
-export default async function ComparePage({
+export default function ComparePage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const hasReal = (await comparableRows()).some((row) => !isIllustrative(row));
-
   return (
     <Container className="pb-16">
       <MarketsPageHeader
         crumb="Market Comparison"
         title="Market Comparison"
-        description={
-          hasReal
-            ? "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed, and real prices are compared only with real prices, illustrative samples with samples."
-            : "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed. Development figures are illustrative samples."
-        }
+        description="Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed."
         activeHref="/markets/compare"
       />
 
@@ -127,10 +106,19 @@ async function CompareResults({
   const query = await searchParams;
   const markets = getMarketsService();
   const allRows = await comparableRows();
+  if (allRows.length === 0) {
+    return (
+      <div className="mt-8">
+        <EmptyState
+          title="No series to compare"
+          detail="Series are read from the database, which this build is not connected to."
+        />
+      </div>
+    );
+  }
+
   const allSeries = allRows.map((row) => row.series);
-  const illustrative = new Map(
-    allRows.map((row) => [row.series.code, isIllustrative(row)]),
-  );
+  const codes = new Set(allSeries.map((s) => s.code));
 
   const options: CompareOption[] = allSeries.map((s) => ({
     code: s.code,
@@ -139,10 +127,9 @@ async function CompareResults({
     unitFamily: UNIT_FAMILY[s.unit],
     unit: s.unit,
     currency: s.currency,
-    illustrative: illustrative.get(s.code) ?? true,
   }));
   const presets = PRESETS.filter((preset) =>
-    preset.codes.every((code) => illustrative.has(code)),
+    preset.codes.every((code) => codes.has(code)),
   );
 
   const requested = (firstParam(query, "s") ?? "")
@@ -167,8 +154,7 @@ async function CompareResults({
     const compatible =
       series.kind === first.kind &&
       UNIT_FAMILY[series.unit] === UNIT_FAMILY[first.unit] &&
-      series.currency === first.currency &&
-      illustrative.get(series.code) === illustrative.get(first.code);
+      series.currency === first.currency;
     if (compatible) {
       selected.push(series);
     } else {
@@ -217,7 +203,7 @@ async function CompareResults({
           {dropped.join(", ")}{" "}
           {dropped.length === 1 ? "was" : "were"} removed: series must share
           the same market type, unit family and currency as the first
-          selection, and be real prices or illustrative samples like it.
+          selection.
         </p>
       ) : null}
 
@@ -242,26 +228,28 @@ async function CompareResults({
               wine prices, volume and mass units, or currencies.
             </p>
           </div>
-          <div>
-            <h2 className="wt-label border-b-2 border-ink pb-1.5 text-wine">
-              Suggested comparisons
-            </h2>
-            <ul className="mt-3 space-y-2">
-              {presets.map((preset) => (
-                <li key={preset.label}>
-                  <Link
-                    href={`/markets/compare?s=${preset.codes.join(",")}`}
-                    className="text-sm font-medium text-ink underline decoration-rule underline-offset-2 hover:text-wine-deep"
-                  >
-                    {preset.label}
-                  </Link>
-                  <span className="wt-label ml-2 text-ink-soft">
-                    {preset.codes.length} series
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {presets.length > 0 ? (
+            <div>
+              <h2 className="wt-label border-b-2 border-ink pb-1.5 text-wine">
+                Suggested comparisons
+              </h2>
+              <ul className="mt-3 space-y-2">
+                {presets.map((preset) => (
+                  <li key={preset.label}>
+                    <Link
+                      href={`/markets/compare?s=${preset.codes.join(",")}`}
+                      className="text-sm font-medium text-ink underline decoration-rule underline-offset-2 hover:text-wine-deep"
+                    >
+                      {preset.label}
+                    </Link>
+                    <span className="wt-label ml-2 text-ink-soft">
+                      {preset.codes.length} series
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       ) : (
         <>
@@ -313,9 +301,6 @@ async function CompareResults({
                   <th scope="col" className={TH}>
                     Date
                   </th>
-                  <th scope="col" className={TH}>
-                    Status
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -361,11 +346,6 @@ async function CompareResults({
                       <td className={`${TD} tnum font-mono text-xs text-ink-soft`}>
                         {formatDate(row.latest.date)}
                       </td>
-                      <td className={TD}>
-                        {isIllustrative(row) ? (
-                          <DataStatusLabel status="illustrative" />
-                        ) : null}
-                      </td>
                     </tr>
                   ) : null,
                 )}
@@ -374,7 +354,7 @@ async function CompareResults({
           </ScrollRegion>
           {rows.some((row) => row?.series.perDegree) ? (
             <p className="wt-label mt-2 text-ink-soft">
-              Samples recorded per hectolitre-degree are shown in EUR/hl at the
+              Series recorded per hectolitre-degree are shown in EUR/hl at the
               product&apos;s strength; each series page gives the recorded
               value and the strength used.
             </p>

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { MaybePercent } from "@/components/markets/cells";
 import { PriceCell } from "@/components/market/PriceCell";
 import { CountryLabel } from "@/components/ui/CountryLabel";
-import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import type { MarketRow } from "@/services/markets/types";
 
 /** Compact list of related series for the market detail sidebar. */
@@ -24,13 +23,8 @@ export function RelatedMarketsList({ rows }: { rows: MarketRow[] }) {
                   {row.series.name}
                 </span>
               </span>
-              <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span className="wt-label whitespace-nowrap text-ink-soft">
-                  {row.series.code}
-                </span>
-                {row.latest.status === "illustrative" ? (
-                  <DataStatusLabel status="illustrative" />
-                ) : null}
+              <span className="wt-label mt-1 block whitespace-nowrap text-ink-soft">
+                {row.series.code}
               </span>
             </span>
             <span className="flex shrink-0 items-center gap-3">

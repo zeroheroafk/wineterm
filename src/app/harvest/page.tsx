@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 
-import { HarvestSummaryPanel } from "@/components/harvest/HarvestSummaryPanel";
 import { ForecastRangeTable } from "@/components/harvest/ForecastRangeTable";
-import { HarvestTimelineList } from "@/components/harvest/HarvestTimelineList";
-import { RegionalStatusTable } from "@/components/harvest/RegionalStatusTable";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
+import { MethodologyNotes } from "@/components/supply/MethodologyNotes";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
@@ -13,7 +11,6 @@ import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getHarvestService } from "@/services/harvest/service";
 import { getSource } from "@/services/markets/sources";
-import { getSupplyService } from "@/services/supply/service";
 
 /** The year of the harvest that opens a campaign: "2026" for 2026/27. */
 function harvestYear(campaign: string): string {
@@ -21,23 +18,19 @@ function harvestYear(campaign: string): string {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const campaign = await getSupplyService().getCurrentCampaign();
+  const campaign = await getHarvestService().getCampaign();
   return {
     title: "Harvest",
-    description: `The ${harvestYear(campaign)} European harvest: official production forecasts for Spain, Portugal, France and Italy, with regional stages, progress, weather and yield expectations.`,
+    description: `The ${harvestYear(campaign)} European harvest: the official production estimates for Spain, Portugal, France and Italy, as each country's statistical body publishes them.`,
   };
 }
 
 export default async function HarvestPage() {
   const harvest = getHarvestService();
-  const [summary, forecasts, regions, timeline, campaign] = await Promise.all([
-    harvest.getSummary(),
+  const [campaign, forecasts] = await Promise.all([
+    harvest.getCampaign(),
     harvest.getCountryForecasts(),
-    harvest.getRegionReports(),
-    harvest.getTimeline(),
-    getSupplyService().getCurrentCampaign(),
   ]);
-  const fieldSource = getSource("sample-harvest-network");
 
   return (
     <Container className="pb-16">
@@ -48,22 +41,22 @@ export default async function HarvestPage() {
           { label: "Harvest" },
         ]}
         kicker="Crop & Supply"
-        title="Harvest monitor"
-        description={`The ${harvestYear(campaign)} harvest in Spain, Portugal, France and Italy. Production forecasts are the official ones, as each country's forecasters published them; the summary, regional reports and timeline are illustrative samples.`}
+        title="Harvest estimates"
+        description={`The ${harvestYear(campaign)} harvest in Spain, Portugal, France and Italy: each country's official production estimate, as its statistical body publishes it, against the previous campaign.`}
         activeHref="/harvest"
       />
 
       <section className="mt-10">
         <SectionHeader
-          kicker="Forecasts"
-          title="Country production forecasts"
-          description="The latest official forecast for each country against the previous campaign, as the same source counts it. France revises its estimate every month until November; Spain estimates wine only once the harvest is in; Italy reports results only after it."
+          kicker="Estimates"
+          title="Country production estimates"
+          description="The latest official estimate for each country against the previous campaign, as the same source counts it. France revises its estimate every month until November; Spain estimates wine only once the harvest is in; Italy reports results only after it."
         />
         <div className="mt-5">
           <ForecastRangeTable
             forecasts={forecasts}
             campaign={campaign}
-            note="Each source counts its own scope: France all wine, including wine for brandy; Portugal wine; Spain wine and must. Forecasts are revised as the harvest goes on."
+            note="Each source counts its own scope: France all wine, including wine for brandy; Portugal wine; Spain wine and must. Figures are revised as the harvest declarations come in."
           />
         </div>
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -92,38 +85,20 @@ export default async function HarvestPage() {
         </div>
       </section>
 
-      <div className="mt-12">
-        <HarvestSummaryPanel summary={summary} />
+      <div className="mt-10 max-w-3xl">
+        <MethodologyNotes title="How to read the estimates">
+          <p>
+            Before the harvest the figures are forecasts: each body&apos;s
+            expectation for the crop, published once, as the IVV does, or
+            monthly, as Agreste does. From the first estimate after picking
+            starts they are provisional figures of the crop that is in,
+            revised until the harvest declarations close in the winter.
+            WineTerm enters each release by hand with its date, keeps the
+            scope each source counts, and adds no precision the sources do
+            not carry.
+          </p>
+        </MethodologyNotes>
       </div>
-
-      <section id="weather" className="mt-12 scroll-mt-6">
-        <SectionHeader
-          kicker="Regional status"
-          title="Regions in detail"
-          description="Illustrative samples of field reporting: stage, start, approximate progress, weather, quality and yield outlook, region by region. Direction triangles compare the expected crop with the previous campaign."
-          action={{ label: "Supply balance", href: "/supply" }}
-        />
-        <div className="mt-5">
-          <RegionalStatusTable reports={regions} />
-        </div>
-        <div className="mt-2">
-          <SourceLine
-            source={{ name: fieldSource.name }}
-            updatedAt={summary.updatedAt}
-          />
-        </div>
-      </section>
-
-      <section className="mt-12 max-w-3xl">
-        <SectionHeader
-          kicker="Campaign diary"
-          title="Timeline"
-          description="Illustrative sample of the dated events the desk records through the season."
-        />
-        <div className="mt-5">
-          <HarvestTimelineList events={timeline} />
-        </div>
-      </section>
     </Container>
   );
 }

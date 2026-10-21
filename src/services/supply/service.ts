@@ -1,208 +1,30 @@
 /**
- * Supply service: balances, production comparisons and stocks with
- * derived context. Spain's stocks, wine production and declared balance
- * come from the Ministry of Agriculture's INFOVI declarations when
- * Supabase is configured; everything else is still the illustrative
- * fixtures, and every row says which it is.
+ * Supply service: Spain's stocks, wine production and declared balance,
+ * read from the Ministry of Agriculture's INFOVI declarations in the
+ * database. Without a database every method answers null and the pages
+ * say that no figures are connected.
  */
 
 import { cacheLife, cacheTag } from "next/cache";
 import { cache } from "react";
 
-import {
-  CURRENT_CAMPAIGN,
-  PREVIOUS_CAMPAIGN,
-  campaigns,
-  openingStocksHistory,
-  productionRecords,
-  stockRecords,
-  supplyBalances,
-} from "@/fixtures/supply";
 import type { Database } from "@/lib/database.types";
 import { getSupabase } from "@/lib/supabase";
 import type {
-  Campaign,
   CampaignPath,
-  ProductionComparison,
-  ProductionRecord,
   SpainBalance,
   SpainCampaignBalance,
   SpainMonthlyStocks,
   SpainProduction,
-  StockComparison,
-  StockRecord,
-  SupplyBalanceComputed,
 } from "@/services/supply/types";
-import { PRODUCER_COUNTRIES, type ProducerCountry } from "@/services/types";
-
-const round1 = (v: number) => Math.round(v * 10) / 10;
 
 export interface SupplyService {
-  getCampaigns(): Promise<Campaign[]>;
-  getCurrentCampaign(): Promise<string>;
-  /** Computed balances for a campaign, one row per country. */
-  getBalances(campaign: string): Promise<SupplyBalanceComputed[]>;
-  getProductionComparisons(): Promise<ProductionComparison[]>;
-  getProductionByCampaign(): Promise<ProductionRecord[]>;
-  getStocks(): Promise<StockComparison[]>;
-  getOpeningStocksHistory(): Promise<
-    Record<ProducerCountry, { campaign: string; stocksMhl: number }[]>
-  >;
-  /** Spain's month-end stocks in detail; null without a real source. */
+  /** Spain's month-end stocks in detail; null without figures. */
   getSpainMonthlyStocks(): Promise<SpainMonthlyStocks | null>;
-  /** Spain's declared wine production; null without a real source. */
+  /** Spain's declared wine production; null without figures. */
   getSpainProduction(): Promise<SpainProduction | null>;
-  /** Spain's declared wine balance; null without a real source. */
+  /** Spain's declared wine balance; null without figures. */
   getSpainBalance(): Promise<SpainBalance | null>;
-}
-
-function computeBalance(
-  campaign: string,
-  country: ProducerCountry,
-): SupplyBalanceComputed | null {
-  const balance = supplyBalances.find(
-    (row) => row.campaign === campaign && row.country === country,
-  );
-  if (!balance) return null;
-  const availabilityMhl = round1(
-    balance.openingStocksMhl + balance.productionMhl + balance.importsMhl,
-  );
-  const closingStocksMhl = round1(
-    availabilityMhl - balance.domesticUseMhl - balance.exportsMhl,
-  );
-
-  const campaignIndex = campaigns.findIndex((c) => c.code === campaign);
-  const next = campaigns[campaignIndex + 1];
-  const nextBalance = next
-    ? supplyBalances.find(
-        (row) => row.campaign === next.code && row.country === country,
-      )
-    : undefined;
-
-  return {
-    ...balance,
-    availabilityMhl,
-    closingStocksMhl,
-    yieldHlHa: round1((balance.productionMhl * 1000) / balance.vineyardKha),
-    residualMhl: nextBalance
-      ? round1(nextBalance.openingStocksMhl - closingStocksMhl)
-      : null,
-  };
-}
-
-/**
- * Stocks rows with their derived context. The share of the four-country
- * total needs four real figures, or four samples; months of use divides
- * by the illustrative balances, so only sample rows get it.
- */
-function compareStocks(
-  records: StockRecord[],
-  previousBalances: SupplyBalanceComputed[],
-): StockComparison[] {
-  const samples = records.filter((r) => r.status === "illustrative").length;
-  const mixed = samples > 0 && samples < records.length;
-  const total = records.reduce((sum, r) => sum + r.stocksMhl, 0);
-  return records.map((record) => {
-    const balance =
-      record.status === "illustrative"
-        ? previousBalances.find((b) => b.country === record.country)
-        : undefined;
-    const monthlyUse = balance
-      ? (balance.domesticUseMhl + balance.exportsMhl) / 12
-      : null;
-    return {
-      ...record,
-      yoyPercent:
-        ((record.stocksMhl - record.yearEarlierMhl) / record.yearEarlierMhl) *
-        100,
-      shareOfTotalPercent: mixed ? null : (record.stocksMhl / total) * 100,
-      monthsOfUse: monthlyUse ? round1(record.stocksMhl / monthlyUse) : null,
-    };
-  });
-}
-
-class FixtureSupplyService implements SupplyService {
-  async getCampaigns(): Promise<Campaign[]> {
-    return campaigns;
-  }
-
-  async getCurrentCampaign(): Promise<string> {
-    return CURRENT_CAMPAIGN;
-  }
-
-  async getBalances(campaign: string): Promise<SupplyBalanceComputed[]> {
-    return PRODUCER_COUNTRIES.map((country) =>
-      computeBalance(campaign, country),
-    ).filter((row): row is SupplyBalanceComputed => row !== null);
-  }
-
-  async getProductionComparisons(): Promise<ProductionComparison[]> {
-    const totals = productionRecords.filter((r) => r.colour === "total");
-    const completed = campaigns
-      .filter((c) => !c.isEstimate)
-      .slice(-5)
-      .map((c) => c.code);
-
-    return PRODUCER_COUNTRIES.map((country) => {
-      const byCampaign = (code: string) =>
-        totals.find((r) => r.country === country && r.campaign === code);
-      const current = byCampaign(CURRENT_CAMPAIGN);
-      const previous = byCampaign(PREVIOUS_CAMPAIGN);
-      const fiveYear = completed
-        .map((code) => byCampaign(code)?.volumeMhl ?? 0)
-        .filter((v) => v > 0);
-      const fiveYearAvg =
-        fiveYear.reduce((sum, v) => sum + v, 0) / fiveYear.length;
-
-      const colour = (kind: "red-rose" | "white") =>
-        productionRecords.find(
-          (r) =>
-            r.country === country &&
-            r.campaign === CURRENT_CAMPAIGN &&
-            r.colour === kind,
-        )?.volumeMhl ?? 0;
-      const currentVolume = current?.volumeMhl ?? 0;
-
-      return {
-        country,
-        currentMhl: currentVolume,
-        currentStatus: current?.status ?? "estimate",
-        previousMhl: previous?.volumeMhl ?? 0,
-        fiveYearAvgMhl: round1(fiveYearAvg),
-        vsPreviousPercent:
-          ((currentVolume - (previous?.volumeMhl ?? 0)) /
-            (previous?.volumeMhl ?? 1)) *
-          100,
-        vsFiveYearPercent: ((currentVolume - fiveYearAvg) / fiveYearAvg) * 100,
-        redRoseShare: (colour("red-rose") / currentVolume) * 100,
-        whiteShare: (colour("white") / currentVolume) * 100,
-      };
-    });
-  }
-
-  async getProductionByCampaign(): Promise<ProductionRecord[]> {
-    return productionRecords.filter((r) => r.colour === "total");
-  }
-
-  async getStocks(): Promise<StockComparison[]> {
-    return compareStocks(stockRecords, await this.getBalances(PREVIOUS_CAMPAIGN));
-  }
-
-  async getOpeningStocksHistory() {
-    return openingStocksHistory;
-  }
-
-  async getSpainMonthlyStocks(): Promise<SpainMonthlyStocks | null> {
-    return null;
-  }
-
-  async getSpainProduction(): Promise<SpainProduction | null> {
-    return null;
-  }
-
-  async getSpainBalance(): Promise<SpainBalance | null> {
-    return null;
-  }
 }
 
 export type FigureRow = Database["public"]["Tables"]["supply_figures"]["Row"];
@@ -296,7 +118,7 @@ function campaignOfMonth(month: string): string {
 }
 
 /** The campaign before, "2025/26" to "2024/25". */
-export function campaignBefore(campaign: string): string {
+function campaignBefore(campaign: string): string {
   const start = Number(campaign.slice(0, 4)) - 1;
   return `${start}/${String((start + 1) % 100).padStart(2, "0")}`;
 }
@@ -321,12 +143,6 @@ function campaignPath(byMonth: Map<string, number>, campaign: string): CampaignP
   };
 }
 
-/** The last day of a month: "2026-07" to "2026-07-31". */
-function lastDay(month: string): string {
-  const [year, number] = month.split("-").map(Number);
-  return new Date(Date.UTC(year, number, 0)).toISOString().slice(0, 10);
-}
-
 /** Entries and exits that every month of a balance needs, in this order. */
 const BALANCE_FLOWS = [
   "entries-domestic",
@@ -346,9 +162,6 @@ const ABROAD_KINDS = [
   ["red-rose", "packaged"],
   ["white", "packaged"],
 ] as const;
-
-const SPAIN_METHODOLOGY =
-  "Month-end stocks declared to the Ministry of Agriculture (INFOVI) by producers of 1,000 hl or more and by warehouse holders, published about six weeks after the month ends. Smaller producers do not declare monthly: at 31 July 2024 the annual declaration counted another 1.5 Mhl in their hands.";
 
 /**
  * Spain's declared wine balance from its INFOVI figures: the latest
@@ -470,41 +283,8 @@ export function spainBalance(rows: FigureRow[]): SpainBalance | null {
   };
 }
 
-/** The fixtures, with Spain's stocks from INFOVI where they are imported. */
-class LiveSupplyService extends FixtureSupplyService {
-  async getStocks(): Promise<StockComparison[]> {
-    const stocks = wineStocksByMonth(await spainFigures());
-    const latest = [...stocks.keys()].sort().at(-1);
-    const yearEarlier = latest ? stocks.get(yearBefore(latest)) : undefined;
-    if (!latest || yearEarlier === undefined) return super.getStocks();
-
-    const spain: StockRecord = {
-      country: "ES",
-      referenceDate: lastDay(latest),
-      stocksMhl: stocks.get(latest)! / HL_PER_MHL,
-      yearEarlierMhl: yearEarlier / HL_PER_MHL,
-      status: "provisional",
-      sourceId: INFOVI,
-      methodology: SPAIN_METHODOLOGY,
-    };
-    return compareStocks(
-      stockRecords.map((record) => (record.country === "ES" ? spain : record)),
-      await this.getBalances(PREVIOUS_CAMPAIGN),
-    );
-  }
-
-  async getOpeningStocksHistory() {
-    const history = await super.getOpeningStocksHistory();
-    const stocks = wineStocksByMonth(await spainFigures());
-    if (stocks.size === 0) return history;
-    // Opening stocks at 1 August are the stocks declared at 31 July.
-    const spain = history.ES.flatMap(({ campaign }) => {
-      const july = stocks.get(`${campaign.slice(0, 4)}-07`);
-      return july === undefined ? [] : [{ campaign, stocksMhl: july / HL_PER_MHL }];
-    });
-    return { ...history, ES: spain };
-  }
-
+/** Spain's figures from the INFOVI declarations in the database. */
+class InfoviSupplyService implements SupplyService {
   async getSpainMonthlyStocks(): Promise<SpainMonthlyStocks | null> {
     const rows = await spainFigures();
     const stocks = wineStocksByMonth(rows);
@@ -620,8 +400,8 @@ class LiveSupplyService extends FixtureSupplyService {
 
 let service: SupplyService | null = null;
 
-/** Spain's stocks from INFOVI when Supabase is configured, fixtures otherwise. */
+/** Spain's INFOVI figures when Supabase is configured; nothing otherwise. */
 export function getSupplyService(): SupplyService {
-  service ??= new LiveSupplyService();
+  service ??= new InfoviSupplyService();
   return service;
 }

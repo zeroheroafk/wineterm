@@ -3,8 +3,8 @@
  *
  * A MarketSeries describes one observed price series (a bulk wine
  * reference, a grape price, a must or concentrate quotation). Series
- * definitions, observations and sources are strictly separated so real
- * providers can replace the fixture implementations series by series.
+ * definitions, observations and sources are strictly separated so a
+ * provider can be replaced series by series.
  */
 
 import type { CountryCode, DataStatus, DegreeBasis } from "@/services/types";

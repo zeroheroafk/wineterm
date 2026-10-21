@@ -27,34 +27,32 @@ src/
     market/          Tables, price cells, changes, charts, commentary
     editorial/       Article previews, newsletter modules
   lib/               Navigation, formatting, Supabase client and form actions
-  services/          Typed service layer: Supabase for trade and imported
-                     prices, fixtures elsewhere
+  services/          Typed service layer: Supabase for prices, supply and
+                     trade; the official harvest estimates entered by hand
   content/           Published editorial content: the Insights articles
                      and monthly reports, and the Industry stories
-  fixtures/          Illustrative sample data only; see fixtures/README.md
 ```
 
-The service interfaces in `src/services` are the seam for real data
-sources; components depend only on those interfaces. Trade reads Eurostat
-figures from the database, Markets reads the Spanish Ministry of
-Agriculture's weekly national wine prices and its weekly prices in
-seven representative markets from it, the French Ministry of
-Agriculture's monthly prices in Languedoc-Roussillon and Midi-Pyrénées
-(DRAAF Occitanie), listed before the illustrative series, with one
-national bulk wine price each for
-Portugal, France and Italy: WineTerm's monthly estimate, the average
-price of the country's bulk exports, computed in the database from the
-Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
-month-end wine stocks and wine made since 1 August. Insights articles
-and monthly reports are published content in `src/content/articles`,
-one file per article, read at `/insights/analysis/<id>` and
+The service interfaces in `src/services` are the seam between the pages
+and the data; components depend only on those interfaces, and every
+figure comes from a named source. Trade reads Eurostat figures from the
+database. Markets reads from it the Spanish Ministry of Agriculture's
+weekly national wine prices and its weekly prices in seven
+representative markets, the French Ministry of Agriculture's monthly
+prices in Languedoc-Roussillon and Midi-Pyrénées (DRAAF Occitanie), and
+one national bulk wine price each for Portugal, France and Italy:
+WineTerm's monthly estimate, the average price of the country's bulk
+exports, computed in the database from the Eurostat figures. The supply,
+stocks and production pages read Spain's monthly declarations. The
+harvest page shows each country's official production estimate, entered
+by hand in `src/services/harvest/official.ts`. Insights articles and
+monthly reports are published content in `src/content/articles`, one
+file per article, read at `/insights/analysis/<id>` and
 `/insights/monthly-reports/<id>`. Industry stories, WineTerm's summaries
 of reports published elsewhere with a link to each, are in
-`src/content/industry.ts`. Everything else
-still uses the fixtures, and nothing
-in `src/fixtures` is real market data: every fixture observation carries
-the Illustrative status, which is how the site tells samples from real
-prices.
+`src/content/industry.ts`. A section whose source is not connected yet,
+such as grape and must prices or the balances of Portugal, France and
+Italy, says so instead of showing sample figures.
 
 ## Commands
 
@@ -64,10 +62,6 @@ npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
 npm run build      # production build
 ```
-
-The Market Outlook (`/outlook`) is withheld until a real edition is
-written: its only edition is a sample, so the page answers 404 and no
-page links it (`OUTLOOK_PUBLISHED` in `src/services/outlook/service.ts`).
 
 `/design-system` documents the tokens and component set. It is excluded
 from the sitemap and marked noindex.
@@ -81,21 +75,18 @@ from the sitemap and marked noindex.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
   and contact messages; `/trade` and the Market data trade snapshot
-  show Eurostat figures, the Markets pages and the homepage key prices
-  add MAPA's national wine prices to the illustrative series,
-  the Markets pages add the Spanish and French regional prices, the
-  Markets pages and the homepage show the national bulk prices of
-  Portugal, France and Italy computed from the trade figures,
-  and `/supply`, `/supply/stocks` and `/supply/production` show Spain's
-  INFOVI balance, stocks and wine production.
-  Pages regenerate at most hourly and database reads are cached for an
-  hour; the build then reads the database, and fails rather than publish
-  trade volumes missing litres. Without them, submissions are discarded
-  and the reply says so, and trade and markets show only the illustrative
-  fixtures.
+  show Eurostat figures; the Markets pages and the homepage key prices
+  show MAPA's national wine prices, the Spanish and French regional
+  prices and the national bulk prices of Portugal, France and Italy
+  computed from the trade figures; and `/supply`, `/supply/stocks` and
+  `/supply/production` show Spain's INFOVI balance, stocks and wine
+  production. Pages regenerate at most hourly and database reads are
+  cached for an hour; the build then reads the database, and fails
+  rather than publish trade volumes missing litres. Without them,
+  submissions are discarded and the reply says so, and the price,
+  supply and trade pages say that no database is connected.
 - `SITE_INDEXABLE`: set to `true` to let search engines index the site.
-  Until then every page is marked noindex, because most figures are
-  still illustrative fixtures.
+  Until then every page is marked noindex.
 
 ## Database
 
@@ -124,16 +115,15 @@ read is a `"use cache: remote"` function with `cacheLife("hours")` and
 the tag `market-data`, shared by every server instance because the
 pages that filter by query string render at request time. The pages that
 read only cached data carry `"use cache"` themselves and are regenerated
-at most hourly. A stored series appears only when
-its source is in `src/services/markets/sources.ts`; a fixture with the
-same code gives way to it, as does a fixture naming it in `givesWayTo`.
-Sample publications such as the Outlook read every fixture through
-`getIllustrativeMarketsService()`. The supply, stocks and production pages read
-Spain's rows of `supply_figures` the same way (`"use cache"`, tag
-`supply-data`), and the trade pages their aggregates (tag `trade-data`).
+at most hourly. A stored series appears only when its source is in
+`src/services/markets/sources.ts`. The supply, stocks and production
+pages read Spain's rows of `supply_figures` the same way (`"use cache"`,
+tag `supply-data`), and the trade pages their aggregates (tag
+`trade-data`).
 
-Real data providers that will replace the fixtures, with their coverage,
-access and licence status, are catalogued in `docs/data-sources.md`.
+The data providers, with their coverage, access and licence status, and
+the candidates still to connect, are catalogued in
+`docs/data-sources.md`.
 
 ### Imports
 

@@ -8,8 +8,8 @@ import { getMarketsService } from "@/services/markets/service";
 /**
  * Public sitemap. Only launched routes are listed; /design-system is
  * internal and is deliberately excluded (and disallowed in robots.ts).
- * Series pages are the markets catalogue's: the imported series and the
- * samples still beside them, read at most hourly.
+ * Series pages are the markets catalogue's: the imported series, read at
+ * most hourly.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   "use cache";
