@@ -10,7 +10,7 @@
  * illustrative one that sample publications read.
  */
 
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { cache } from "react";
 
 import { marketCommentary } from "@/fixtures/markets/commentary";
@@ -249,48 +249,50 @@ function toObservation(row: ObservationRow): SeriesObservation {
 /**
  * The series imported from real sources, with every observation. Read at
  * most hourly: the sources publish weekly, and the pages that filter by
- * query string would otherwise read the tables on each request.
+ * query string would otherwise read the tables on each request. Those
+ * pages render at request time, outside the static shell, so the entry
+ * lives in the remote cache, shared by every server instance.
  */
-const loadDatabaseCatalogue = unstable_cache(
-  async (): Promise<CatalogueEntry[]> => {
-    const supabase = getSupabase();
-    if (!supabase) return [];
+async function loadDatabaseCatalogue(): Promise<CatalogueEntry[]> {
+  "use cache: remote";
+  cacheLife("hours");
+  cacheTag("market-data");
 
-    const series = await supabase.from("market_series").select("*").order("code");
-    if (series.error) {
-      throw new Error(`Reading market series failed: ${series.error.message}`);
-    }
+  const supabase = getSupabase();
+  if (!supabase) return [];
 
-    const observations: ObservationRow[] = [];
-    for (;;) {
-      const page = await supabase
-        .from("market_observations")
-        .select("*", { count: "exact" })
-        .order("series_code")
-        .order("observed_on")
-        .range(observations.length, observations.length + PAGE_SIZE - 1);
-      if (page.error) {
-        throw new Error(`Reading market observations failed: ${page.error.message}`);
-      }
-      observations.push(...page.data);
-      if (page.data.length === 0 || observations.length >= (page.count ?? 0)) break;
-    }
+  const series = await supabase.from("market_series").select("*").order("code");
+  if (series.error) {
+    throw new Error(`Reading market series failed: ${series.error.message}`);
+  }
 
-    const histories = new Map<string, SeriesObservation[]>();
-    for (const row of observations) {
-      const history = histories.get(row.series_code) ?? [];
-      history.push(toObservation(row));
-      histories.set(row.series_code, history);
+  const observations: ObservationRow[] = [];
+  for (;;) {
+    const page = await supabase
+      .from("market_observations")
+      .select("*", { count: "exact" })
+      .order("series_code")
+      .order("observed_on")
+      .range(observations.length, observations.length + PAGE_SIZE - 1);
+    if (page.error) {
+      throw new Error(`Reading market observations failed: ${page.error.message}`);
     }
-    return series.data.flatMap((row) => {
-      const mapped = toSeries(row);
-      const history = histories.get(row.code);
-      return mapped && history ? [{ series: mapped, history }] : [];
-    });
-  },
-  ["market-catalogue"],
-  { revalidate: 3600, tags: ["market-data"] },
-);
+    observations.push(...page.data);
+    if (page.data.length === 0 || observations.length >= (page.count ?? 0)) break;
+  }
+
+  const histories = new Map<string, SeriesObservation[]>();
+  for (const row of observations) {
+    const history = histories.get(row.series_code) ?? [];
+    history.push(toObservation(row));
+    histories.set(row.series_code, history);
+  }
+  return series.data.flatMap((row) => {
+    const mapped = toSeries(row);
+    const history = histories.get(row.code);
+    return mapped && history ? [{ series: mapped, history }] : [];
+  });
+}
 
 /**
  * The imported series, then the samples still needed beside them: a

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Pages are prerendered as static shells; the database reads behind
+  // them are cached with "use cache" and refreshed hourly (cacheLife).
+  cacheComponents: true,
   async redirects() {
     // Early information architecture used /crop-supply/*; the built
     // sections live at /supply, /harvest and /trade.

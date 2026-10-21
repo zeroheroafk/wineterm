@@ -15,6 +15,7 @@ import { DataNote } from "@/components/ui/SourceLine";
 import { formatDateRange } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getHomeService } from "@/services/home";
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Market data",
@@ -22,15 +23,16 @@ export const metadata: Metadata = {
     "Supply, harvest and trade in Spain, Portugal, France and Italy at a glance: availability by country, harvest conditions and wine exports.",
 };
 
-// The trade snapshot reads the database; regenerate at most hourly.
-export const revalidate = 3600;
-
 /**
  * The Market data tab: the supply snapshot, the harvest monitor and the
  * trade snapshot on one page, each linking to its full section. The
- * homepage keeps to prices and editorial.
+ * homepage keeps to prices and editorial. The trade snapshot reads the
+ * database, so the page is regenerated at most hourly.
  */
 export default async function MarketDataPage() {
+  "use cache";
+  cacheLife("hours");
+
   const home = getHomeService();
   const [supply, harvest, trade] = await Promise.all([
     home.getSupplySnapshot(),

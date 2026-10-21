@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { cacheLife } from "next/cache";
 
 import { publishedArticles } from "@/content/articles";
 import { SITE_URL } from "@/lib/site";
@@ -8,11 +9,12 @@ import { getMarketsService } from "@/services/markets/service";
  * Public sitemap. Only launched routes are listed; /design-system is
  * internal and is deliberately excluded (and disallowed in robots.ts).
  * Series pages are the markets catalogue's: the imported series and the
- * samples still beside them.
+ * samples still beside them, read at most hourly.
  */
-export const revalidate = 3600;
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  "use cache";
+  cacheLife("hours");
+
   const base = SITE_URL;
   const series = await getMarketsService().listSeries();
   const seriesEntries: MetadataRoute.Sitemap = series.map((s) => ({

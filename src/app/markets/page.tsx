@@ -12,9 +12,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import type { MarketKind, MarketRow } from "@/services/markets/types";
-
-// Real series are read from the database; regenerate at most hourly.
-export const revalidate = 3600;
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Markets",
@@ -51,7 +49,11 @@ const PRODUCTS: {
   },
 ];
 
+/** Real series are read from the database; regenerated at most hourly. */
 export default async function MarketsPage() {
+  "use cache";
+  cacheLife("hours");
+
   const markets = getMarketsService();
 
   const [bulkRows, grapeRows, mustRows, bulkCommentary, grapeCommentary, mustCommentary] =

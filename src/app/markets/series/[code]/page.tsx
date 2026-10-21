@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
@@ -51,13 +52,37 @@ export async function generateMetadata({
   };
 }
 
-export default async function MarketDetailPage({
-  params,
-  searchParams,
-}: {
+interface MarketDetailProps {
   params: Promise<{ code: string }>;
   searchParams: Promise<SearchParams>;
-}) {
+}
+
+/**
+ * The series and the chart range are only known at request time, so the
+ * page streams in behind a placeholder of the same shape.
+ */
+export default function MarketDetailPage(props: MarketDetailProps) {
+  return (
+    <Suspense fallback={<MarketDetailFallback />}>
+      <MarketDetail {...props} />
+    </Suspense>
+  );
+}
+
+function MarketDetailFallback() {
+  return (
+    <Container className="pb-16">
+      <div aria-busy="true">
+        <p className="sr-only">Loading the series</p>
+        <div className="h-4 w-48 bg-paper" />
+        <div className="mt-6 h-28 border-b border-rule" />
+        <div className="mt-8 h-72 border border-rule bg-paper" />
+      </div>
+    </Container>
+  );
+}
+
+async function MarketDetail({ params, searchParams }: MarketDetailProps) {
   const [{ code }, query] = await Promise.all([params, searchParams]);
   const markets = getMarketsService();
 

@@ -9,6 +9,7 @@ import {
   type FilterFieldConfig,
 } from "@/components/markets/MarketFilterPanel";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
+import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { UpdatedAt } from "@/components/ui/SourceLine";
 import { getMarketsService } from "@/services/markets/service";
 import {
@@ -24,7 +25,32 @@ export const metadata: Metadata = {
     "Grape prices by region, variety and harvest, with explicit provenance for every observation.",
 };
 
-export default async function GrapePricesPage({
+/**
+ * The header is prerendered; the filtered table reads the query string,
+ * so it renders at request time behind the fallback.
+ */
+export default function GrapePricesPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  return (
+    <Container className="pb-16">
+      <MarketsPageHeader
+        crumb="Grape Prices"
+        title="Grape Prices"
+        description="Grape prices by region, appellation, variety and harvest. Every observation states how it was established: official campaign averages, registered contracts, cooperative settlements, buyer announcements, reported ranges or clearly labelled WineTerm estimates. Development figures are illustrative samples."
+        activeHref="/markets/grapes"
+      />
+
+      <Suspense fallback={<ResultsFallback />}>
+        <GrapePricesResults searchParams={searchParams} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function GrapePricesResults({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
@@ -105,22 +131,13 @@ export default async function GrapePricesPage({
   ];
 
   return (
-    <Container className="pb-16">
-      <MarketsPageHeader
-        crumb="Grape Prices"
-        title="Grape Prices"
-        description="Grape prices by region, appellation, variety and harvest. Every observation states how it was established: official campaign averages, registered contracts, cooperative settlements, buyer announcements, reported ranges or clearly labelled WineTerm estimates. Development figures are illustrative samples."
-        activeHref="/markets/grapes"
-      />
-
+    <>
       <div className="mt-8">
-        <Suspense fallback={<div className="h-16 border-y border-rule bg-paper" />}>
-          <MarketFilterPanel
-            fields={fields}
-            resultCount={rows.length}
-            end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
-          />
-        </Suspense>
+        <MarketFilterPanel
+          fields={fields}
+          resultCount={rows.length}
+          end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
+        />
       </div>
 
       <div className="mt-5">
@@ -140,6 +157,6 @@ export default async function GrapePricesPage({
           <MarketCommentaryBlock commentary={commentary} />
         </div>
       ) : null}
-    </Container>
+    </>
   );
 }

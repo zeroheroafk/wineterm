@@ -16,6 +16,7 @@ import { primaryNavigation } from "@/lib/navigation";
 import { campaignBefore, getSupplyService } from "@/services/supply/service";
 import { getSource } from "@/services/markets/sources";
 import { COUNTRY_NAMES, PRODUCER_COUNTRIES } from "@/services/types";
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Production",
@@ -23,14 +24,15 @@ export const metadata: Metadata = {
     "Wine production by campaign and country: current estimates against the previous campaign and the five-year average, in million hectolitres.",
 };
 
-// Spain's production is read from the database; regenerate at most hourly.
-export const revalidate = 3600;
-
 function percentChange(current: number, previous: number | null): number | null {
   return previous === null || previous === 0 ? null : (current / previous - 1) * 100;
 }
 
+/** Spain's production is read from the database; regenerated at most hourly. */
 export default async function ProductionPage() {
+  "use cache";
+  cacheLife("hours");
+
   const supply = getSupplyService();
   const [comparisons, history, campaigns, current, spain] = await Promise.all([
     supply.getProductionComparisons(),

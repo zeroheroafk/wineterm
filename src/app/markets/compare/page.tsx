@@ -18,6 +18,7 @@ import {
   type CompareOption,
 } from "@/components/markets/ComparePicker";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
+import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatDate, formatPrice } from "@/lib/format";
@@ -29,6 +30,7 @@ import {
   UNIT_FAMILY,
   UNIT_TO_REFERENCE,
   type MarketKind,
+  type MarketRow,
   type MarketSeries,
 } from "@/services/markets/types";
 
@@ -37,6 +39,8 @@ export const metadata: Metadata = {
   description:
     "Compare compatible wine market price series side by side, with explicit unit handling.",
 };
+
+const KINDS: MarketKind[] = ["bulk-wine", "grape", "must"];
 
 const PRESETS: { label: string; codes: string[] }[] = [
   {
@@ -77,15 +81,52 @@ const PRESETS: { label: string; codes: string[] }[] = [
   },
 ];
 
+/** Every comparable row of the catalogue, across the three market kinds. */
+async function comparableRows(): Promise<MarketRow[]> {
+  const markets = getMarketsService();
+  return (await Promise.all(KINDS.map((kind) => markets.getRows(kind)))).flat();
+}
+
+/**
+ * The header is prerendered; the picker and the chart read the selection
+ * from the query string, so they render at request time behind the
+ * fallback.
+ */
 export default async function ComparePage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const hasReal = (await comparableRows()).some((row) => !isIllustrative(row));
+
+  return (
+    <Container className="pb-16">
+      <MarketsPageHeader
+        crumb="Market Comparison"
+        title="Market Comparison"
+        description={
+          hasReal
+            ? "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed, and real prices are compared only with real prices, illustrative samples with samples."
+            : "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed. Development figures are illustrative samples."
+        }
+        activeHref="/markets/compare"
+      />
+
+      <Suspense fallback={<ResultsFallback />}>
+        <CompareResults searchParams={searchParams} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function CompareResults({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
   const query = await searchParams;
   const markets = getMarketsService();
-  const kinds: MarketKind[] = ["bulk-wine", "grape", "must"];
-  const allRows = (await Promise.all(kinds.map((kind) => markets.getRows(kind)))).flat();
+  const allRows = await comparableRows();
   const allSeries = allRows.map((row) => row.series);
   const illustrative = new Map(
     allRows.map((row) => [row.series.code, isIllustrative(row)]),
@@ -103,7 +144,6 @@ export default async function ComparePage({
   const presets = PRESETS.filter((preset) =>
     preset.codes.every((code) => illustrative.has(code)),
   );
-  const hasReal = [...illustrative.values()].some((value) => !value);
 
   const requested = (firstParam(query, "s") ?? "")
     .split(",")
@@ -163,25 +203,12 @@ export default async function ComparePage({
   );
 
   return (
-    <Container className="pb-16">
-      <MarketsPageHeader
-        crumb="Market Comparison"
-        title="Market Comparison"
-        description={
-          hasReal
-            ? "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed, and real prices are compared only with real prices, illustrative samples with samples."
-            : "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed. Development figures are illustrative samples."
-        }
-        activeHref="/markets/compare"
-      />
-
+    <>
       <div className="mt-8">
-        <Suspense fallback={<div className="h-16 border-y border-rule bg-paper" />}>
-          <ComparePicker
-            options={options}
-            selected={selected.map((s) => s.code)}
-          />
-        </Suspense>
+        <ComparePicker
+          options={options}
+          selected={selected.map((s) => s.code)}
+        />
       </div>
 
       {dropped.length > 0 ? (
@@ -354,6 +381,6 @@ export default async function ComparePage({
           ) : null}
         </>
       )}
-    </Container>
+    </>
   );
 }

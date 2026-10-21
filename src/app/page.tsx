@@ -8,9 +8,7 @@ import { LeadBriefing } from "@/components/market/LeadBriefing";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getHomeService } from "@/services/home";
-
-// The key prices read the database; regenerate at most hourly.
-export const revalidate = 3600;
+import { cacheLife } from "next/cache";
 
 /** Headlines in the industry rail; the Industry section carries the rest. */
 const INDUSTRY_HEADLINES = 5;
@@ -19,9 +17,13 @@ const INDUSTRY_HEADLINES = 5;
  * The homepage, kept to four blocks: the introduction beside the latest
  * Weekly Briefing, the key bulk wine prices, the latest analysis and
  * industry news, and the newsletter signup. The supply, harvest and trade
- * snapshots have their own tab, Market data (/data).
+ * snapshots have their own tab, Market data (/data). The key prices read
+ * the database, so the page is regenerated at most hourly.
  */
 export default async function Home() {
+  "use cache";
+  cacheLife("hours");
+
   const home = getHomeService();
   const [
     briefing,

@@ -17,6 +17,7 @@ import { formatDate, formatMonthYear } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getSource } from "@/services/markets/sources";
 import { campaignBefore, getSupplyService } from "@/services/supply/service";
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Crop & Supply",
@@ -24,10 +25,11 @@ export const metadata: Metadata = {
     "The physical balance of the European wine market: stocks, production, availability, use and trade in million hectolitres.",
 };
 
-// Spain's balance is read from the database; regenerate at most hourly.
-export const revalidate = 3600;
-
+/** Spain's balance is read from the database; regenerated at most hourly. */
 export default async function SupplyPage() {
+  "use cache";
+  cacheLife("hours");
+
   const supply = getSupplyService();
   const current = await supply.getCurrentCampaign();
   const previous = campaignBefore(current);

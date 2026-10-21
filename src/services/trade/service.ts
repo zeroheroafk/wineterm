@@ -9,7 +9,7 @@
  * come from the illustrative fixtures.
  */
 
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 
 import {
   monthlyExportVolumes,
@@ -233,12 +233,16 @@ const NOTES: Record<TradeCategory, string> = {
 };
 
 /**
- * Everything the trade pages read, fetched once per render. The period
- * ends at the latest month every reporter has published, and a render
- * fails rather than show the volume of part of the trade, so a
- * regeneration keeps the last good page instead.
+ * Everything the trade pages read, fetched at most hourly: Eurostat
+ * publishes monthly. The period ends at the latest month every reporter
+ * has published, and a read fails rather than show the volume of part of
+ * the trade, so a regeneration keeps the last good page instead.
  */
-const loadSnapshot = cache(async (): Promise<Snapshot> => {
+async function loadSnapshot(): Promise<Snapshot> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("trade-data");
+
   const supabase = getSupabase();
   if (!supabase) throw new Error("Supabase is not configured");
 
@@ -287,7 +291,7 @@ const loadSnapshot = cache(async (): Promise<Snapshot> => {
     );
   }
   return snapshot;
-});
+}
 
 function total(values: (number | null)[]): number {
   return values.reduce<number>((sum, value) => sum + (value ?? 0), 0);

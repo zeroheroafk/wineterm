@@ -6,7 +6,7 @@
  * fixtures, and every row says which it is.
  */
 
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { cache } from "react";
 
 import {
@@ -213,34 +213,34 @@ const PAGE_SIZE = 1000;
 const HL_PER_MHL = 1_000_000;
 
 /** Spain's INFOVI figures, oldest first. Read at most hourly: they change monthly. */
-const loadSpainFigures = unstable_cache(
-  async (): Promise<FigureRow[]> => {
-    const supabase = getSupabase();
-    if (!supabase) return [];
-    const rows: FigureRow[] = [];
-    for (;;) {
-      const page = await supabase
-        .from("supply_figures")
-        .select("*", { count: "exact" })
-        .eq("country", "ES")
-        .eq("source_id", INFOVI)
-        .order("period")
-        .order("measure")
-        .order("product")
-        .order("colour")
-        .order("presentation")
-        .range(rows.length, rows.length + PAGE_SIZE - 1);
-      if (page.error) {
-        throw new Error(`Reading supply figures failed: ${page.error.message}`);
-      }
-      rows.push(...page.data);
-      if (page.data.length === 0 || rows.length >= (page.count ?? 0)) break;
+async function loadSpainFigures(): Promise<FigureRow[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("supply-data");
+
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const rows: FigureRow[] = [];
+  for (;;) {
+    const page = await supabase
+      .from("supply_figures")
+      .select("*", { count: "exact" })
+      .eq("country", "ES")
+      .eq("source_id", INFOVI)
+      .order("period")
+      .order("measure")
+      .order("product")
+      .order("colour")
+      .order("presentation")
+      .range(rows.length, rows.length + PAGE_SIZE - 1);
+    if (page.error) {
+      throw new Error(`Reading supply figures failed: ${page.error.message}`);
     }
-    return rows;
-  },
-  ["supply-figures-es"],
-  { revalidate: 3600, tags: ["supply-data"] },
-);
+    rows.push(...page.data);
+    if (page.data.length === 0 || rows.length >= (page.count ?? 0)) break;
+  }
+  return rows;
+}
 
 const spainFigures = cache(
   async (): Promise<FigureRow[]> => (getSupabase() ? loadSpainFigures() : []),

@@ -9,6 +9,7 @@ import {
 } from "@/components/markets/MarketFilterPanel";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
 import { MustPricesTable } from "@/components/markets/MustPricesTable";
+import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { UpdatedAt } from "@/components/ui/SourceLine";
 import { getMarketsService } from "@/services/markets/service";
 import {
@@ -24,7 +25,32 @@ export const metadata: Metadata = {
     "Grape must, concentrated must and RCGM quotations with technical specifications and original units.",
 };
 
-export default async function MustConcentratesPage({
+/**
+ * The header is prerendered; the filtered table reads the query string,
+ * so it renders at request time behind the fallback.
+ */
+export default function MustConcentratesPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  return (
+    <Container className="pb-16">
+      <MarketsPageHeader
+        crumb="Must & Concentrates"
+        title="Must & Concentrates"
+        description="Quotations for grape must, concentrated grape must and rectified concentrated grape must, with the technical specification each price refers to. Must is quoted by volume and concentrates by mass; the two are never converted into each other. Development figures are illustrative samples."
+        activeHref="/markets/must-concentrates"
+      />
+
+      <Suspense fallback={<ResultsFallback />}>
+        <MustPricesResults searchParams={searchParams} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function MustPricesResults({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
@@ -89,22 +115,13 @@ export default async function MustConcentratesPage({
   ];
 
   return (
-    <Container className="pb-16">
-      <MarketsPageHeader
-        crumb="Must & Concentrates"
-        title="Must & Concentrates"
-        description="Quotations for grape must, concentrated grape must and rectified concentrated grape must, with the technical specification each price refers to. Must is quoted by volume and concentrates by mass; the two are never converted into each other. Development figures are illustrative samples."
-        activeHref="/markets/must-concentrates"
-      />
-
+    <>
       <div className="mt-8">
-        <Suspense fallback={<div className="h-16 border-y border-rule bg-paper" />}>
-          <MarketFilterPanel
-            fields={fields}
-            resultCount={rows.length}
-            end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
-          />
-        </Suspense>
+        <MarketFilterPanel
+          fields={fields}
+          resultCount={rows.length}
+          end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
+        />
       </div>
 
       <div className="mt-5">
@@ -124,6 +141,6 @@ export default async function MustConcentratesPage({
           <MarketCommentaryBlock commentary={commentary} />
         </div>
       ) : null}
-    </Container>
+    </>
   );
 }

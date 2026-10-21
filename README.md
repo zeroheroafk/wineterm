@@ -118,13 +118,19 @@ the latest month all four reporters have published, since France and
 Italy often publish a month after Spain and Portugal.
 
 The Markets pages read `market_series` and `market_observations` whole,
-paging through the observations, and cache them for an hour
-(`unstable_cache`, tag `market-data`). A stored series appears only when
+paging through the observations, and cache them for an hour: the site
+uses Cache Components (`cacheComponents` in `next.config.ts`), so the
+read is a `"use cache: remote"` function with `cacheLife("hours")` and
+the tag `market-data`, shared by every server instance because the
+pages that filter by query string render at request time. The pages that
+read only cached data carry `"use cache"` themselves and are regenerated
+at most hourly. A stored series appears only when
 its source is in `src/services/markets/sources.ts`; a fixture with the
 same code gives way to it, as does a fixture naming it in `givesWayTo`.
 Sample publications such as the Outlook read every fixture through
 `getIllustrativeMarketsService()`. The supply, stocks and production pages read
-Spain's rows of `supply_figures` the same way (tag `supply-data`).
+Spain's rows of `supply_figures` the same way (`"use cache"`, tag
+`supply-data`), and the trade pages their aggregates (tag `trade-data`).
 
 Real data providers that will replace the fixtures, with their coverage,
 access and licence status, are catalogued in `docs/data-sources.md`.

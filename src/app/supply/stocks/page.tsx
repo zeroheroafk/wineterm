@@ -20,6 +20,7 @@ import {
   PRODUCER_COUNTRIES,
   type DataSource,
 } from "@/services/types";
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Stocks",
@@ -27,14 +28,15 @@ export const metadata: Metadata = {
     "Declared wine stocks by country: latest references, year-on-year direction and opening stocks across campaigns, in million hectolitres.",
 };
 
-// Spain's stocks are read from the database; regenerate at most hourly.
-export const revalidate = 3600;
-
 function percentChange(current: number, previous: number | null): number | null {
   return previous === null || previous === 0 ? null : (current / previous - 1) * 100;
 }
 
+/** Spain's stocks are read from the database; regenerated at most hourly. */
 export default async function StocksPage() {
+  "use cache";
+  cacheLife("hours");
+
   const supply = getSupplyService();
   const [stocks, history, spain] = await Promise.all([
     supply.getStocks(),

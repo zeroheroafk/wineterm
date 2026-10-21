@@ -14,6 +14,7 @@ import {
   TRADE_CATEGORIES,
   TRADE_CATEGORY_LABELS,
 } from "@/services/trade/types";
+import { cacheLife } from "next/cache";
 
 export const metadata: Metadata = {
   title: "Trade",
@@ -21,11 +22,14 @@ export const metadata: Metadata = {
     "Wine trade of Spain, Portugal, France and Italy by customs category: bulk, bottled and bag-in-box still wine, sparkling wine and grape must. Volumes, values, unit values and partners.",
 };
 
-// Eurostat publishes monthly; regenerate at most hourly so a new month
-// shows up soon after the import.
-export const revalidate = 3600;
-
+/**
+ * Eurostat publishes monthly; the page is regenerated at most hourly so
+ * a new month shows up soon after the import.
+ */
 export default async function TradePage() {
+  "use cache";
+  cacheLife("hours");
+
   const trade = getTradeService();
   const [period, source, updatedAt, summaries, details, monthly] =
     await Promise.all([

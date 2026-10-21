@@ -9,6 +9,7 @@ import {
   type FilterFieldConfig,
 } from "@/components/markets/MarketFilterPanel";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
+import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { SourceLine, UpdatedAt } from "@/components/ui/SourceLine";
 import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import {
@@ -28,7 +29,39 @@ export const metadata: Metadata = {
     "Bulk wine prices by country, region, classification and colour, with original units preserved.",
 };
 
+/**
+ * The header is prerendered; the filtered table reads the query string,
+ * so it renders at request time behind the fallback.
+ */
 export default async function BulkWinePage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const allRows = await getMarketsService().getRows("bulk-wine");
+  const hasReal = allRows.some((row) => !isIllustrative(row));
+
+  return (
+    <Container className="pb-16">
+      <MarketsPageHeader
+        crumb="Bulk Wine Prices"
+        title="Bulk Wine Prices"
+        description={
+          hasReal
+            ? "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. National averages are listed first, then prices in regional reference markets, then the illustrative samples, marked as such. How each price is established is set out in the methodology."
+            : "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Development figures are illustrative samples."
+        }
+        activeHref="/markets/bulk-wine"
+      />
+
+      <Suspense fallback={<ResultsFallback />}>
+        <BulkWineResults searchParams={searchParams} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function BulkWineResults({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
@@ -37,13 +70,11 @@ export default async function BulkWinePage({
   const markets = getMarketsService();
   const filter = filterFromParams(params);
 
-  const [rows, allRows, options, commentary] = await Promise.all([
+  const [rows, options, commentary] = await Promise.all([
     markets.getRows("bulk-wine", filter),
-    markets.getRows("bulk-wine"),
     markets.getFilterOptions("bulk-wine"),
     markets.getCommentary("bulk-wine"),
   ]);
-  const hasReal = allRows.some((row) => !isIllustrative(row));
 
   const updatedAt = rows
     .map((row) => row.latest.updatedAt)
@@ -143,26 +174,13 @@ export default async function BulkWinePage({
   ];
 
   return (
-    <Container className="pb-16">
-      <MarketsPageHeader
-        crumb="Bulk Wine Prices"
-        title="Bulk Wine Prices"
-        description={
-          hasReal
-            ? "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. National averages are listed first, then prices in regional reference markets, then the illustrative samples, marked as such. How each price is established is set out in the methodology."
-            : "Bulk wine prices across the main European producing regions. Observations keep their original unit, with labelled EUR/hl normalisations beside them; prices recorded per hectolitre-degree are shown in EUR/hl at the wine's strength. Development figures are illustrative samples."
-        }
-        activeHref="/markets/bulk-wine"
-      />
-
+    <>
       <div className="mt-8">
-        <Suspense fallback={<div className="h-16 border-y border-rule bg-paper" />}>
-          <MarketFilterPanel
-            fields={fields}
-            resultCount={rows.length}
-            end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
-          />
-        </Suspense>
+        <MarketFilterPanel
+          fields={fields}
+          resultCount={rows.length}
+          end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
+        />
       </div>
 
       <div className="mt-5">
@@ -190,6 +208,6 @@ export default async function BulkWinePage({
           <MarketCommentaryBlock commentary={commentary} />
         </div>
       ) : null}
-    </Container>
+    </>
   );
 }
