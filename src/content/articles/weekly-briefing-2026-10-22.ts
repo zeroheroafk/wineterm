@@ -12,6 +12,17 @@ export const weeklyBriefing20261022: ArticleDetail = {
   publishedAt: "2026-10-22",
   readingMinutes: 3,
   href: `/insights/weekly-briefing/${id}`,
+  hero: {
+    src: `/images/insights/${id}.jpg`,
+    width: 1920,
+    height: 1280,
+    alt: "Rows of tall stainless steel wine tanks under a metal catwalk, with hoses, a pump and a small mobile tank on the wet tiled floor of a cellar.",
+    caption: "Fermentation tanks in a cellar at Chavignol, near Sancerre.",
+    author: "Cjp24",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Stainless_steel_vinification_tanks.jpg",
+    licence: { name: "CC BY-SA 4.0", url: "https://creativecommons.org/licenses/by-sa/4.0/" },
+    changes: "cropped",
+  },
   body: [
     {
       heading: "Prices: white wine turns up",

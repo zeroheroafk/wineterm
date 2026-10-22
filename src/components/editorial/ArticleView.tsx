@@ -54,11 +54,12 @@ function HeroImage({ hero }: { hero: ArticleHero }) {
         width={hero.width}
         height={hero.height}
         alt={hero.alt}
-        sizes="(min-width: 1024px) 44rem, 100vw"
+        sizes="(min-width: 1024px) 48rem, 100vw"
         loading="eager"
         className="h-auto w-full bg-paper"
       />
       <figcaption className="mt-2 text-xs leading-relaxed text-ink-soft">
+        {hero.caption ? `${hero.caption} ` : null}
         Photo:{" "}
         <a
           href={hero.sourceUrl}

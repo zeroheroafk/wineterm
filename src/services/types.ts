@@ -258,6 +258,8 @@ export interface ArticleHero {
   height: number;
   /** What the picture shows, for readers who cannot see it. */
   alt: string;
+  /** Where it was taken, printed before the credit. */
+  caption?: string;
   /** The author as the source credits them. */
   author: string;
   /** The page the picture is published on. */
