@@ -1,11 +1,14 @@
 /**
- * Supply domain model: Spain's stocks, production and declared balance,
- * as the Ministry of Agriculture publishes the monthly INFOVI
- * declarations. Volumes are million hectolitres (Mhl) unless a field says
- * otherwise.
+ * Supply domain model: the stocks each country declares, Spain's wine
+ * production and declared balance from the Ministry of Agriculture's
+ * monthly INFOVI declarations, Italy's month-end stocks from the
+ * telematic wine register, and the stocks France's and Portugal's
+ * operators declare at 31 July. Volumes are million hectolitres (Mhl)
+ * unless a field says otherwise.
  */
 
 import type { SourceId } from "@/services/markets/sources";
+import type { ProducerCountry } from "@/services/types";
 
 /** A volume of wine at one month: stocks at its end, or made up to it. Mhl. */
 export interface MonthlyWinePoint {
@@ -14,11 +17,11 @@ export interface MonthlyWinePoint {
   wineMhl: number;
 }
 
-/** A figure for the latest month against the same month a year earlier, Mhl. */
+/** A figure for the latest period against the same period a year earlier, Mhl. */
 export interface YearOnYearRow {
   label: string;
   latestMhl: number;
-  /** The same month a year earlier; null when not declared. */
+  /** The same period a year earlier; null when not declared. */
   yearEarlierMhl: number | null;
   /** Totals are set apart from their parts. */
   isTotal: boolean;
@@ -31,21 +34,67 @@ export interface CampaignPath {
 }
 
 /**
- * Spain's month-end stocks as declared to the Ministry of Agriculture
- * (INFOVI): the latest month in detail, and the monthly path of the
- * latest two campaigns.
+ * A country's month-end stocks as its declarations or register give
+ * them: the latest month in detail, and the monthly path of the latest
+ * two campaigns. Spain from the INFOVI declarations to the Ministry of
+ * Agriculture, Italy from the ICQRF's Cantina Italia reports.
  */
-export interface SpainMonthlyStocks {
-  /** Latest month with declarations, e.g. "2026-07". */
+export interface MonthlyStocks {
+  country: ProducerCountry;
+  /** Latest month with figures, e.g. "2026-07". */
   latestMonth: string;
   breakdown: YearOnYearRow[];
   /** Latest campaign first. */
   campaigns: CampaignPath[];
   sourceId: SourceId;
-  /** When the ministry published the latest month. */
+  /** When the source published the latest month. */
   publishedAt: string;
   /** When WineTerm last updated the figures. */
   updatedAt: string;
+}
+
+/** Stocks declared at 31 July of one year, Mhl. */
+export interface JulyStockPoint {
+  /** The year of the 31 July the stocks are counted at. */
+  year: number;
+  totalMhl: number;
+  /** The producers' and the traders' parts, where the source keeps them apart. */
+  producersMhl: number | null;
+  tradersMhl: number | null;
+}
+
+/**
+ * A country's stocks declared at 31 July, as its declarations give them:
+ * the latest year in detail against the year before, and the totals of
+ * every year declared. France from the customs' stock declarations,
+ * Portugal from the wine institute's.
+ */
+export interface AnnualStocks {
+  country: ProducerCountry;
+  /** The year of the latest 31 July declared, e.g. 2026. */
+  latestYear: number;
+  /** The latest year's figures against the year before. */
+  breakdown: YearOnYearRow[];
+  /** Every year declared, oldest first. */
+  history: JulyStockPoint[];
+  sourceId: SourceId;
+  /** When the source published the latest year. */
+  publishedAt: string;
+  /** When WineTerm last updated the figures. */
+  updatedAt: string;
+}
+
+/** One country's stocks at its latest 31 July, for the comparison across countries. */
+export interface JulyStocksRow {
+  country: ProducerCountry;
+  /** The year of the 31 July the latest figure is counted at. */
+  year: number;
+  latestMhl: number;
+  /** At 31 July a year earlier; null when not declared. */
+  yearEarlierMhl: number | null;
+  /** What the figure counts, as the source does. */
+  scope: string;
+  sourceId: SourceId;
 }
 
 /** Wine made in one completed campaign, by colour, Mhl. */

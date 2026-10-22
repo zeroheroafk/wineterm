@@ -32,6 +32,9 @@ export type SourceId =
   | "agreste"
   | "ivv"
   | "uiv-assoenologi-ismea"
+  | "icqrf-cantina-italia"
+  | "douane-stocks"
+  | "ivv-existencias"
   | "wineterm-trade-estimate";
 
 export interface MarketSource {
@@ -154,6 +157,39 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     cadence: "Once a year in early September; none in 2026",
     note: "Italy's usual harvest forecast comes from the trade associations Unione Italiana Vini and Assoenologi with the public agency ISMEA. For 2026 they published none, and will report results after the harvest.",
     url: "https://www.unioneitalianavini.it/approfondimenti-tematici/news/vendemmia-2026-dati-consuntivi-fine-campagna",
+  },
+  "icqrf-cantina-italia": {
+    id: "icqrf-cantina-italia",
+    name: "ICQRF, Cantina Italia",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Italy: wine, must and new wine held at the end of each month by the operators that keep the telematic wine register; WineTerm imports the national totals by category and colour",
+    cadence: "Monthly, 8 to 12 days after the month ends",
+    note: "Official statistics of the Italian Ministry of Agriculture's inspectorate (ICQRF), from the telematic wine registers, which hold at least 95% of the wine kept in Italy, imported unchanged in hectolitres from each report's spreadsheet. Source: ICQRF, bollettino \"Cantina Italia\", reused with attribution under the ministry's CC BY terms.",
+    url: "https://www.masaf.gov.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/7817",
+  },
+  "douane-stocks": {
+    id: "douane-stocks",
+    name: "DGDDI, stock declarations",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "France: wine held at 31 July by producers and by traders, as declared to customs at the end of each campaign, by category and colour; WineTerm imports the national totals",
+    cadence: "Yearly, in October or November",
+    note: "Official statistics of the French customs (Direction générale des douanes et droits indirects), from the end-of-campaign stock declarations, imported unchanged in hectolitres. Source: DGDDI, open data, reused under the Licence Ouverte / Open Licence 2.0.",
+    url: "https://www.douane.gouv.fr/la-douane/opendata/categories/viticulture/stocks-de-vins",
+  },
+  "ivv-existencias": {
+    id: "ivv-existencias",
+    name: "IVV, declarações de existências",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "Portugal: wine and must held at 31 July, as declared to the wine institute, by category and colour; WineTerm imports the national totals",
+    cadence: "Yearly; the series workbook follows the declarations by some months",
+    note: "Official statistics of the Instituto da Vinha e do Vinho, from the compulsory stock declarations at 31 July, imported unchanged in hectolitres from its series workbook. Wine and must are declared together, and products with a PDO or PGI include those eligible for one. Source: Instituto da Vinha e do Vinho, I.P.",
+    url: "https://www.ivv.gov.pt/estatisticas/dados-do-vinho/",
   },
   "wineterm-trade-estimate": {
     id: "wineterm-trade-estimate",

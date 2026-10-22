@@ -43,7 +43,10 @@ prices in Languedoc-Roussillon and Midi-Pyrénées (DRAAF Occitanie), and
 one national bulk wine price each for Portugal, France and Italy:
 WineTerm's monthly estimate, the average price of the country's bulk
 exports, computed in the database from the Eurostat figures. The supply,
-stocks and production pages read Spain's monthly declarations. The
+stocks and production pages read Spain's monthly declarations, and the
+stocks page also Italy's month-end stocks from the ICQRF's Cantina
+Italia reports and the stocks France and Portugal declare at 31 July,
+from the customs' open data and the wine institute's series. The
 harvest page shows each country's official production estimate, entered
 by hand in `src/services/harvest/official.ts`. Insights articles and
 monthly reports are published content in `src/content/articles`, one
@@ -51,8 +54,8 @@ file per article, read at `/insights/analysis/<id>` and
 `/insights/monthly-reports/<id>`. Industry stories, WineTerm's summaries
 of reports published elsewhere with a link to each, are in
 `src/content/industry.ts`. A section whose source is not connected yet,
-such as grape and must prices or the balances of Portugal, France and
-Italy, says so instead of showing sample figures.
+such as must prices or the balances of Portugal, France and Italy, says
+so instead of showing sample figures; grape prices are not covered.
 
 ## Commands
 
@@ -78,9 +81,10 @@ from the sitemap and marked noindex.
   show Eurostat figures; the Markets pages and the homepage key prices
   show MAPA's national wine prices, the Spanish and French regional
   prices and the national bulk prices of Portugal, France and Italy
-  computed from the trade figures; and `/supply`, `/supply/stocks` and
+  computed from the trade figures; `/supply`, `/supply/stocks` and
   `/supply/production` show Spain's INFOVI balance, stocks and wine
-  production. Pages regenerate at most hourly and database reads are
+  production; and `/supply/stocks` shows the stocks of Italy, France
+  and Portugal. Pages regenerate at most hourly and database reads are
   cached for an hour; the build then reads the database, and fails
   rather than publish trade volumes missing litres. Without them,
   submissions are discarded and the reply says so, and the price,
@@ -117,8 +121,8 @@ pages that filter by query string render at request time. The pages that
 read only cached data carry `"use cache"` themselves and are regenerated
 at most hourly. A stored series appears only when its source is in
 `src/services/markets/sources.ts`. The supply, stocks and production
-pages read Spain's rows of `supply_figures` the same way (`"use cache"`,
-tag `supply-data`), and the trade pages their aggregates (tag
+pages read `supply_figures` the same way (`"use cache"`, tag
+`supply-data`), and the trade pages their aggregates (tag
 `trade-data`).
 
 The data providers, with their coverage, access and licence status, and
@@ -235,6 +239,52 @@ outcome on the run.
   backfill, run `select private.start_infovi_imports(2018, 2020);`. A
   failed run names the table and the check that did not hold.
 
+- **ICQRF, Cantina Italia** (`supabase/functions/import-cantina-italia`)
+  loads Italy's month-end stocks into `supply_figures`: wine with a PDO
+  and with a PGI by colour, varietal and other wine, must that is not
+  concentrated, concentrated and rectified concentrated must, and new
+  wine still in fermentation, national totals in hectolitres. The
+  ministry lists one report per month, 8 to 12 days after the month
+  ends, each with a spreadsheet by region and province; `cantina.ts`
+  reads the ministry's listing of a year, keeps the reports dated at a
+  month's end (a report dated the 1st counts the month before, as the
+  bulletins of 2018 and 2019 were dated), finds each report's
+  spreadsheet and reads the national totals, checking that the regions
+  add up to them. A run covers one month's report, which keeps the
+  parsing within the function's CPU time;
+  `private.start_cantina_italia_imports()` queues one run per month,
+  from December of the year before to the last month ended, and posts
+  them at once, and the job `import-cantina-italia` starts the current
+  year every Thursday. The bulletins up to the autumn of 2018 lay the
+  figures out in other sheets and are not read. For a backfill, run a
+  year at a time, `select private.start_cantina_italia_imports(2019,
+  2019);`, to spare the ministry's server a hundred downloads at once.
+
+- **DGDDI, stock declarations** (`supabase/functions/import-douane-stocks`)
+  loads France's stocks at 31 July into `supply_figures`: the wine
+  producers and traders declared to customs at the end of each campaign,
+  by category (PDO, PGI, without GI, and wine from third countries at
+  traders) and colour, national totals in hectolitres, with the holder
+  in the `holder` column. The customs' open data lists one workbook per
+  campaign since 2017/2018; `douane.ts` reads the listing's pages, keeps
+  the statements of production and trade stocks, and reads each
+  workbook's TOTAL rows, checking that the categories add up to them.
+  `private.start_douane_stock_imports()` queues one run that reads
+  every campaign, and the job `import-douane-stocks` runs it on Tuesdays
+  from October to December, when a campaign's statement comes out.
+
+- **IVV, declarações de existências** (`supabase/functions/import-ivv-stocks`)
+  loads Portugal's stocks at 31 July into `supply_figures`: the wine and
+  must operators declared to the wine institute, by category (PDO, PDO
+  liqueur wine, PGI, varietal, without certification) and colour,
+  national totals in hectolitres, from the series workbook the institute
+  keeps among its documents. `ivv.ts` finds the latest series in the
+  documents' sitemap, its workbook on the page, and reads every year's
+  table, checking that the categories add up to the total.
+  `private.start_ivv_stock_imports()` queues one run, and the job
+  `import-ivv-stocks` runs it on Tuesdays from January to June, when the
+  series follows the declarations.
+
 Scheduled calls need two Vault secrets, set once per project and never
 committed: `project_url` (the project's API URL) and `anon_key` (the
 legacy anon key, because the function verifies JWTs). Without them the
@@ -244,5 +294,6 @@ queued, not the caller.
 
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise
-`import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie` and
-`import-infovi`) or the dashboard.
+`import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie`,
+`import-infovi`, `import-cantina-italia`, `import-douane-stocks` and
+`import-ivv-stocks`) or the dashboard.

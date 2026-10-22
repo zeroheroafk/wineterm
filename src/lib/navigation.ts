@@ -33,11 +33,6 @@ export const primaryNavigation: NavSection[] = [
         description: "Reference prices by region, colour and grade",
       },
       {
-        label: "Grape Prices",
-        href: "/markets/grapes",
-        description: "Wine grape prices through the campaign",
-      },
-      {
         label: "Must & Concentrates",
         href: "/markets/must-concentrates",
         description: "Grape must, RCGM and concentrate values",
@@ -209,7 +204,6 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
     items: [
       { label: "Market Data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
-      { label: "Grape Prices", href: "/markets/grapes" },
       { label: "Production", href: "/supply/production" },
       { label: "Stocks", href: "/supply/stocks" },
       { label: "Imports & Exports", href: "/trade" },

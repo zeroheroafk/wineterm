@@ -38,13 +38,18 @@ Status legend:
    declared balance on `/supply`, its stocks on `/supply/stocks` and the
    wine made since 1 August on `/supply/production`. Commercial reuse of
    both is allowed under Law 37/2007.
-4. **Portugal: IVV.** Monthly trade synthesis in Excel validated; the
-   production files are password-protected.
+4. **Portugal: IVV. Stocks imported.** The stocks operators declare at
+   31 July, by category and colour, from the institute's series workbook
+   (2020 to 2025), feed `/supply/stocks`. The monthly trade synthesis in
+   Excel is validated but is trade only; the production files are
+   password-protected.
 5. **Harvest: official national forecasts. On `/harvest`.** Agreste,
    IVV and MAPA's crop estimates, entered by hand from each release; the
    OIV world outlook still to add.
-6. **Gaps to cover with partners or desk estimates:** grape prices,
-   must and concentrate prices, and Portuguese bulk wine prices.
+6. **Gaps to cover with partners or desk estimates:** must and
+   concentrate prices, and Portuguese bulk wine prices. Grape prices are
+   left out by decision: no public series exists for the four countries
+   that WineTerm may republish.
 7. **French regional bulk prices: DRAAF Occitanie. Imported.** Monthly
    prices of wine without GI and PGI wine by colour in
    Languedoc-Roussillon and Midi-Pyrénées since August 2023, refreshed
@@ -54,6 +59,109 @@ Status legend:
    monthly average price of each country's bulk wine exports, from the
    Comext figures, is its national bulk price. See "WineTerm estimates
    from Comext" below.
+9. **Stocks of Italy and France: ICQRF and DGDDI. Imported.** Italy's
+   month-end stocks from the Cantina Italia reports since 2019, and the
+   stocks France's producers and traders declare at 31 July from the
+   customs' open data since 2017/2018, feed `/supply/stocks`. See
+   "Stocks" below.
+
+## Stocks
+
+### Italy: ICQRF, Cantina Italia. Imported
+
+- **Covers:** the wine, must and new wine held at the end of each month
+  by the operators that keep the telematic wine register (at least 95%
+  of the wine kept in Italy, the ICQRF says), by region and province, by
+  category (DOP, IGP, varietal, other wine) and colour, and by
+  denomination with bottled and bulk apart; musts as other musts,
+  concentrated and rectified concentrated must, and new wine still in
+  fermentation. One report per month, published 8 to 12 days after the
+  month ends, with a PDF in Italian and English and an ODS spreadsheet;
+  twice a month in 2018 and 2019 and weekly in 2020. No report for
+  August, when the campaign's registrations close. WineTerm reads the
+  reports from 2019: the bulletins up to the autumn of 2018 lay the
+  figures out in other sheets.
+- **In the database:** `public.supply_figures`, country `IT`, source
+  `icqrf-cantina-italia`: the national totals of wine with a PDO and
+  with a PGI by colour, varietal and other wine, the total of wine, and
+  the four must and new wine figures, one row each per month, period
+  the first day of the month whose closing stocks they are.
+- **Access:** the ministry's documents listing, one page per year
+  (`ServeBLOB.php/L/IT/IDPagina/7817?YY=2026`), each report on its own
+  page with the spreadsheet as an attachment. Read on 21 October 2026
+  from the development environment and from Supabase.
+- **Checks:** the regions add up to the national total of every column;
+  the colours add up to the DOP and IGP totals; the report of 31 January
+  2026 reads 60.9 Mhl of wine, as its PDF says.
+- **Refresh:** `pg_cron` job `import-cantina-italia`, Thursday at 06:51
+  UTC. See `README.md`, section Database.
+- **Licence:** the ministry's site publishes its texts under CC BY and
+  its documents free to download, citing the source; the spreadsheet
+  itself says the data may be used citing "ICQRF, bollettino Cantina
+  Italia". Confirmed.
+- **Feeds:** `/supply/stocks`.
+- Link: [Cantina Italia reports](https://www.masaf.gov.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/7817).
+
+### France: DGDDI, stock declarations. Imported
+
+- **Covers:** the wine held at 31 July, the close of the campaign, as
+  declared to customs: by producers, by department, category (AOP, IGP
+  with and without a grape variety, VSIG with and without) and colour;
+  and by traders, by category, origin (France, rest of the EU, third
+  countries) and colour. One workbook per campaign since 2009/2010, with
+  the traders' stocks since 2013/2014 and the producers' by department
+  since 2017/2018, published in October or November.
+- **In the database:** `public.supply_figures`, country `FR`, source
+  `douane-stocks`, period the first of July of the year declared, holder
+  `producers` or `traders`: PDO, PGI and wine without GI by colour, wine
+  from third countries at traders, and each holder's total.
+- **Access:** the open data category "stocks de vins", five publications
+  a page. Validated on 21 October 2026 from the development environment;
+  on the same afternoon the customs' site went into maintenance and the
+  first import found nothing, so the job retries on Tuesdays.
+- **Checks:** the fifteen category columns add up to the TOTAL row
+  within 0.01% (the 2023/2024 statement's total is 94 hl short of its
+  parts); the traders' categories add up to their total; 31 July 2026
+  reads 26.51 Mhl at producers and 21.97 Mhl at traders.
+- **Refresh:** `pg_cron` job `import-douane-stocks`, Tuesday at 06:53
+  UTC from October to December. See `README.md`, section Database.
+- **Licence:** the same statistics are on data.gouv.fr under the Licence
+  Ouverte / Open Licence 2.0 ("Statistiques viti-vinicoles - Relevés
+  annuels des stocks et des récoltes depuis 2009", DGDDI). Confirmed
+  there; the customs' own open data pages name no licence.
+- **Feeds:** `/supply/stocks`.
+- Link: [stocks de vins](https://www.douane.gouv.fr/la-douane/opendata/categories/viticulture/stocks-de-vins).
+
+### Portugal: IVV, declarações de existências. Imported
+
+- **Covers:** the wine and must held at 31 July by every operator but
+  retailers, as declared to the institute: by category (DOP, PDO liqueur
+  wine, IGP, varietal, without certification, the certified categories
+  including products eligible for certification) and colour, and DOP and
+  IGP by wine region. The institute publishes the results each November
+  as prose (Informação de Mercado) and a series workbook of the last six
+  years some months later, among its documents.
+- **In the database:** `public.supply_figures`, country `PT`, source
+  `ivv-existencias`, period the first of July of the year declared: the
+  five categories by colour and the total of wine and must.
+- **Access:** the documents' sitemap names the latest series page
+  (`existencias-serie-2020-a-2025`), which links the workbook. Validated
+  on 21 October 2026 from the development environment and from Supabase.
+  The first run from Supabase timed out after 60 seconds; the second,
+  with a browser's headers and a longer timeout, read the series in
+  three seconds.
+- **Checks:** each category's colours add up to its total, and the
+  categories to the year's total; the 2024 total row's white cell misses
+  a category and is not read. 31 July 2025 reads 12.17 Mhl, as the
+  institute's Informação de Mercado 9/2025 says.
+- **Refresh:** `pg_cron` job `import-ivv-stocks`, Tuesday at 06:55 UTC
+  from January to June. See `README.md`, section Database.
+- **Licence:** the institute's site states none; public statistics of a
+  Portuguese public body, cited to the Instituto da Vinha e do Vinho,
+  I.P. To confirm with the institute before launch.
+- **Feeds:** `/supply/stocks`.
+- Links: [series page](https://www.ivv.gov.pt/documentos/existencias-serie-2020-a-2025/),
+  [Informação de Mercado 9/2025](https://www.ivv.gov.pt/documentos/informacao-de-mercado-n-o-09-2025-existencias-de-vinho-mosto-descem-5-face-a-2024/).
 
 ## Markets: bulk wine prices
 

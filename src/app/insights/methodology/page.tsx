@@ -102,12 +102,13 @@ export default function MethodologyPage() {
         <SectionHeader kicker="Scope" title="What WineTerm publishes" />
         <Prose>
           <p>
-            WineTerm publishes price series for bulk wine, with grape and
-            must prices to follow as sources allow; Spain&apos;s declared
-            supply balance of stocks, production, entries and exits; the
-            official harvest estimates; and customs trade aggregates.
-            Coverage spans Spain, Portugal, France and Italy. A section
-            without a source yet says so rather than showing a stand-in.
+            WineTerm publishes price series for bulk wine, with must prices
+            to follow as sources allow; the stocks each country declares;
+            Spain&apos;s declared supply balance of stocks, production,
+            entries and exits; the official harvest estimates; and customs
+            trade aggregates. Coverage spans Spain, Portugal, France and
+            Italy. A section without a source yet says so rather than
+            showing a stand-in.
           </p>
           <p>
             Every observation carries its source, unit, observation date,
@@ -366,10 +367,14 @@ export default function MethodologyPage() {
             leave unaccounted.
           </p>
           <p>
-            Stock declarations are compared within a country against the
-            same reference a year earlier. Cross-country stock comparisons
-            are indicative because reference dates and coverage differ; the
-            differences are documented on the{" "}
+            Stocks are shown as each country declares them: Spain&apos;s and
+            Italy&apos;s at the end of each month, from the INFOVI
+            declarations and the telematic wine register; France&apos;s and
+            Portugal&apos;s at 31 July, from the declarations to customs and
+            to the wine institute. Each is compared against itself a year
+            earlier. Cross-country comparisons are indicative because who
+            declares and what is counted differ; the differences are
+            documented on the{" "}
             <Link
               href="/supply/stocks"
               className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
@@ -478,14 +483,18 @@ export default function MethodologyPage() {
             regional bulk wine prices and its monthly declarations of wine
             stocks, production, entries and exits credited to MAPA are
             official statistics, refreshed every week, as are the regional
-            bulk prices credited to DRAAF Occitanie. The harvest estimates
-            credited to Agreste, the IVV and MAPA are official too, entered
-            by hand from each release. The bulk wine prices for Portugal,
-            France and Italy are WineTerm&apos;s monthly estimates from the
-            Eurostat trade figures, described above. Grape and must prices,
-            and the balances and stocks of Portugal, France and Italy, wait
-            for sources WineTerm may republish, and their pages say so.
-            Nothing on the platform is investment advice.
+            bulk prices credited to DRAAF Occitanie. Italy&apos;s monthly
+            stocks credited to the ICQRF, and the stocks France and Portugal
+            declare at 31 July, credited to the customs and to the IVV, are
+            official statistics imported from each release. The harvest
+            estimates credited to Agreste, the IVV and MAPA are official
+            too, entered by hand from each release. The bulk wine prices for
+            Portugal, France and Italy are WineTerm&apos;s monthly estimates
+            from the Eurostat trade figures, described above. Must prices
+            and the supply balances of Portugal, France and Italy wait for
+            sources WineTerm may republish, and their pages say so; grape
+            prices are not covered. Nothing on the platform is investment
+            advice.
           </p>
         </Prose>
       </section>

@@ -33,13 +33,6 @@ const PRODUCTS: {
       "Bulk wine prices by country, region, classification and colour, with original units preserved and movements over three horizons.",
   },
   {
-    kind: "grape",
-    title: "Grape Prices",
-    href: "/markets/grapes",
-    description:
-      "Grape prices by region, variety and harvest, with the provenance of every observation: official averages, contracts, cooperative settlements, announcements and estimates.",
-  },
-  {
     kind: "must",
     title: "Must & Concentrates",
     href: "/markets/must-concentrates",
@@ -54,19 +47,17 @@ export default async function MarketsPage() {
   cacheLife("hours");
 
   const markets = getMarketsService();
-  const [bulkRows, grapeRows, mustRows] = await Promise.all([
+  const [bulkRows, mustRows] = await Promise.all([
     markets.getRows("bulk-wine"),
-    markets.getRows("grape"),
     markets.getRows("must"),
   ]);
 
-  const rowsByKind: Record<MarketKind, MarketRow[]> = {
+  const rowsByKind: Partial<Record<MarketKind, MarketRow[]>> = {
     "bulk-wine": bulkRows,
-    grape: grapeRows,
     must: mustRows,
   };
 
-  const recent = [...bulkRows, ...grapeRows, ...mustRows]
+  const recent = [...bulkRows, ...mustRows]
     .sort((a, b) => b.latest.date.localeCompare(a.latest.date))
     .slice(0, 6);
 
@@ -74,7 +65,7 @@ export default async function MarketsPage() {
     <Container className="pb-16">
       <MarketsPageHeader
         title="Markets"
-        description="Price series for the professional wine market: bulk wine, grapes, must and concentrates. Every observation keeps its source and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. National bulk wine averages lead; how each price is established is set out in the methodology."
+        description="Price series for the professional wine market: bulk wine, must and concentrates. Every observation keeps its source and original unit, except prices recorded per hectolitre-degree, shown in EUR/hl at the product's strength. National bulk wine averages lead; how each price is established is set out in the methodology."
         activeHref="/markets"
       />
 
@@ -86,7 +77,7 @@ export default async function MarketsPage() {
         />
         <ul className="mt-5 border border-rule bg-paper">
           {PRODUCTS.map((product) => {
-            const rows = rowsByKind[product.kind];
+            const rows = rowsByKind[product.kind] ?? [];
             const latestDate = rows
               .map((r) => r.latest.date)
               .sort()

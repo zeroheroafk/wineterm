@@ -40,7 +40,7 @@ export default async function SupplyPage() {
         crumbs={[{ label: "Crop & Supply" }]}
         kicker="Crop & Supply"
         title="Supply balance"
-        description="The physical balance of the market in million hectolitres. Spain's is drawn up from the stocks, production, entries and exits declared every month to the Ministry of Agriculture (INFOVI). Portugal, France and Italy publish no monthly declarations WineTerm may republish; their balances follow once a source does."
+        description="The physical balance of the market in million hectolitres. Spain's is drawn up from the stocks, production, entries and exits declared every month to the Ministry of Agriculture (INFOVI). Portugal, France and Italy publish no monthly entries and exits WineTerm may republish, so their balances follow once a source does; their declared stocks are on the stocks page."
         activeHref="/supply"
       />
 

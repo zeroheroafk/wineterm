@@ -169,6 +169,8 @@ async function importRun(
           ...figure,
           country: COUNTRY,
           source_id: SOURCE_ID,
+          // The declarations cover producers and warehouse holders alike.
+          holder: "all",
           published_at: previous?.published_at ?? publishedAt,
           updated_at: startedAt,
           revised: previous !== undefined,
@@ -179,7 +181,7 @@ async function importRun(
       const { error } = await supabase
         .from("supply_figures")
         .upsert(rows, {
-          onConflict: "country,period,measure,product,colour,presentation",
+          onConflict: "country,period,measure,product,colour,presentation,holder",
         });
       if (error) throw new Error(`Saving ${job.year} failed: ${error.message}`);
     }

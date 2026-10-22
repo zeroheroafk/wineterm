@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     "Compare compatible wine market price series side by side, with explicit unit handling.",
 };
 
-const KINDS: MarketKind[] = ["bulk-wine", "grape", "must"];
+const KINDS: MarketKind[] = ["bulk-wine", "must"];
 
 /** Suggested comparisons; each is offered only when every series exists. */
 const PRESETS: { label: string; codes: string[] }[] = [
