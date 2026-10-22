@@ -5,7 +5,7 @@ import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { DataNote } from "@/components/ui/SourceLine";
 import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatPrice } from "@/lib/format";
-import { countryName, type DataSource, type PriceQuote } from "@/services/types";
+import type { DataSource, PriceQuote } from "@/services/types";
 
 const COLOUR_LABELS = { red: "Red", white: "White", rose: "Rose" } as const;
 
@@ -22,10 +22,9 @@ function sourcesOf(quotes: PriceQuote[]): DataSource[] {
 
 /**
  * The key bulk wine prices of the homepage. Market names and prices
- * lead; a unit shared by every row moves into the column heading, and
- * country flags are dropped when every market is named after its
- * country. Columns that yield on narrow screens reappear as a line under
- * the market name, so no figure is lost. Changes are signed and coloured
+ * lead, each after its country's flag; a unit shared by every row moves
+ * into the column heading. Columns that yield on narrow screens reappear
+ * as a line under the market name, so no figure is lost. Changes are signed and coloured
  * like every other movement on the page, without glyphs. A change is on
  * the previous price: a week earlier for weekly series, a month earlier
  * for monthly ones. How each price is established is on the methodology
@@ -56,11 +55,6 @@ export function KeyPricesTable({
   // The wine column shows when any price is for one colour; estimates
   // that span every colour read "All" in it.
   const showWineColumn = quotes.some((quote) => quote.colour);
-  // A market named after its country needs no flag beside it; flags
-  // stay on every row while any market is a region.
-  const showCountryFlags = quotes.some(
-    (quote) => quote.market !== countryName(quote.country),
-  );
 
   return (
     <figure>
@@ -108,22 +102,12 @@ export function KeyPricesTable({
                 <tr key={quote.id} className="border-b border-rule">
                   <th scope="row" className={`${TD} font-normal`}>
                     <span className="flex items-baseline gap-2">
-                      {showCountryFlags ? (
-                        <span className="hidden sm:inline-flex">
-                          <CountryLabel code={quote.country} variant="plain" />
-                        </span>
-                      ) : null}
+                      <CountryLabel code={quote.country} variant="plain" />
                       <span className="min-w-0">
                         <span className="block text-[0.9375rem] leading-snug font-semibold text-ink">
                           {quote.market}
                         </span>
                         <span className="block text-xs leading-snug text-ink-soft lg:hidden">
-                          {showCountryFlags ? (
-                            <span className="sm:hidden">
-                              <CountryLabel code={quote.country} variant="plain" />{" "}
-                              &middot;{" "}
-                            </span>
-                          ) : null}
                           {colour ? (
                             <span className="md:hidden">{colour} &middot; </span>
                           ) : null}
