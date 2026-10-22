@@ -23,7 +23,7 @@ function sourcesOf(quotes: PriceQuote[]): DataSource[] {
 /**
  * The key bulk wine prices of the homepage. Market names and prices
  * lead; a unit shared by every row moves into the column heading, and
- * country codes are dropped when every market is named after its
+ * country flags are dropped when every market is named after its
  * country. Columns that yield on narrow screens reappear as a line under
  * the market name, so no figure is lost. Changes are signed and coloured
  * like every other movement on the page, without glyphs. A change is on
@@ -56,9 +56,9 @@ export function KeyPricesTable({
   // The wine column shows when any price is for one colour; estimates
   // that span every colour read "All" in it.
   const showWineColumn = quotes.some((quote) => quote.colour);
-  // A market named after its country needs no country code beside it;
-  // codes stay on every row while any market is a region.
-  const showCountryCodes = quotes.some(
+  // A market named after its country needs no flag beside it; flags
+  // stay on every row while any market is a region.
+  const showCountryFlags = quotes.some(
     (quote) => quote.market !== countryName(quote.country),
   );
 
@@ -108,7 +108,7 @@ export function KeyPricesTable({
                 <tr key={quote.id} className="border-b border-rule">
                   <th scope="row" className={`${TD} font-normal`}>
                     <span className="flex items-baseline gap-2">
-                      {showCountryCodes ? (
+                      {showCountryFlags ? (
                         <span className="hidden sm:inline-flex">
                           <CountryLabel code={quote.country} variant="plain" />
                         </span>
@@ -118,7 +118,7 @@ export function KeyPricesTable({
                           {quote.market}
                         </span>
                         <span className="block text-xs leading-snug text-ink-soft lg:hidden">
-                          {showCountryCodes ? (
+                          {showCountryFlags ? (
                             <span className="sm:hidden">
                               <CountryLabel code={quote.country} variant="plain" />{" "}
                               &middot;{" "}
