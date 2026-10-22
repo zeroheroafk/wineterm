@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Fragment } from "react";
 
 import { ShareChart } from "@/components/charts/ShareChart";
@@ -7,7 +8,12 @@ import { Container } from "@/components/layout/Container";
 import { TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { formatDate } from "@/lib/format";
-import type { ArticleDetail, ArticleTable, CitationText } from "@/services/types";
+import type {
+  ArticleDetail,
+  ArticleHero,
+  ArticleTable,
+  CitationText,
+} from "@/services/types";
 
 /** Bracketed source numbers after a paragraph, each linked to its source. */
 function Citations({ numbers }: { numbers: number[] }) {
@@ -36,6 +42,41 @@ function Citation({ parts }: { parts: CitationText[] }) {
         {part.title}
       </cite>
     ),
+  );
+}
+
+/** The article's photograph, above the fold, with its credit and licence. */
+function HeroImage({ hero }: { hero: ArticleHero }) {
+  return (
+    <figure className="mt-6">
+      <Image
+        src={hero.src}
+        width={hero.width}
+        height={hero.height}
+        alt={hero.alt}
+        sizes="(min-width: 1024px) 48rem, 100vw"
+        loading="eager"
+        className="h-auto w-full bg-paper"
+      />
+      <figcaption className="mt-2 text-xs leading-relaxed text-ink-soft">
+        {hero.caption ? `${hero.caption} ` : null}
+        Photo:{" "}
+        <a
+          href={hero.sourceUrl}
+          className="underline decoration-rule underline-offset-2 hover:text-wine"
+        >
+          {hero.author}
+        </a>
+        ,{" "}
+        <a
+          href={hero.licence.url}
+          className="underline decoration-rule underline-offset-2 hover:text-wine"
+        >
+          {hero.licence.name}
+        </a>
+        {hero.changes ? `, ${hero.changes}` : null}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -82,8 +123,8 @@ function FiguresTable({ table, titleId }: { table: ArticleTable; titleId: string
 }
 
 /**
- * A published article in full: header, text with its subheadings, chart
- * and tables, and the numbered sources it cites.
+ * A published article in full: header and photograph, text with its
+ * subheadings, chart and tables, and the numbered sources it cites.
  */
 export function ArticleView({
   article,
@@ -122,6 +163,7 @@ export function ArticleView({
               </span>
               <span>{article.readingMinutes} min read</span>
             </p>
+            {article.hero ? <HeroImage hero={article.hero} /> : null}
           </header>
 
           <div className="mt-8 max-w-2xl space-y-5">
