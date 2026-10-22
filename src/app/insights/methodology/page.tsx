@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
@@ -373,15 +372,7 @@ export default function MethodologyPage() {
             Portugal&apos;s at 31 July, from the declarations to customs and
             to the wine institute. Each is compared against itself a year
             earlier. Cross-country comparisons are indicative because who
-            declares and what is counted differ; the differences are
-            documented on the{" "}
-            <Link
-              href="/supply/stocks"
-              className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
-            >
-              stocks page
-            </Link>
-            .
+            declares and what is counted differ.
           </p>
         </Prose>
       </section>

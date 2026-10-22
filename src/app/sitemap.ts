@@ -34,14 +34,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/markets/bulk-wine`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/markets/compare`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${base}/data`, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${base}/supply`, changeFrequency: "weekly", priority: 0.8 },
-    {
-      url: `${base}/supply/production`,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    { url: `${base}/supply/stocks`, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${base}/harvest`, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/trade`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/insights`, changeFrequency: "daily", priority: 0.8 },
     {

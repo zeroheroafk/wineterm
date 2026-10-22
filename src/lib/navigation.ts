@@ -10,6 +10,11 @@
  * published), the Directory (/directory, no organisation listed) and
  * Must & Concentrates (/markets/must-concentrates, no licensed source).
  * Add each back here when it has something to show.
+ *
+ * Crop & Supply (/supply, /supply/production, /supply/stocks, /harvest)
+ * is hidden the same way for now, along with its supply and harvest
+ * panels on Market data. Its section stays below, marked hidden, so its
+ * pages keep their headers; drop the mark to show it again.
  */
 
 export interface NavLeaf {
@@ -25,6 +30,8 @@ export interface NavSection {
   /** Monospace section code shown in dropdowns and secondary navigation. */
   code: string;
   items: NavLeaf[];
+  /** Kept out of the menus; its pages still answer. */
+  hidden?: boolean;
 }
 
 export const primaryNavigation: NavSection[] = [
@@ -51,16 +58,6 @@ export const primaryNavigation: NavSection[] = [
     code: "DAT",
     items: [
       {
-        label: "Supply",
-        href: "/data#supply",
-        description: "Spain's declared wine balance this campaign",
-      },
-      {
-        label: "Harvest",
-        href: "/data#harvest",
-        description: "Official production estimates by country",
-      },
-      {
         label: "Trade",
         href: "/data#trade",
         description: "Leading exporters, destinations and product forms",
@@ -71,6 +68,7 @@ export const primaryNavigation: NavSection[] = [
     label: "Crop & Supply",
     href: "/supply",
     code: "SUP",
+    hidden: true,
     items: [
       {
         label: "Production",
@@ -182,6 +180,9 @@ export const primaryNavigation: NavSection[] = [
   },
 ];
 
+/** The sections the menus show. */
+export const menuNavigation = primaryNavigation.filter((section) => !section.hidden);
+
 export interface BreadcrumbItem {
   label: string;
   href?: string;
@@ -194,8 +195,6 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
     items: [
       { label: "Market Data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
-      { label: "Production", href: "/supply/production" },
-      { label: "Stocks", href: "/supply/stocks" },
       { label: "Imports & Exports", href: "/trade" },
     ],
   },
