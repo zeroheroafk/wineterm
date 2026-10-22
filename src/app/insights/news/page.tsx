@@ -21,7 +21,7 @@ export default async function NewsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={primaryNavigation[5]}
         crumbs={[{ label: "Insights", href: "/insights" }, { label: "News" }]}
         kicker="Insights"
         title="News"
@@ -42,7 +42,7 @@ export default async function NewsPage() {
           ) : (
             <EmptyState
               title="No news published yet"
-              detail="News reporting starts at launch. Published analysis is already available."
+              detail="Published analysis and the Weekly Briefing are available."
               action={
                 <ArrowLink href="/insights/analysis">Read the analysis</ArrowLink>
               }

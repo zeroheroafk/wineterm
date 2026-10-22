@@ -1,6 +1,12 @@
+import { Suspense } from "react";
+
 import { Container } from "@/components/layout/Container";
 import { MainNav } from "@/components/layout/MainNav";
 import { MobileNav } from "@/components/layout/MobileNav";
+import {
+  MainNavFallback,
+  MobileNavFallback,
+} from "@/components/layout/NavFallbacks";
 import { UtilityBar } from "@/components/layout/UtilityBar";
 import { Wordmark } from "@/components/layout/Wordmark";
 import { ButtonLink } from "@/components/ui/Button";
@@ -8,7 +14,9 @@ import { ButtonLink } from "@/components/ui/Button";
 /**
  * Global header: compact utility strip, masthead row with the wordmark,
  * its descriptor and the single newsletter action, and the primary
- * navigation rail.
+ * navigation rail. The navigation marks the current section from the
+ * pathname, so it sits behind a boundary with a static stand-in for the
+ * routes whose path is only known at request time.
  */
 export function SiteHeader() {
   return (
@@ -26,10 +34,14 @@ export function SiteHeader() {
             <div className="hidden sm:block">
               <ButtonLink href="/briefing">Get the briefing</ButtonLink>
             </div>
-            <MobileNav />
+            <Suspense fallback={<MobileNavFallback />}>
+              <MobileNav />
+            </Suspense>
           </div>
         </div>
-        <MainNav />
+        <Suspense fallback={<MainNavFallback />}>
+          <MainNav />
+        </Suspense>
       </Container>
     </header>
   );

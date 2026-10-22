@@ -13,7 +13,7 @@ export default function PrivacyPage() {
     <LegalPage
       title="Privacy"
       description="How WineTerm handles personal data."
-      updatedAt="2026-09-26"
+      updatedAt="2026-10-22"
       sections={[
         {
           heading: "What we collect",
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
         {
           heading: "Cookies and analytics",
           paragraphs: [
-            "The development build sets no advertising or tracking cookies. If analytics are introduced at launch, this policy will be updated first and will describe exactly what is measured.",
+            "WineTerm sets no advertising or tracking cookies and runs no analytics. If analytics are introduced, this policy will be updated first and will describe exactly what is measured.",
           ],
         },
       ]}

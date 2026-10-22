@@ -13,7 +13,7 @@ export const SITE_URL = (
 
 /**
  * Search engines may index the site only once SITE_INDEXABLE=true is set,
- * when real data has replaced the illustrative fixtures. Until then every
- * page carries noindex, so sample figures never surface in search results.
+ * at launch. Until then every page carries noindex, so pages still being
+ * built never surface in search results.
  */
 export const SITE_INDEXABLE = process.env.SITE_INDEXABLE === "true";

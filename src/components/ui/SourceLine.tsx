@@ -85,7 +85,7 @@ export function SourceLine({
 
 /**
  * Sentence-case data note for editorial layouts: an optional lead (such as
- * a sample-data disclosure, set in the primary ink so it cannot be
+ * a caveat on the figures, set in the primary ink so it cannot be
  * missed), optional further text, the sources with their caveats, the
  * update time and an optional closing link.
  */

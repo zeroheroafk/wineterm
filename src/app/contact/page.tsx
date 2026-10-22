@@ -121,8 +121,8 @@ export default function ContactPage() {
             <h2 className="wt-label text-wine">What to expect</h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">
               The desk reads everything. Corrections are handled first, then
-              data partnerships and directory requests. During the
-              development period, responses may take a few days.
+              data partnerships and directory requests. Responses may take a
+              few days.
             </p>
           </div>
         </aside>

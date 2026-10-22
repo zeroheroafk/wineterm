@@ -4,11 +4,11 @@ import { formatDate } from "@/lib/format";
 import type { MarketBriefing } from "@/services/types";
 
 /**
- * The editorial market briefing beside the homepage introduction: a small
+ * The latest Weekly Briefing beside the homepage introduction: a small
  * label, one headline, a short summary and at most one further
- * development, closed by the update date, the sample-data disclosure and
- * a link to the full Market Outlook. One flat surface under a burgundy
- * rule, no internal compartments.
+ * development, closed by the date, any data status and a link to the full
+ * edition. One flat surface under a burgundy rule, no internal
+ * compartments.
  */
 export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
   return (
@@ -16,7 +16,7 @@ export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
       aria-labelledby="market-briefing-headline"
       className="border-t-2 border-wine bg-paper px-5 pt-4 pb-5 sm:px-6"
     >
-      <p className="wt-kicker text-wine">Market briefing</p>
+      <p className="wt-kicker text-wine">Weekly briefing</p>
 
       <h2
         id="market-briefing-headline"
@@ -39,20 +39,18 @@ export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
       <footer className="mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
         <p className="text-[0.8125rem] text-ink-soft">
           <time dateTime={briefing.updatedAt}>
-            Updated {formatDate(briefing.updatedAt)}
+            {formatDate(briefing.updatedAt)}
           </time>
           {briefing.status !== "final" ? (
             <>
               <span aria-hidden="true" className="mx-1.5">
                 &middot;
               </span>
-              {briefing.status === "illustrative"
-                ? "Illustrative sample"
-                : DATA_STATUS_LABELS[briefing.status]}
+              {DATA_STATUS_LABELS[briefing.status]}
             </>
           ) : null}
         </p>
-        <ArrowLink href={briefing.outlookHref}>Read the market outlook</ArrowLink>
+        <ArrowLink href={briefing.href}>Read the briefing</ArrowLink>
       </footer>
     </article>
   );

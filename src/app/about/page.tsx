@@ -34,28 +34,30 @@ export default function AboutPage() {
               data supports it.
             </p>
             <p>
-              Coverage starts with the professional European market, with
-              particularly deep coverage of Spain and Portugal and
-              comparative series for France and Italy. The platform is built
+              Coverage starts with the professional European market: Spain,
+              Portugal, France and Italy. The platform is built
               for repeated working use by wineries, winegrowers,
               cooperatives, bulk buyers and sellers, brokers, bottlers,
               importers and exporters, industry suppliers and analysts.
             </p>
             <p>
-              WineTerm is currently in development. Trade figures credited to
-              Eurostat, Spain&apos;s national bulk wine prices and its
-              declared wine stocks, production, entries and exits credited to
-              the Ministry of Agriculture (MAPA), and the harvest forecasts
-              credited to Agreste, the IVV and MAPA are official figures;
-              every other figure shown today is an illustrative sample,
-              marked as such. The{" "}
+              WineTerm is currently in development, and every figure it shows
+              is read from a named source or computed from one by a stated
+              method: trade figures credited to Eurostat; Spain&apos;s bulk
+              wine prices and its declared wine stocks, production, entries
+              and exits credited to the Ministry of Agriculture (MAPA); the
+              bulk prices in Occitanie credited to DRAAF Occitanie; the
+              harvest estimates credited to Agreste, the IVV and MAPA; and
+              WineTerm&apos;s own estimates of the bulk prices of Portugal,
+              France and Italy from the trade figures. Where no source exists
+              yet, the page says so. The{" "}
               <Link
                 href="/insights/methodology"
                 className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
               >
                 methodology
               </Link>{" "}
-              those samples demonstrate is the one live data will follow.
+              describes how each figure is established.
             </p>
           </div>
 

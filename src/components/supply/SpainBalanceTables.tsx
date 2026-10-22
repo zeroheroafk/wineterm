@@ -2,7 +2,7 @@ import { Fragment } from "react";
 
 import { MaybePercent, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { formatChange, formatMonthYear, formatPrice } from "@/lib/format";
-import type { SpainCampaignBalance } from "@/services/supply/types";
+import type { ExitsAbroadLine, SpainCampaignBalance } from "@/services/supply/types";
 
 const VALUE = "tnum font-mono text-sm";
 
@@ -188,6 +188,10 @@ export function SpainBalanceHistoryTable({ history }: { history: SpainCampaignBa
               Exits abroad
               <Marker>b</Marker>
             </th>
+            <th scope="col" className={`${TH_RIGHT} hidden md:table-cell`}>
+              Bulk share
+              <Marker>b</Marker>
+            </th>
             <th scope="col" className={`${TH_RIGHT} hidden sm:table-cell`}>
               Within Spain, net
               <Marker>a</Marker>
@@ -213,6 +217,9 @@ export function SpainBalanceHistoryTable({ history }: { history: SpainCampaignBa
               <td className={`${TD_RIGHT} ${VALUE} text-ink`}>
                 {formatPrice(balance.exitsEuMhl + balance.exitsThirdCountriesMhl, 2)}
               </td>
+              <td className={`${TD_RIGHT} ${VALUE} hidden text-ink-soft md:table-cell`}>
+                {balance.exitsAbroad ? formatOneDecimalShare(bulkShare(balance.exitsAbroad)) : null}
+              </td>
               <td className={`${TD_RIGHT} ${VALUE} hidden text-ink sm:table-cell`}>
                 {formatPrice(balance.netDomesticExitsMhl, 2)}
               </td>
@@ -225,6 +232,192 @@ export function SpainBalanceHistoryTable({ history }: { history: SpainCampaignBa
               </td>
             </tr>
           ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+type Kind = Pick<ExitsAbroadLine, "colour" | "presentation">;
+
+interface AbroadLine {
+  label: string;
+  match: (line: ExitsAbroadLine) => boolean;
+  emphasis?: boolean;
+  indent?: boolean;
+}
+
+const COLOURS: [ExitsAbroadLine["colour"], string][] = [
+  ["red-rose", "Red and rosé"],
+  ["white", "White"],
+];
+
+const ABROAD_ROWS: (AbroadLine | { group: string })[] = (
+  [
+    ["bulk", "Bulk"],
+    ["packaged", "Packaged"],
+  ] as const
+).flatMap(([presentation, name]) => [
+  { group: name },
+  ...COLOURS.map(([colour, label]) => ({
+    label,
+    match: (line: Kind) => line.colour === colour && line.presentation === presentation,
+    indent: true,
+  })),
+  {
+    label: `All ${name.toLowerCase()}`,
+    match: (line: Kind) => line.presentation === presentation,
+    emphasis: true,
+  },
+]);
+
+const ALL_ABROAD: AbroadLine = { label: "All exits abroad", match: () => true, emphasis: true };
+
+/** Hectolitres of the lines a row covers, to the EU, to third countries or both. */
+function abroad(
+  lines: ExitsAbroadLine[],
+  match: AbroadLine["match"],
+  to: "eu" | "third" | "all",
+): number {
+  return lines
+    .filter(match)
+    .reduce(
+      (sum, line) =>
+        sum + (to === "third" ? 0 : line.euMhl) + (to === "eu" ? 0 : line.thirdCountriesMhl),
+      0,
+    );
+}
+
+/** A share with one decimal always, so "60.0%" lines up with "63.9%". */
+function formatOneDecimalShare(value: number): string {
+  return `${formatPrice(value, 1)}%`;
+}
+
+/** Bulk wine's share of the exits abroad, percent. */
+function bulkShare(lines: ExitsAbroadLine[]): number {
+  return (
+    (abroad(lines, (line) => line.presentation === "bulk", "all") /
+      abroad(lines, () => true, "all")) *
+    100
+  );
+}
+
+/**
+ * Spain's declared exits to the rest of the EU and to third countries by
+ * presentation and colour, for the latest campaign to date, with the
+ * total against the campaign before to the same month. Mhl.
+ */
+export function SpainExitsAbroadTable({
+  latest,
+  lines,
+  previous,
+}: {
+  latest: SpainCampaignBalance;
+  /** The latest campaign's exits abroad. */
+  lines: ExitsAbroadLine[];
+  previous: SpainCampaignBalance | null;
+}) {
+  const before = previous?.exitsAbroad ?? null;
+
+  const line = (row: AbroadLine) => {
+    const total = abroad(lines, row.match, "all");
+    const earlier = before ? abroad(before, row.match, "all") : null;
+    return (
+      <tr
+        key={row.label}
+        className={
+          row.emphasis ? "border-y border-ink bg-ground/60" : "border-b border-rule last:border-b-0"
+        }
+      >
+        <th
+          scope="row"
+          className={`${TD} !whitespace-normal text-sm ${row.indent ? "pl-6" : ""} ${
+            row.emphasis ? "font-semibold" : "font-normal"
+          } text-ink`}
+        >
+          {row.label}
+        </th>
+        <td className={`${TD_RIGHT} ${VALUE} hidden text-ink sm:table-cell`}>
+          {formatPrice(abroad(lines, row.match, "eu"), 2)}
+        </td>
+        <td className={`${TD_RIGHT} ${VALUE} hidden text-ink sm:table-cell`}>
+          {formatPrice(abroad(lines, row.match, "third"), 2)}
+        </td>
+        <td className={`${TD_RIGHT} ${VALUE} ${row.emphasis ? "font-medium" : ""} text-ink`}>
+          {formatPrice(total, 2)}
+        </td>
+        <td className={`${TD_RIGHT} ${VALUE} hidden text-ink-soft md:table-cell`}>
+          {earlier === null ? null : formatPrice(earlier, 2)}
+        </td>
+        <td className={TD_RIGHT}>
+          <MaybePercent value={percentChange(total, earlier)} />
+        </td>
+      </tr>
+    );
+  };
+
+  return (
+    <div className="overflow-x-auto border border-rule bg-paper">
+      <table className="w-full border-collapse text-left">
+        <caption className="sr-only">
+          Spain&apos;s declared exits of wine abroad by presentation and colour, {latest.campaign} to{" "}
+          {formatMonthYear(latest.throughMonth)}
+          {previous
+            ? `, against ${previous.campaign} to ${formatMonthYear(previous.throughMonth)}`
+            : null}
+          , million hectolitres
+        </caption>
+        <thead>
+          <tr className="border-b-2 border-ink">
+            <th scope="col" className={TH}>
+              Mhl
+            </th>
+            <th scope="col" className={`${TH_RIGHT} hidden sm:table-cell`}>
+              To the EU
+            </th>
+            <th scope="col" className={`${TH_RIGHT} hidden sm:table-cell`}>
+              To third countries
+            </th>
+            <th scope="col" className={TH_RIGHT}>
+              <Period balance={latest} />
+            </th>
+            <th scope="col" className={`${TH_RIGHT} hidden md:table-cell`}>
+              {previous ? <Period balance={previous} /> : "A campaign earlier"}
+            </th>
+            <th scope="col" className={TH_RIGHT}>
+              Change
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {ABROAD_ROWS.map((row) =>
+            "group" in row ? (
+              <tr key={row.group} className="border-b border-rule">
+                <th scope="rowgroup" colSpan={6} className={`${TD} wt-label pt-3 font-normal text-ink-soft`}>
+                  {row.group}
+                </th>
+              </tr>
+            ) : (
+              line(row)
+            ),
+          )}
+        </tbody>
+        <tbody className="border-t-2 border-ink">
+          {line(ALL_ABROAD)}
+          <tr>
+            <th scope="row" className={`${TD} !whitespace-normal text-sm font-normal text-ink`}>
+              Bulk share
+            </th>
+            <td className="hidden sm:table-cell" />
+            <td className="hidden sm:table-cell" />
+            <td className={`${TD_RIGHT} ${VALUE} text-ink`}>
+              {formatOneDecimalShare(bulkShare(lines))}
+            </td>
+            <td className={`${TD_RIGHT} ${VALUE} hidden text-ink-soft md:table-cell`}>
+              {before ? formatOneDecimalShare(bulkShare(before)) : null}
+            </td>
+            <td />
+          </tr>
         </tbody>
       </table>
     </div>
