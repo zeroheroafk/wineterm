@@ -22,6 +22,11 @@
   --wt-wine-deep: #421724; /* dark burgundy */
   --wt-wine-wash: #e8dadd; /* light burgundy surface */
 
+  /* Logo wine drop: gradient from its lit top left to its deep bottom right */
+  --wt-drop-light: #c64760;
+  --wt-drop: #9a2240;
+  --wt-drop-deep: #6e1029;
+
   /* Lines */
   --wt-rule: #d6cfc5; /* borders and rules */
 
