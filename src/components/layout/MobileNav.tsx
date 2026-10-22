@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { primaryNavigation } from "@/lib/navigation";
+import { menuNavigation } from "@/lib/navigation";
 
 /**
  * Mobile navigation: a toggle button in the header row and a full-width
@@ -54,7 +54,7 @@ export function MobileNav() {
           className="absolute inset-x-0 top-full z-40 max-h-[75vh] overflow-y-auto border-b-2 border-t border-b-wine border-t-rule bg-paper"
         >
           <ul className="divide-y divide-rule">
-            {primaryNavigation.map((section) => {
+            {menuNavigation.map((section) => {
               const isExpanded = expanded === section.label;
               const hasItems = section.items.length > 0;
               const active = pathname.startsWith(section.href);

@@ -5,9 +5,9 @@ import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { ButtonLink } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Directory",
+  title: "Companies",
   description:
-    "The WineTerm professional directory: wineries, cooperatives, bottlers, brokers, suppliers and service providers for the wine trade.",
+    "The companies of the professional wine trade: wineries, cooperatives, bottlers, brokers, suppliers and service providers.",
 };
 
 const CATEGORIES: { name: string; description: string }[] = [
@@ -43,15 +43,15 @@ const CATEGORIES: { name: string; description: string }[] = [
   },
 ];
 
-export default function DirectoryPage() {
+export default function CompaniesPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        crumbs={[{ label: "Directory" }]}
-        kicker="Directory"
-        title="Professional directory"
+        crumbs={[{ label: "Companies" }]}
+        kicker="Companies"
+        title="Companies"
         description="A structured directory of the professional wine trade, built for finding counterparties, not for consumer discovery. No organisation is listed yet: entries are verified before publication."
-        activeHref="/directory"
+        activeHref="/companies"
       />
 
       <ul className="mt-10 max-w-3xl border border-rule bg-paper">
@@ -79,7 +79,7 @@ export default function DirectoryPage() {
           List your organisation
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-soft">
-          Directory listings are verified before publication: WineTerm
+          Listings are verified before publication: WineTerm
           confirms that each entry is a real, operating organisation. To be
           included, get in touch.
         </p>

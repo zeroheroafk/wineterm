@@ -23,7 +23,7 @@ export function SiteFooter() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-3">
             {footerNavigation.map((group) => (
               <nav key={group.heading} aria-label={group.heading}>
                 <h2 className="text-sm font-semibold text-paper">

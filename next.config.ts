@@ -50,6 +50,15 @@ const nextConfig: NextConfig = {
       { source: "/trade/bulk", destination: "/trade", permanent: true },
       { source: "/trade/bottled", destination: "/trade", permanent: true },
       { source: "/trade/sparkling", destination: "/trade", permanent: true },
+      // Industry's stories became Insights > News, its topics the news
+      // filters, and the directory the Companies tab.
+      { source: "/industry", destination: "/insights/news", permanent: true },
+      {
+        source: "/industry/:topic",
+        destination: "/insights/news/:topic",
+        permanent: true,
+      },
+      { source: "/directory", destination: "/companies", permanent: true },
     ];
   },
 };

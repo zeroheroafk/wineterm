@@ -10,15 +10,15 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getHomeService } from "@/services/home";
 import { cacheLife } from "next/cache";
 
-/** Headlines in the industry rail; the Industry section carries the rest. */
+/** Headlines in the news rail; Insights > News carries the rest. */
 const INDUSTRY_HEADLINES = 5;
 
 /**
  * The homepage, kept to four blocks: the introduction beside the latest
  * Weekly Briefing, the key bulk wine prices, the latest analysis and
- * industry news, and the newsletter signup. The supply, harvest and trade
- * snapshots have their own tab, Market data (/data). The key prices read
- * the database, so the page is regenerated at most hourly.
+ * industry news, and the newsletter signup. The trade snapshot has its
+ * own tab, Market data (/data). The key prices read the database, so the
+ * page is regenerated at most hourly.
  */
 export default async function Home() {
   "use cache";
@@ -133,7 +133,7 @@ export default async function Home() {
               title="Industry news"
               titleId="home-industry"
               items={industry}
-              action={{ label: "All industry news", href: "/industry" }}
+              action={{ label: "All news", href: "/insights/news" }}
             />
           </aside>
         </div>

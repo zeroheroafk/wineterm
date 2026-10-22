@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { StoryList } from "@/components/editorial/StoryList";
+import { NEWS_TOPICS, NewsStories } from "@/components/editorial/NewsStories";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { primaryNavigation } from "@/lib/navigation";
@@ -25,10 +24,8 @@ const TOPIC_INTROS: Record<IndustryTopic, string> = {
     "Glass, closures, cartons, flexitanks and freight: the cost and capacity layer between cellar and shelf.",
 };
 
-const TOPICS = Object.keys(TOPIC_INTROS) as IndustryTopic[];
-
 export function generateStaticParams() {
-  return TOPICS.map((topic) => ({ topic }));
+  return NEWS_TOPICS.map((topic) => ({ topic }));
 }
 
 export async function generateMetadata({
@@ -37,7 +34,7 @@ export async function generateMetadata({
   params: Promise<{ topic: string }>;
 }): Promise<Metadata> {
   const { topic } = await params;
-  if (!TOPICS.includes(topic as IndustryTopic)) return { title: "Industry" };
+  if (!NEWS_TOPICS.includes(topic as IndustryTopic)) return { title: "News" };
   const key = topic as IndustryTopic;
   return {
     title: INDUSTRY_TOPIC_LABELS[key],
@@ -45,13 +42,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function IndustryTopicPage({
+export default async function NewsTopicPage({
   params,
 }: {
   params: Promise<{ topic: string }>;
 }) {
   const { topic } = await params;
-  if (!TOPICS.includes(topic as IndustryTopic)) notFound();
+  if (!NEWS_TOPICS.includes(topic as IndustryTopic)) notFound();
   const key = topic as IndustryTopic;
 
   const stories = await getIndustryService().getStoriesByTopic(key);
@@ -59,33 +56,18 @@ export default async function IndustryTopicPage({
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={primaryNavigation[5]}
         crumbs={[
-          { label: "Industry", href: "/industry" },
+          { label: "Insights", href: "/insights" },
+          { label: "News", href: "/insights/news" },
           { label: INDUSTRY_TOPIC_LABELS[key] },
         ]}
-        kicker="Industry"
+        kicker="News"
         title={INDUSTRY_TOPIC_LABELS[key]}
         description={TOPIC_INTROS[key]}
-        activeHref={`/industry/${key}`}
+        activeHref="/insights/news"
       />
-
-      <div className="mt-8 max-w-3xl">
-        <StoryList stories={stories} headingLevel={2} />
-      </div>
-
-      <p className="wt-label mt-8 max-w-3xl leading-relaxed text-ink-soft">
-        Each story is WineTerm&apos;s summary of a report published
-        elsewhere, linked to its source. For the market figures behind
-        them, see the{" "}
-        <Link
-          href="/insights/monthly-reports"
-          className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
-        >
-          monthly reports
-        </Link>
-        .
-      </p>
+      <NewsStories stories={stories} topic={key} />
     </Container>
   );
 }

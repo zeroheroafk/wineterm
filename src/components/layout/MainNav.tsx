@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { primaryNavigation } from "@/lib/navigation";
+import { menuNavigation } from "@/lib/navigation";
 
 const ITEM_BASE =
   "flex h-11 items-center gap-1.5 border-b-2 px-3 text-[0.9375rem] font-medium transition-colors";
@@ -56,7 +56,7 @@ export function MainNav() {
       className="hidden border-t border-rule lg:block"
     >
       <ul className="-mx-3 flex items-stretch">
-        {primaryNavigation.map((section) => {
+        {menuNavigation.map((section) => {
           const active = pathname.startsWith(section.href);
           const expanded = open === section.label;
           const hasItems = section.items.length > 0;

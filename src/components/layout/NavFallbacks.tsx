@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { primaryNavigation } from "@/lib/navigation";
+import { menuNavigation } from "@/lib/navigation";
 
 /**
  * The navigation reads the pathname to mark the current section, which
@@ -15,7 +15,7 @@ export function MainNavFallback() {
       className="hidden border-t border-rule lg:block"
     >
       <ul className="-mx-3 flex items-stretch">
-        {primaryNavigation.map((section) => (
+        {menuNavigation.map((section) => (
           <li key={section.label}>
             <Link
               href={section.href}

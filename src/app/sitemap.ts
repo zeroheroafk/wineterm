@@ -34,14 +34,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/markets/bulk-wine`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/markets/compare`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${base}/data`, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${base}/supply`, changeFrequency: "weekly", priority: 0.8 },
-    {
-      url: `${base}/supply/production`,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    { url: `${base}/supply/stocks`, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${base}/harvest`, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/trade`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/insights`, changeFrequency: "daily", priority: 0.8 },
     {
@@ -65,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    { url: `${base}/industry`, changeFrequency: "daily", priority: 0.7 },
+    { url: `${base}/insights/news`, changeFrequency: "daily", priority: 0.7 },
     ...(
       [
         "companies",
@@ -75,10 +67,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         "packaging-logistics",
       ] as const
     ).map((topic) => ({
-      url: `${base}/industry/${topic}`,
+      url: `${base}/insights/news/${topic}`,
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),
+    { url: `${base}/companies`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${base}/about`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/contact`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.3 },
