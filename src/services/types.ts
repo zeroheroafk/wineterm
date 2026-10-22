@@ -246,8 +246,30 @@ export interface ArticleTable {
   afterParagraph: number;
 }
 
+/**
+ * A photograph set under the article's header, credited as its licence
+ * asks: the author linked to the page the picture is published on, and
+ * the licence linked to its terms.
+ */
+export interface ArticleHero {
+  /** The file under public/, e.g. "/images/insights/<article id>.jpg". */
+  src: string;
+  width: number;
+  height: number;
+  /** What the picture shows, for readers who cannot see it. */
+  alt: string;
+  /** The author as the source credits them. */
+  author: string;
+  /** The page the picture is published on. */
+  sourceUrl: string;
+  licence: { name: string; url: string };
+  /** What was changed from the original, e.g. "cropped". */
+  changes?: string;
+}
+
 /** A published article: its preview fields, full text and sources. */
 export interface ArticleDetail extends Article {
+  hero?: ArticleHero;
   body: ArticleParagraph[];
   sources: ArticleSource[];
   chart?: ArticleChart;

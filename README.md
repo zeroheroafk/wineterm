@@ -51,7 +51,10 @@ harvest page shows each country's official production estimate, entered
 by hand in `src/services/harvest/official.ts`. Insights articles and
 monthly reports are published content in `src/content/articles`, one
 file per article, read at `/insights/analysis/<id>` and
-`/insights/monthly-reports/<id>`. Industry stories, WineTerm's summaries
+`/insights/monthly-reports/<id>`, and weekly briefings at
+`/insights/weekly-briefing/<id>`. An article's photograph, credited with
+its author and licence, is in `public/images/insights/<id>.jpg`.
+Industry stories, WineTerm's summaries
 of reports published elsewhere with a link to each, are in
 `src/content/industry.ts`. A section whose source is not connected yet,
 such as must prices or the balances of Portugal, France and Italy, says

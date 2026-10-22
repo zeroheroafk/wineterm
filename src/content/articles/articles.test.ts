@@ -1,12 +1,13 @@
 /**
  * Consistency checks for the published articles, briefings and reports:
  * each is served at the address its preview links to, every citation
- * names a listed source and every source is cited, a chart shows the
- * figures the paragraph it follows states, and every table row fills its
- * columns.
+ * names a listed source and every source is cited, a photograph is in
+ * public/ with its credit, a chart shows the figures the paragraph it
+ * follows states, and every table row fills its columns.
  */
 
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { describe, it } from "node:test";
 
 import { publishedArticles } from "@/content/articles";
@@ -55,6 +56,17 @@ describe("published articles", () => {
           `${article.id}: ${bar.label} ${formatShare(bar.percent)}`,
         );
       }
+    }
+  });
+
+  it("serve their photograph from public/, credited to its source", () => {
+    for (const article of publishedArticles) {
+      if (!article.hero) continue;
+      const { src, sourceUrl, licence } = article.hero;
+      assert.ok(src.startsWith("/images/"), `${article.id}: ${src}`);
+      assert.ok(existsSync(new URL(`../../../public${src}`, import.meta.url)), src);
+      assert.ok(sourceUrl.startsWith("https://"), `${article.id}: ${sourceUrl}`);
+      assert.ok(licence.url.startsWith("https://"), `${article.id}: ${licence.url}`);
     }
   });
 
