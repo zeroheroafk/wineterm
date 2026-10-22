@@ -6,10 +6,11 @@
  * built so the shell is stable while sections come online.
  *
  * Pages without content yet stay out of the menus, the footer and the
- * sitemap, though their routes answer: News (/insights/news, no article
- * published), the Directory (/directory, no organisation listed) and
- * Must & Concentrates (/markets/must-concentrates, no licensed source).
- * Add each back here when it has something to show.
+ * sitemap, though their routes answer: Must & Concentrates
+ * (/markets/must-concentrates, no licensed source). Add each back here
+ * when it has something to show. Companies (/companies) is the
+ * exception: it is in the menu before its first listing, as the place
+ * the directory will fill.
  *
  * Crop & Supply (/supply, /supply/production, /supply/stocks, /harvest)
  * is hidden the same way for now, along with its supply and harvest
@@ -120,36 +121,10 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
-    label: "Industry",
-    href: "/industry",
-    code: "IND",
-    items: [
-      {
-        label: "Companies",
-        href: "/industry/companies",
-        description: "Wineries, cooperatives, bottlers and suppliers",
-      },
-      {
-        label: "Deals & Investments",
-        href: "/industry/deals",
-        description: "Transactions, capacity and consolidation",
-      },
-      {
-        label: "Regulation",
-        href: "/industry/regulation",
-        description: "EU and national rules affecting the sector",
-      },
-      {
-        label: "Technology",
-        href: "/industry/technology",
-        description: "Winemaking, vineyard and data technology",
-      },
-      {
-        label: "Packaging & Logistics",
-        href: "/industry/packaging-logistics",
-        description: "Glass, closures, flexitanks and freight",
-      },
-    ],
+    label: "Companies",
+    href: "/companies",
+    code: "CMP",
+    items: [],
   },
   {
     label: "Insights",
@@ -160,6 +135,11 @@ export const primaryNavigation: NavSection[] = [
         label: "Analysis",
         href: "/insights/analysis",
         description: "Interpretation of prices, supply and trade",
+      },
+      {
+        label: "News",
+        href: "/insights/news",
+        description: "Industry news by topic, linked to its source",
       },
       {
         label: "Weekly Briefing",
@@ -196,23 +176,17 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
       { label: "Market Data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
       { label: "Imports & Exports", href: "/trade" },
+      { label: "Companies", href: "/companies" },
     ],
   },
   {
     heading: "Editorial",
     items: [
       { label: "Analysis", href: "/insights/analysis" },
+      { label: "News", href: "/insights/news" },
       { label: "Weekly Briefing", href: "/insights/weekly-briefing" },
       { label: "Monthly Reports", href: "/insights/monthly-reports" },
       { label: "Methodology", href: "/insights/methodology" },
-    ],
-  },
-  {
-    heading: "Industry",
-    items: [
-      { label: "Companies", href: "/industry/companies" },
-      { label: "Deals & Investments", href: "/industry/deals" },
-      { label: "Regulation", href: "/industry/regulation" },
     ],
   },
   {

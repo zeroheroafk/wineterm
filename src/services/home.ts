@@ -37,7 +37,7 @@ export interface HomeService {
   /** The latest analysis with its full text, when one is published. */
   getLeadAnalysis(): Promise<ArticleDetail | null>;
   getSecondaryAnalysis(): Promise<Article[]>;
-  /** The latest industry stories, each linked where its topic lists it. */
+  /** The latest industry stories, each linked to its row on News. */
   getIndustryHeadlines(limit: number): Promise<IndustryItem[]>;
   /** When the key prices were last updated; null without any. */
   getLastUpdated(): Promise<string | null>;
@@ -170,7 +170,7 @@ class EditorialHomeService implements HomeService {
       id: story.id,
       headline: story.headline,
       publishedAt: story.publishedAt,
-      href: `/industry/${story.topic}#${story.id}`,
+      href: `/insights/news#${story.id}`,
       topic: INDUSTRY_TOPIC_LABELS[story.topic],
     }));
   }

@@ -9,6 +9,8 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
+import { getIndustryService } from "@/services/industry";
+import { INDUSTRY_TOPIC_LABELS } from "@/services/types";
 
 export const metadata: Metadata = {
   title: "Insights",
@@ -20,7 +22,7 @@ export default async function InsightsPage() {
   const editorial = getEditorialService();
   const [analysis, news, briefings, reports] = await Promise.all([
     editorial.getArticlesByKind("analysis", 4),
-    editorial.getArticlesByKind("news", 5),
+    getIndustryService().getLatestStories(5),
     editorial.getArticlesByKind("weekly-briefing", 1),
     editorial.getArticlesByKind("monthly-report", 3),
   ]);
@@ -115,22 +117,27 @@ export default async function InsightsPage() {
               />
               {news.length > 0 ? (
                 <ul className="mt-5">
-                  {news.map((article) => (
+                  {news.map((story) => (
                     <li
-                      key={article.id}
+                      key={story.id}
                       className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
                     >
-                      <p className="wt-label text-wine">{article.section}</p>
+                      <p className="wt-label text-wine">
+                        {INDUSTRY_TOPIC_LABELS[story.topic]}
+                      </p>
                       <p className="mt-0.5 text-sm leading-snug font-medium text-ink">
-                        <Link href={article.href} className="hover:text-wine-deep">
-                          {article.headline}
+                        <Link
+                          href={`/insights/news#${story.id}`}
+                          className="hover:text-wine-deep"
+                        >
+                          {story.headline}
                         </Link>
                       </p>
                       <time
-                        dateTime={article.publishedAt}
+                        dateTime={story.publishedAt}
                         className="wt-label mt-1 block text-ink-soft"
                       >
-                        {formatDate(article.publishedAt)}
+                        {formatDate(story.publishedAt)}
                       </time>
                     </li>
                   ))}

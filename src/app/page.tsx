@@ -10,7 +10,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getHomeService } from "@/services/home";
 import { cacheLife } from "next/cache";
 
-/** Headlines in the industry rail; the Industry section carries the rest. */
+/** Headlines in the news rail; Insights > News carries the rest. */
 const INDUSTRY_HEADLINES = 5;
 
 /**
@@ -133,7 +133,7 @@ export default async function Home() {
               title="Industry news"
               titleId="home-industry"
               items={industry}
-              action={{ label: "All industry news", href: "/industry" }}
+              action={{ label: "All news", href: "/insights/news" }}
             />
           </aside>
         </div>
