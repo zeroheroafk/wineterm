@@ -1,6 +1,8 @@
 -- Reconstructed on 22 October 2026 from the database, where this
 -- migration had been applied without its file reaching the repository:
--- the objects below are as the catalog describes them.
+-- the objects below are as the catalog describes them, including the
+-- fault in send_alert() that 20261022102111_fix_send_alert_channels
+-- corrects.
 --
 -- Alerts on import failures. A daily job reports, once each, the failed
 -- runs no later run of the same scope recovered, the runs left queued or
