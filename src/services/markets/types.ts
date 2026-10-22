@@ -10,7 +10,7 @@
 import type { CountryCode, DataStatus, DegreeBasis } from "@/services/types";
 import type { SourceId } from "@/services/markets/sources";
 
-export type MarketKind = "bulk-wine" | "grape" | "must";
+export type MarketKind = "bulk-wine" | "must";
 
 /** Geographical-indication status of a wine series. */
 export type WineClassification = "no-gi" | "pgi" | "pdo";

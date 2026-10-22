@@ -91,6 +91,10 @@ from the sitemap and marked noindex.
   supply and trade pages say that no database is connected.
 - `SITE_INDEXABLE`: set to `true` to let search engines index the site.
   Until then every page is marked noindex.
+- `SHOW_DESIGN_SYSTEM`: set to `true` to serve `/design-system`, the
+  component gallery, from a production build, as on a preview
+  deployment; otherwise it answers 404 there. `next dev` always serves
+  it.
 
 ## Database
 
@@ -291,6 +295,17 @@ legacy anon key, because the function verifies JWTs). Without them the
 job only logs a warning. If legacy keys are ever disabled, redeploy the
 function with JWT verification off: it trusts only runs the database
 queued, not the caller.
+
+The job `check-imports` runs `private.check_imports()` every morning:
+it reports, once each, the failed runs no later run of the same scope
+recovered, the runs left queued or running for a day, and the sources
+without a successful run for longer than `private.import_schedule`
+allows (five days for MAPA's prices, nine for INFOVI, DRAAF and the
+Cantina Italia, 35 for Comext, 370 for the annual stock statements of
+France and Portugal). The report goes to a webhook (Vault secret
+`alert_webhook_url`) and by email through Resend (`resend_api_key`,
+`alert_email_to` and, optionally, `alert_email_from`); with neither
+set, it is only logged as a warning, so set one before launch.
 
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise

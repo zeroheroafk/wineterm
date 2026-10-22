@@ -28,7 +28,6 @@ import { COUNTRY_NAMES, describeDegreeBasis } from "@/services/types";
 
 const KIND_META: Record<MarketKind, { label: string; href: string }> = {
   "bulk-wine": { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
-  grape: { label: "Grape Prices", href: "/markets/grapes" },
   must: { label: "Must & Concentrates", href: "/markets/must-concentrates" },
 };
 

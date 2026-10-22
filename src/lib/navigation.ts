@@ -4,6 +4,12 @@
  * Single source of truth for the primary navigation, its secondary levels,
  * the footer and breadcrumbs. Routes exist here before their pages are
  * built so the shell is stable while sections come online.
+ *
+ * Pages without content yet stay out of the menus, the footer and the
+ * sitemap, though their routes answer: News (/insights/news, no article
+ * published), the Directory (/directory, no organisation listed) and
+ * Must & Concentrates (/markets/must-concentrates, no licensed source).
+ * Add each back here when it has something to show.
  */
 
 export interface NavLeaf {
@@ -31,11 +37,6 @@ export const primaryNavigation: NavSection[] = [
         label: "Bulk Wine Prices",
         href: "/markets/bulk-wine",
         description: "Reference prices by region, colour and grade",
-      },
-      {
-        label: "Must & Concentrates",
-        href: "/markets/must-concentrates",
-        description: "Grape must, RCGM and concentrate values",
       },
       {
         label: "Market Comparison",
@@ -158,11 +159,6 @@ export const primaryNavigation: NavSection[] = [
     code: "INS",
     items: [
       {
-        label: "News",
-        href: "/insights/news",
-        description: "Reporting for the professional wine trade",
-      },
-      {
         label: "Analysis",
         href: "/insights/analysis",
         description: "Interpretation of prices, supply and trade",
@@ -183,12 +179,6 @@ export const primaryNavigation: NavSection[] = [
         description: "How WineTerm series are collected and defined",
       },
     ],
-  },
-  {
-    label: "Directory",
-    href: "/directory",
-    code: "DIR",
-    items: [],
   },
 ];
 
@@ -212,7 +202,6 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
   {
     heading: "Editorial",
     items: [
-      { label: "News", href: "/insights/news" },
       { label: "Analysis", href: "/insights/analysis" },
       { label: "Weekly Briefing", href: "/insights/weekly-briefing" },
       { label: "Monthly Reports", href: "/insights/monthly-reports" },
@@ -225,7 +214,6 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
       { label: "Companies", href: "/industry/companies" },
       { label: "Deals & Investments", href: "/industry/deals" },
       { label: "Regulation", href: "/industry/regulation" },
-      { label: "Directory", href: "/directory" },
     ],
   },
   {

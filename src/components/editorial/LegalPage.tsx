@@ -8,7 +8,7 @@ export interface LegalSection {
   paragraphs: string[];
 }
 
-/** Shared layout for legal pages: numbered prose sections, draft notice. */
+/** Shared layout for legal pages: numbered prose sections, dated. */
 export function LegalPage({
   title,
   description,
@@ -24,9 +24,7 @@ export function LegalPage({
     <Container className="pb-16">
       <Breadcrumbs items={[{ label: title }]} />
       <PageHeader kicker="WineTerm" title={title} description={description} />
-      <p className="wt-label mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-y border-rule bg-paper px-3 py-2 text-ink-soft">
-        <span className="text-ochre-deep">Draft</span>
-        This document is a development draft and is finalised before launch.
+      <p className="wt-label mt-6 border-y border-rule bg-paper px-3 py-2 text-ink-soft">
         Last updated {formatDate(updatedAt)}.
       </p>
       <div className="mt-8 max-w-2xl">

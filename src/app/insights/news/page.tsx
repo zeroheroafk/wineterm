@@ -42,7 +42,7 @@ export default async function NewsPage() {
           ) : (
             <EmptyState
               title="No news published yet"
-              detail="News reporting starts at launch. Published analysis is already available."
+              detail="Published analysis and the Weekly Briefing are available."
               action={
                 <ArrowLink href="/insights/analysis">Read the analysis</ArrowLink>
               }

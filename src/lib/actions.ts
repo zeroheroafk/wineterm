@@ -1,5 +1,6 @@
 "use server";
 
+import { TRAP_FIELD } from "@/lib/forms";
 import { getSupabase } from "@/lib/supabase";
 
 /**
@@ -8,7 +9,8 @@ import { getSupabase } from "@/lib/supabase";
  * and request logs. Submissions are stored in Supabase as the anon role,
  * which may insert them but never read them back. Without Supabase
  * configured, a submission is validated and discarded, and the reply
- * says so.
+ * says so. A submission that fills the field no person sees is a bot's:
+ * it is discarded with the reply an accepted one gets.
  */
 
 export interface FormState {
@@ -25,6 +27,8 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const FAILED =
   "Something went wrong on our side and nothing was saved. Please try again in a moment.";
+const SUBSCRIBED = "Thank you. You are on the list for the Weekly Briefing.";
+const SENT = "Thank you. Your message has reached the market desk.";
 
 function field(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -35,6 +39,11 @@ function isEmail(value: string): boolean {
   return value.length <= 254 && EMAIL_PATTERN.test(value);
 }
 
+/** True for a submission that filled the field no person sees. */
+function isTrapped(formData: FormData): boolean {
+  return field(formData, TRAP_FIELD) !== "";
+}
+
 export async function subscribeToBriefing(
   _previous: FormState,
   formData: FormData,
@@ -43,6 +52,8 @@ export async function subscribeToBriefing(
   if (!isEmail(email)) {
     return { message: "Enter a valid work email address." };
   }
+
+  if (isTrapped(formData)) return { message: SUBSCRIBED };
 
   const supabase = getSupabase();
   if (!supabase) {
@@ -62,10 +73,7 @@ export async function subscribeToBriefing(
     console.error("Briefing signup failed:", error.code, error.message);
     return { message: FAILED };
   }
-  return {
-    message:
-      "Thank you. You are on the list for the Weekly Briefing, which starts at launch.",
-  };
+  return { message: SUBSCRIBED };
 }
 
 export async function sendContactMessage(
@@ -96,6 +104,8 @@ export async function sendContactMessage(
     };
   }
 
+  if (isTrapped(formData)) return { message: SENT };
+
   const supabase = getSupabase();
   if (!supabase) {
     return {
@@ -115,5 +125,5 @@ export async function sendContactMessage(
     console.error("Contact message failed:", error.code, error.message);
     return { message: FAILED };
   }
-  return { message: "Thank you. Your message has reached the market desk." };
+  return { message: SENT };
 }

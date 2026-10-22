@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
@@ -92,6 +93,15 @@ function Block({
  * fixed values that demonstrate the components, not market figures.
  */
 export default async function DesignSystemPage() {
+  // A reference for development: a production build answers 404 unless
+  // SHOW_DESIGN_SYSTEM=true is set, as on a preview deployment.
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.SHOW_DESIGN_SYSTEM !== "true"
+  ) {
+    notFound();
+  }
+
   const marketsService = getMarketsService();
   const editorial = getEditorialService();
 

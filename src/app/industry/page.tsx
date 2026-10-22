@@ -90,10 +90,6 @@ export default async function IndustryPage() {
             Each story is WineTerm&apos;s summary of a report published
             elsewhere, linked to its source.
           </p>
-          <p className="wt-label mt-3 leading-relaxed text-ink-soft">
-            Company profiles and the professional directory open with the
-            Directory section at launch.
-          </p>
         </aside>
       </div>
     </Container>

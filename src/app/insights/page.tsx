@@ -137,7 +137,7 @@ export default async function InsightsPage() {
                 </ul>
               ) : (
                 <p className="mt-5 text-sm text-ink-soft">
-                  No news published yet. Reporting starts at launch.
+                  No news published yet.
                 </p>
               )}
             </div>
