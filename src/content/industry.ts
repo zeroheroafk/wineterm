@@ -1,8 +1,8 @@
 /**
  * Industry stories: WineTerm's own headline and summary of a report
- * published elsewhere, each linked to its source. Real editorial content,
- * unlike src/fixtures; every figure is as the source reports it, and each
- * was checked against the source's page on 8 October 2026.
+ * published elsewhere, each linked to its source. Every figure is as the
+ * source reports it, and each was checked against the source's page on
+ * 8 October 2026.
  */
 
 import type { IndustryStory } from "@/services/types";

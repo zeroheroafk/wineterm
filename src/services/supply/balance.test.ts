@@ -23,6 +23,7 @@ function row(
     product: "wine",
     colour,
     presentation,
+    holder: "all",
     volume_hl,
     source_id: "mapa-infovi",
     published_at: "2026-09-29T00:00:00Z",

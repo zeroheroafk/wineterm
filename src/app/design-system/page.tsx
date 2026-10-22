@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
@@ -7,11 +8,10 @@ import { Container } from "@/components/layout/Container";
 import { SectionNav } from "@/components/layout/SectionNav";
 import { AbsoluteChange, PercentChange } from "@/components/market/ChangeCell";
 import { ChartFrame } from "@/components/market/ChartFrame";
-import { MarketCommentaryBlock } from "@/components/market/MarketCommentaryBlock";
-import { MarketTable } from "@/components/market/MarketTable";
 import { PriceCell } from "@/components/market/PriceCell";
 import { PriceLineChart } from "@/components/market/PriceLineChart";
 import { TrendIndicator } from "@/components/market/TrendIndicator";
+import { BulkPricesTable } from "@/components/markets/BulkPricesTable";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
@@ -25,9 +25,11 @@ import {
   LoadingState,
   TableSkeleton,
 } from "@/components/ui/states";
+import { formatDate, formatPrice } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
-import { getMarketDataService } from "@/services/market-data";
+import { getMarketsService } from "@/services/markets/service";
+import { getSource } from "@/services/markets/sources";
 import type { DataStatus } from "@/services/types";
 
 export const metadata: Metadata = {
@@ -61,13 +63,10 @@ const SPACING_STEPS = [
   { token: "16", px: "64px", className: "w-16" },
 ];
 
-const STATUSES: DataStatus[] = [
-  "final",
-  "provisional",
-  "estimate",
-  "forecast",
-  "illustrative",
-];
+const STATUSES: DataStatus[] = ["final", "provisional", "estimate", "forecast"];
+
+/** Rows shown in the table specimen. */
+const SPECIMEN_ROWS = 6;
 
 function Spec({ children }: { children: React.ReactNode }) {
   return <p className="wt-label mb-3 text-ink-soft">{children}</p>;
@@ -88,17 +87,34 @@ function Block({
   );
 }
 
+/**
+ * The data specimens are the imported bulk wine series, so the page shows
+ * the components as the site does; the movement and state specimens are
+ * fixed values that demonstrate the components, not market figures.
+ */
 export default async function DesignSystemPage() {
-  const marketData = getMarketDataService();
+  // A reference for development: a production build answers 404 unless
+  // SHOW_DESIGN_SYSTEM=true is set, as on a preview deployment.
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.SHOW_DESIGN_SYSTEM !== "true"
+  ) {
+    notFound();
+  }
+
+  const marketsService = getMarketsService();
   const editorial = getEditorialService();
 
-  const [quotes, series, commentary, updatedAt, [article]] = await Promise.all([
-    marketData.getBulkWineQuotes(),
-    marketData.getPriceSeries("ES-CLM-RED-GEN"),
-    marketData.getMarketCommentary("bulk"),
-    marketData.getLastUpdated(),
+  const [rows, [article]] = await Promise.all([
+    marketsService.getRows("bulk-wine"),
     editorial.getLatestArticles(1),
   ]);
+  const specimen = rows[0];
+  const history = specimen
+    ? await marketsService.getHistory(specimen.series.code, "1y")
+    : [];
+  const updatedAt = specimen?.latest.updatedAt;
+  const source = getSource("mapa-pmn");
 
   const markets = primaryNavigation[0];
 
@@ -109,7 +125,7 @@ export default async function DesignSystemPage() {
       <PageHeader
         kicker="Internal reference"
         title="WineTerm design system"
-        description="Tokens, typography and the core component set. This route is internal: it is excluded from the sitemap and marked noindex. All figures on this page are illustrative fixtures, not market data."
+        description="Tokens, typography and the core component set. This route is internal: it is excluded from the sitemap and marked noindex. The table and chart show the imported series; the movement and state specimens are fixed values that demonstrate the components."
       />
 
       <Block title="Colours">
@@ -139,7 +155,7 @@ export default async function DesignSystemPage() {
           <div>
             <p className="wt-label text-ink-soft">Editorial serif / Newsreader</p>
             <p className="wt-headline mt-2 text-4xl font-semibold text-ink">
-              Iberian bulk market tightens into the vintage
+              {article?.headline ?? "Headlines are set in the serif"}
             </p>
             <p className="wt-headline mt-1 text-2xl italic text-ink-soft">
               Standfirst and commentary set in the italic cut
@@ -163,7 +179,9 @@ export default async function DesignSystemPage() {
           <div className="border-t border-rule pt-5">
             <p className="wt-label text-ink-soft">Data mono / IBM Plex Mono</p>
             <p className="tnum mt-2 font-mono text-sm text-ink">
-              ES-CLM-RED-GEN &nbsp; 51.25 EUR/hl &nbsp; +2.5% &nbsp; 20 Aug 2026
+              {specimen
+                ? `${specimen.series.code}   ${formatPrice(specimen.latest.value)} ${specimen.series.unit}   ${formatDate(specimen.latest.date)}`
+                : "Series code, price, unit and date are set in the mono"}
             </p>
             <p className="wt-label mt-2 text-wine">
               Small uppercase market labels use the mono at 11px with wide
@@ -257,10 +275,10 @@ export default async function DesignSystemPage() {
           </div>
           <div className="space-y-2 border-t border-rule pt-5">
             <SourceLine
-              source={{ name: "Regional market bulletin (sample)" }}
+              source={{ name: source.name, url: source.url }}
               updatedAt={updatedAt}
             />
-            <UpdatedAt iso={updatedAt} />
+            {updatedAt ? <UpdatedAt iso={updatedAt} /> : null}
           </div>
         </div>
       </Block>
@@ -268,7 +286,7 @@ export default async function DesignSystemPage() {
       <Block title="Price movements">
         <Spec>
           Monospace tabular numerals; green and red reserved exclusively for
-          movement. Flat movement is neutral.
+          movement. Flat movement is neutral. Fixed specimen values.
         </Spec>
         <div className="flex flex-wrap items-center gap-x-8 gap-y-4 border border-rule bg-paper p-6">
           <PriceCell value={51.25} unit="EUR/hl" />
@@ -291,7 +309,7 @@ export default async function DesignSystemPage() {
           The filter rail sits directly above its table. Controls are native
           selects styled with tokens; the right slot carries the update time.
         </Spec>
-        <FilterBar end={<UpdatedAt iso={updatedAt} />}>
+        <FilterBar end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}>
           <FilterSelect label="Country" id="ds-filter-country" defaultValue="all">
             <option value="all">All countries</option>
             <option value="ES">Spain</option>
@@ -315,34 +333,47 @@ export default async function DesignSystemPage() {
 
       <Block title="Market table">
         <Spec>
-          The core data interface. Fixture rows, marked illustrative, fetched
-          through the typed market data service.
+          The core data interface: the first rows of the bulk wine prices,
+          fetched through the typed markets service.
         </Spec>
-        <MarketTable
-          caption="Illustrative bulk wine reference prices"
-          quotes={quotes}
-          updatedAt={updatedAt}
-        />
+        {rows.length > 0 ? (
+          <BulkPricesTable rows={rows.slice(0, SPECIMEN_ROWS)} />
+        ) : (
+          <EmptyState
+            title="No series to show"
+            detail="Series are read from the database, which this build is not connected to."
+          />
+        )}
       </Block>
 
       <Block title="Chart frame">
         <Spec>
           Every chart sits in the same frame: title, code and unit on top,
-          source and status underneath. The plot is a thin flat line with
-          monospace ticks.
+          source and update time underneath. The plot is a thin flat line
+          with monospace ticks.
         </Spec>
-        {series ? (
+        {specimen ? (
           <ChartFrame
-            title={series.name}
-            code={series.code}
-            unit={series.unit}
-            status={series.status}
-            source={series.source}
-            updatedAt={series.updatedAt}
+            title={specimen.series.name}
+            code={specimen.series.code}
+            unit={specimen.series.unit}
+            source={{
+              name: getSource(specimen.series.sourceId).name,
+              url: getSource(specimen.series.sourceId).url,
+            }}
+            updatedAt={specimen.latest.updatedAt}
           >
-            <PriceLineChart points={series.points} unit={series.unit} />
+            <PriceLineChart
+              points={history.map((obs) => ({ date: obs.date, value: obs.value }))}
+              unit={specimen.series.unit}
+            />
           </ChartFrame>
-        ) : null}
+        ) : (
+          <EmptyState
+            title="No series to chart"
+            detail="Series are read from the database, which this build is not connected to."
+          />
+        )}
       </Block>
 
       <Block title="Tabs">
@@ -376,14 +407,6 @@ export default async function DesignSystemPage() {
             ]}
           />
         </div>
-      </Block>
-
-      <Block title="Market commentary">
-        <Spec>
-          A dated desk note set in the serif, attached to a market panel by a
-          burgundy rule.
-        </Spec>
-        {commentary ? <MarketCommentaryBlock commentary={commentary} /> : null}
       </Block>
 
       <Block title="Editorial previews">

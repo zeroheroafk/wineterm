@@ -1,50 +1,48 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 
+import { ForecastRangeTable } from "@/components/harvest/ForecastRangeTable";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
-import {
-  HarvestMonitor,
-  representativeRegions,
-} from "@/components/market/HarvestMonitor";
-import { SupplyComparison } from "@/components/market/SupplyComparison";
 import { TradeFlowsPanel } from "@/components/market/TradeFlowsPanel";
+import { SpainBalanceTable } from "@/components/supply/SpainBalanceTables";
 import { ArrowLink } from "@/components/ui/ArrowLink";
-import { sharedStatusNote } from "@/components/ui/DataStatusLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { DataNote } from "@/components/ui/SourceLine";
-import { formatDateRange } from "@/lib/format";
+import { SourceLine } from "@/components/ui/SourceLine";
+import { EmptyState } from "@/components/ui/states";
+import { formatDate, formatMonthYear } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
-import { getHomeService } from "@/services/home";
+import { getHarvestService } from "@/services/harvest/service";
+import { getSource } from "@/services/markets/sources";
+import { getSupplyService } from "@/services/supply/service";
+import { getTradeService } from "@/services/trade/service";
 
 export const metadata: Metadata = {
   title: "Market data",
   description:
-    "Supply, harvest and trade in Spain, Portugal, France and Italy at a glance: availability by country, harvest conditions and wine exports.",
+    "Supply, harvest and trade at a glance: Spain's declared wine balance, the official harvest estimates for Spain, Portugal, France and Italy, and their wine exports.",
 };
 
-// The trade snapshot reads the database; regenerate at most hourly.
-export const revalidate = 3600;
-
 /**
- * The Market data tab: the supply snapshot, the harvest monitor and the
- * trade snapshot on one page, each linking to its full section. The
- * homepage keeps to prices and editorial.
+ * The Market data tab: Spain's declared balance, the official harvest
+ * estimates and the trade snapshot on one page, each linking to its full
+ * section. The homepage keeps to prices and editorial. The balance and
+ * the trade snapshot read the database, so the page is regenerated at
+ * most hourly.
  */
 export default async function MarketDataPage() {
-  const home = getHomeService();
-  const [supply, harvest, trade] = await Promise.all([
-    home.getSupplySnapshot(),
-    home.getHarvestRegions(),
-    home.getTradeOverview(),
-  ]);
+  "use cache";
+  cacheLife("hours");
 
-  const regions = representativeRegions(harvest);
-  const reportDates = regions.map((region) => region.updatedAt).sort();
-  const harvestStatus = regions.every(
-    (region) => region.status === regions[0]?.status,
-  )
-    ? regions[0]?.status
-    : undefined;
+  const harvest = getHarvestService();
+  const trade = getTradeService();
+  const [spain, campaign, forecasts, overview] = await Promise.all([
+    getSupplyService().getSpainBalance(),
+    harvest.getCampaign(),
+    harvest.getCountryForecasts(),
+    trade ? trade.getOverview() : null,
+  ]);
+  const spainSource = spain ? getSource(spain.sourceId) : null;
 
   return (
     <Container className="pb-16">
@@ -53,7 +51,7 @@ export default async function MarketDataPage() {
         crumbs={[{ label: "Market data" }]}
         kicker="Market data"
         title="Supply, harvest and trade"
-        description="The wine market of Spain, Portugal, France and Italy at a glance: how much wine is available, how the harvest is going and where exports go. Each panel links to its full section."
+        description="The wine market at a glance: how much wine Spain's declarants hold and move, what each country's harvest is estimated at, and where the exports of Spain, Portugal, France and Italy go. Each panel links to its full section."
         activeHref="/data"
       />
 
@@ -66,66 +64,59 @@ export default async function MarketDataPage() {
           variant="editorial"
           id="data-supply"
           kicker="Crop & Supply"
-          title="Supply and harvest"
+          title="Spain's declared wine balance"
+          description={
+            spain
+              ? `From 1 August to the end of ${formatMonthYear(spain.latestMonth)}, as declared to the Ministry of Agriculture by producers of 1,000 hl or more and by warehouse holders, against the campaign before to the same month.`
+              : undefined
+          }
+          action={{ label: "Full supply balance", href: "/supply" }}
         />
-
-        <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-14">
-          <div>
-            <h3 className="wt-headline text-[1.375rem] leading-tight font-semibold text-ink">
-              European supply snapshot
-            </h3>
-            <p className="mt-1 text-[0.8125rem] text-ink-soft">
-              {supply.campaign} campaign
-            </p>
-            <p className="wt-headline mt-3 text-lg leading-snug text-pretty text-ink">
-              {supply.takeaway}
-            </p>
-            <p className="mt-3 text-[0.9375rem] leading-[1.55] text-pretty text-ink-soft">
-              {supply.note}
-            </p>
-            <ul className="mt-4 space-y-1.5">
-              <li>
-                <ArrowLink href="/supply">Full supply balance</ArrowLink>
-              </li>
-              <li>
-                <ArrowLink href="/insights/methodology#supply-balance">
-                  How availability is calculated
-                </ArrowLink>
-              </li>
-            </ul>
-          </div>
-          <SupplyComparison snapshot={supply} />
+        <div className="mt-5 max-w-3xl">
+          {spain && spainSource ? (
+            <>
+              <SpainBalanceTable latest={spain.latest} previous={spain.previous} />
+              <div className="mt-3">
+                <SourceLine
+                  source={{ name: spainSource.name, url: spainSource.url }}
+                  updatedAt={spain.updatedAt}
+                />
+              </div>
+              <p className="wt-label mt-2 leading-relaxed text-ink-soft">
+                {formatMonthYear(spain.latestMonth)} was published on{" "}
+                {formatDate(spain.publishedAt)}. Wine only; producers of less
+                than 1,000 hl a year do not declare monthly.
+              </p>
+            </>
+          ) : (
+            <EmptyState
+              title="No declarations to show"
+              detail="Spain's balance is read from the database, which this build is not connected to."
+            />
+          )}
         </div>
+      </section>
 
-        <div id="harvest" className="mt-12 scroll-mt-6">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-            <h3 className="wt-headline text-[1.375rem] leading-tight font-semibold text-ink">
-              Harvest monitor
-            </h3>
-            <ArrowLink href="/harvest">Full harvest monitor</ArrowLink>
-          </div>
-          <p className="mt-1 text-[0.8125rem] text-ink-soft">
-            One representative region per country: stage, vineyard condition
-            and expected crop.
-          </p>
-          <div className="mt-4">
-            <HarvestMonitor regions={regions} />
-          </div>
-          {reportDates.length > 0 ? (
-            <DataNote
-              className="mt-3"
-              lead={harvestStatus ? sharedStatusNote(harvestStatus) : null}
-            >
-              Field reports dated{" "}
-              <span className="whitespace-nowrap">
-                {formatDateRange(
-                  reportDates[0],
-                  reportDates[reportDates.length - 1],
-                )}
-                .
-              </span>
-            </DataNote>
-          ) : null}
+      <section
+        id="harvest"
+        aria-labelledby="data-harvest"
+        className="mt-14 scroll-mt-6"
+      >
+        <SectionHeader
+          variant="editorial"
+          id="data-harvest"
+          kicker="Harvest"
+          title="Official production estimates"
+          description="Each country's latest official estimate for the vintage against the previous campaign, as the same source counts it."
+          action={{ label: "Full harvest page", href: "/harvest" }}
+        />
+        <div className="mt-5">
+          <ForecastRangeTable
+            forecasts={forecasts}
+            campaign={campaign}
+            withCommentary
+            note="Each source counts its own scope: France all wine, including wine for brandy; Portugal wine; Spain wine and must. Figures are revised as the harvest declarations come in."
+          />
         </div>
       </section>
 
@@ -139,11 +130,23 @@ export default async function MarketDataPage() {
           id="data-trade"
           kicker="Trade"
           title="Trade snapshot"
-          description={`Exports from Spain, Portugal, France and Italy in million hectolitres, ${trade.period}. Year-on-year changes compare with the same period a year earlier.`}
+          description={
+            overview
+              ? `Exports from Spain, Portugal, France and Italy in million hectolitres, ${overview.period}. Year-on-year changes compare with the same period a year earlier.`
+              : undefined
+          }
           action={{ label: "Explore trade data", href: "/trade" }}
         />
         <div className="mt-5">
-          <TradeFlowsPanel overview={trade} />
+          {overview ? (
+            <TradeFlowsPanel overview={overview} />
+          ) : (
+            <EmptyState
+              title="No trade figures to show"
+              detail="Trade figures are read from the database, which this build is not connected to."
+              action={<ArrowLink href="/trade">Trade page</ArrowLink>}
+            />
+          )}
         </div>
       </section>
     </Container>

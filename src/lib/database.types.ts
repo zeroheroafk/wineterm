@@ -327,6 +327,7 @@ export type Database = {
         Row: {
           colour: string
           country: string
+          holder: string
           measure: string
           period: string
           presentation: string
@@ -340,6 +341,7 @@ export type Database = {
         Insert: {
           colour: string
           country: string
+          holder?: string
           measure: string
           period: string
           presentation: string
@@ -353,6 +355,7 @@ export type Database = {
         Update: {
           colour?: string
           country?: string
+          holder?: string
           measure?: string
           period?: string
           presentation?: string

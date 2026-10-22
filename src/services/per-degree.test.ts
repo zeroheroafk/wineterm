@@ -1,44 +1,12 @@
 /**
- * Checks on the prices recorded per hectolitre-degree and shown in
- * EUR/hl: the conversion itself, the recorded figures every converted
- * record keeps, and strengths that follow each product's description.
+ * Checks on prices recorded per hectolitre-degree and shown in EUR/hl:
+ * the conversion itself and how each strength is described.
  */
 
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { getIllustrativeHomeService } from "@/services/home";
-import { getMarketsService } from "@/services/markets/service";
-import {
-  describeDegreeBasis,
-  perHectolitre,
-  type DegreeBasis,
-} from "@/services/types";
-
-/**
- * The strength a product description supports: the stated figure, the
- * midpoint of a stated range, or none.
- */
-function statedStrength(text: string): { value: number; range: boolean } | null {
-  const match = /(\d+(?:\.\d+)?)(?: to (\d+(?:\.\d+)?))? (?:percent|potential) vol/.exec(
-    text,
-  );
-  if (!match) return null;
-  const low = Number(match[1]);
-  if (match[2] === undefined) return { value: low, range: false };
-  return { value: (low + Number(match[2])) / 2, range: true };
-}
-
-function assertStrengthFollows(text: string, basis: DegreeBasis, label: string) {
-  const stated = statedStrength(text);
-  if (basis.strengthBasis === "assumed") {
-    assert.equal(stated, null, `${label}: assumed, yet "${text}" states one`);
-    return;
-  }
-  assert.ok(stated, `${label}: "${text}" states no strength`);
-  assert.equal(basis.alcoholPercent, stated.value, label);
-  assert.equal(basis.strengthBasis === "range-midpoint", stated.range, label);
-}
+import { describeDegreeBasis, perHectolitre } from "@/services/types";
 
 describe("per-degree conversion", () => {
   it("multiplies by the strength and rounds to the cent", () => {
@@ -66,74 +34,5 @@ describe("per-degree conversion", () => {
       describeDegreeBasis({ alcoholPercent: 12, strengthBasis: "assumed" }),
       "an assumed 12% vol, as none is stated",
     );
-  });
-});
-
-describe("sample key prices", () => {
-  it("keep the recorded figures beside their EUR/hl conversion", async () => {
-    const samples = await getIllustrativeHomeService().getKeyPrices();
-    assert.ok(samples.length > 0);
-    for (const quote of samples) {
-      const recorded = quote.perDegree;
-      assert.ok(recorded, `${quote.code} keeps no recorded figures`);
-      assert.equal(quote.unit, "EUR/hl", quote.code);
-      assert.equal(
-        quote.price,
-        perHectolitre(recorded.price, recorded.alcoholPercent),
-        quote.code,
-      );
-      // The change is between the converted prices, so it can differ by
-      // a cent from the converted recorded change.
-      assert.ok(
-        Math.abs(
-          quote.change - perHectolitre(recorded.change, recorded.alcoholPercent),
-        ) <= 0.01 + 1e-9,
-        quote.code,
-      );
-      assertStrengthFollows(quote.product, recorded, quote.code);
-    }
-  });
-});
-
-describe("catalogue series recorded per degree", () => {
-  it("give every observation in EUR/hl at the series strength", async () => {
-    const markets = getMarketsService();
-    const series = [
-      ...(await markets.listSeries("bulk-wine")),
-      ...(await markets.listSeries("must")),
-    ].filter((item) => item.perDegree);
-    assert.ok(series.length >= 12, `only ${series.length} series converted`);
-
-    for (const item of series) {
-      const basis = item.perDegree!;
-      assert.equal(item.unit, "EUR/hl", item.code);
-      assertStrengthFollows(
-        [item.product, item.spec].filter(Boolean).join(", "),
-        basis,
-        item.code,
-      );
-      const history = await markets.getHistory(item.code);
-      assert.ok(history.length > 0, item.code);
-      for (const observation of history) {
-        assert.ok(observation.perDegreeValue !== undefined, item.code);
-        assert.equal(
-          observation.value,
-          perHectolitre(observation.perDegreeValue, basis.alcoholPercent),
-          `${item.code} ${observation.date}`,
-        );
-      }
-    }
-  });
-
-  it("leave series without a per-degree basis as recorded", async () => {
-    const markets = getMarketsService();
-    for (const item of await markets.listSeries()) {
-      if (item.perDegree) continue;
-      const history = await markets.getHistory(item.code);
-      assert.ok(
-        history.every((observation) => observation.perDegreeValue === undefined),
-        item.code,
-      );
-    }
   });
 });

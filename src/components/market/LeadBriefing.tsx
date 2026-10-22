@@ -46,9 +46,7 @@ export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
               <span aria-hidden="true" className="mx-1.5">
                 &middot;
               </span>
-              {briefing.status === "illustrative"
-                ? "Illustrative sample"
-                : DATA_STATUS_LABELS[briefing.status]}
+              {DATA_STATUS_LABELS[briefing.status]}
             </>
           ) : null}
         </p>

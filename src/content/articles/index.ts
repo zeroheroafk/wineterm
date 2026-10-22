@@ -1,7 +1,7 @@
 /**
- * Published Insights articles, weekly briefings and monthly reports. Unlike src/fixtures,
- * this is real editorial content: each is one file, listed here, and its
- * figures are cited to the sources it lists.
+ * Published Insights articles, weekly briefings and monthly reports: each
+ * is one file, listed here, and its figures are cited to the sources it
+ * lists.
  *
  * Newest first. Lists sort by publication date and keep this order for
  * articles published the same day, so the first of them leads.

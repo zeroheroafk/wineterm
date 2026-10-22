@@ -4,6 +4,12 @@
  * Single source of truth for the primary navigation, its secondary levels,
  * the footer and breadcrumbs. Routes exist here before their pages are
  * built so the shell is stable while sections come online.
+ *
+ * Pages without content yet stay out of the menus, the footer and the
+ * sitemap, though their routes answer: News (/insights/news, no article
+ * published), the Directory (/directory, no organisation listed) and
+ * Must & Concentrates (/markets/must-concentrates, no licensed source).
+ * Add each back here when it has something to show.
  */
 
 export interface NavLeaf {
@@ -33,16 +39,6 @@ export const primaryNavigation: NavSection[] = [
         description: "Reference prices by region, colour and grade",
       },
       {
-        label: "Grape Prices",
-        href: "/markets/grapes",
-        description: "Wine grape prices through the campaign",
-      },
-      {
-        label: "Must & Concentrates",
-        href: "/markets/must-concentrates",
-        description: "Grape must, RCGM and concentrate values",
-      },
-      {
         label: "Market Comparison",
         href: "/markets/compare",
         description: "Compatible series side by side",
@@ -57,12 +53,12 @@ export const primaryNavigation: NavSection[] = [
       {
         label: "Supply",
         href: "/data#supply",
-        description: "Wine available by country this campaign",
+        description: "Spain's declared wine balance this campaign",
       },
       {
         label: "Harvest",
         href: "/data#harvest",
-        description: "Stage, condition and expected crop by region",
+        description: "Official production estimates by country",
       },
       {
         label: "Trade",
@@ -89,17 +85,12 @@ export const primaryNavigation: NavSection[] = [
       {
         label: "Availability",
         href: "/supply",
-        description: "Supply balance: stocks, production, use and trade",
+        description: "Spain's declared balance: stocks, production, entries and exits",
       },
       {
-        label: "Harvest Outlook",
+        label: "Harvest",
         href: "/harvest",
-        description: "Forecasts and progress for the coming vintage",
-      },
-      {
-        label: "Weather",
-        href: "/harvest#weather",
-        description: "Growing conditions across key regions",
+        description: "Official production estimates for the vintage",
       },
     ],
   },
@@ -168,11 +159,6 @@ export const primaryNavigation: NavSection[] = [
     code: "INS",
     items: [
       {
-        label: "News",
-        href: "/insights/news",
-        description: "Reporting for the professional wine trade",
-      },
-      {
         label: "Analysis",
         href: "/insights/analysis",
         description: "Interpretation of prices, supply and trade",
@@ -194,12 +180,6 @@ export const primaryNavigation: NavSection[] = [
       },
     ],
   },
-  {
-    label: "Directory",
-    href: "/directory",
-    code: "DIR",
-    items: [],
-  },
 ];
 
 export interface BreadcrumbItem {
@@ -214,7 +194,6 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
     items: [
       { label: "Market Data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
-      { label: "Grape Prices", href: "/markets/grapes" },
       { label: "Production", href: "/supply/production" },
       { label: "Stocks", href: "/supply/stocks" },
       { label: "Imports & Exports", href: "/trade" },
@@ -223,7 +202,6 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
   {
     heading: "Editorial",
     items: [
-      { label: "News", href: "/insights/news" },
       { label: "Analysis", href: "/insights/analysis" },
       { label: "Weekly Briefing", href: "/insights/weekly-briefing" },
       { label: "Monthly Reports", href: "/insights/monthly-reports" },
@@ -236,7 +214,6 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
       { label: "Companies", href: "/industry/companies" },
       { label: "Deals & Investments", href: "/industry/deals" },
       { label: "Regulation", href: "/industry/regulation" },
-      { label: "Directory", href: "/directory" },
     ],
   },
   {
