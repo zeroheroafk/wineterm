@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   Bar,
   BarChart,
@@ -9,6 +10,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  type XAxisTickContentProps,
 } from "recharts";
 
 import { formatPrice } from "@/lib/format";
@@ -31,6 +33,44 @@ const BAR_COLOURS = [
   "var(--wt-wine-deep)",
 ];
 
+const CATEGORY_TICK = {
+  fill: "var(--wt-ink)",
+  fontSize: 11,
+  fontFamily: "var(--font-mono)",
+};
+
+/** A category's flag, 18 by 12 under the axis with a hairline round it. */
+function FlagTick({
+  x,
+  y,
+  payload,
+  flags,
+}: XAxisTickContentProps & { flags: Record<string, ReactNode> }) {
+  const label = String(payload.value);
+  const flag = flags[label];
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {flag ? (
+        <svg x={-9} y={4} width={18} height={12} overflow="visible">
+          {flag}
+          <rect
+            x={-0.5}
+            y={-0.5}
+            width={19}
+            height={13}
+            fill="none"
+            stroke="var(--wt-rule)"
+          />
+        </svg>
+      ) : (
+        <text dy="0.71em" y={4} textAnchor="middle" {...CATEGORY_TICK}>
+          {label}
+        </text>
+      )}
+    </g>
+  );
+}
+
 /**
  * Restrained grouped bar chart in the WineTerm chart idiom: flat token
  * colours, thin rules, mono ticks, no gradients or animation.
@@ -40,11 +80,17 @@ export function GroupedBarChart({
   series,
   unit,
   height = 300,
+  flags,
 }: {
   points: BarPoint[];
   series: BarSeriesMeta[];
   unit: string;
   height?: number;
+  /**
+   * Flags drawn under the axis in place of category labels, by label,
+   * rendered on the server; the tooltip keeps the label.
+   */
+  flags?: Record<string, ReactNode>;
 }) {
   return (
     <div style={{ height }} className="w-full">
@@ -58,11 +104,13 @@ export function GroupedBarChart({
           <CartesianGrid stroke="var(--wt-rule)" strokeWidth={1} vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{
-              fill: "var(--wt-ink)",
-              fontSize: 11,
-              fontFamily: "var(--font-mono)",
-            }}
+            tick={
+              flags
+                ? (props: XAxisTickContentProps) => (
+                    <FlagTick {...props} flags={flags} />
+                  )
+                : CATEGORY_TICK
+            }
             tickLine={false}
             axisLine={{ stroke: "var(--wt-rule)" }}
           />

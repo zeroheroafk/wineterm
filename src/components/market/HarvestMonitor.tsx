@@ -1,4 +1,5 @@
 import { TrendIndicator } from "@/components/market/TrendIndicator";
+import { Flag } from "@/components/ui/Flag";
 import { COUNTRY_NAMES } from "@/services/types";
 import type { HarvestCondition, HarvestRegion } from "@/services/types";
 
@@ -53,7 +54,8 @@ export function HarvestMonitor({ regions }: { regions: HarvestRegion[] }) {
             <h4 className="text-[0.9375rem] leading-snug font-semibold text-ink">
               {region.region}
             </h4>
-            <p className="text-xs text-ink-soft">
+            <p className="flex items-center gap-1.5 text-xs text-ink-soft">
+              <Flag code={region.country} decorative />
               {COUNTRY_NAMES[region.country]}
             </p>
             <dl className="row-span-3 mt-3 grid grid-rows-subgrid gap-y-2.5 text-sm">

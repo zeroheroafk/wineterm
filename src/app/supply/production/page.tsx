@@ -8,6 +8,7 @@ import { CampaignLinesChart } from "@/components/supply/CampaignLinesChart";
 import { MethodologyNotes } from "@/components/supply/MethodologyNotes";
 import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { Flag } from "@/components/ui/Flag";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
@@ -43,7 +44,7 @@ export default async function ProductionPage() {
   const [latestCampaign, previousCampaign] = spain?.campaigns ?? [];
 
   const chartPoints = comparisons.map((row) => ({
-    label: row.country,
+    label: COUNTRY_NAMES[row.country],
     current: row.currentMhl,
     previous: row.previousMhl,
     fiveYear: row.fiveYearAvgMhl,
@@ -250,6 +251,12 @@ export default async function ProductionPage() {
                 { key: "fiveYear", name: "5-yr avg" },
               ]}
               unit="Mhl"
+              flags={Object.fromEntries(
+                comparisons.map((row) => [
+                  COUNTRY_NAMES[row.country],
+                  <Flag key={row.country} code={row.country} />,
+                ]),
+              )}
             />
           </div>
           <figcaption className="border-t border-rule px-4 py-2.5">
@@ -367,9 +374,7 @@ export default async function ProductionPage() {
                 </th>
                 {PRODUCER_COUNTRIES.map((country) => (
                   <th key={country} scope="col" className={TH_RIGHT}>
-                    <abbr title={COUNTRY_NAMES[country]} className="no-underline">
-                      {country}
-                    </abbr>
+                    <CountryLabel code={country} />
                   </th>
                 ))}
                 <th scope="col" className={TH_RIGHT}>

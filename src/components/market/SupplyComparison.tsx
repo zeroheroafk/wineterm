@@ -1,5 +1,6 @@
 import { InlinePercentChange } from "@/components/market/ChangeCell";
 import { sharedStatusNote } from "@/components/ui/DataStatusLabel";
+import { Flag } from "@/components/ui/Flag";
 import { DataNote } from "@/components/ui/SourceLine";
 import { formatPrice } from "@/lib/format";
 import {
@@ -88,7 +89,8 @@ export function SupplyComparison({ snapshot }: { snapshot: SupplySnapshot }) {
             key={row.country}
             className={`${ROW_GRID} gap-y-2 border-b border-rule py-3 sm:items-center`}
           >
-            <p className="text-[0.9375rem] font-semibold text-ink">
+            <p className="flex items-center gap-2 text-[0.9375rem] font-semibold text-ink">
+              <Flag code={row.country} decorative />
               {COUNTRY_NAMES[row.country]}
             </p>
             <div className="col-span-3 row-start-2 min-w-0 sm:col-span-1 sm:col-start-2 sm:row-start-1">

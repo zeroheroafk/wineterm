@@ -1,3 +1,4 @@
+import { CountryLabel } from "@/components/ui/CountryLabel";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatPrice } from "@/lib/format";
@@ -136,7 +137,7 @@ export function BalanceTable({
               </th>
               {rows.map((row) => (
                 <th key={row.country} scope="col" className={TH}>
-                  <span className="text-ink">{row.country}</span>
+                  <CountryLabel code={row.country} />
                   <span className="mt-1 block">
                     <DataStatusLabel status={row.status} />
                   </span>
