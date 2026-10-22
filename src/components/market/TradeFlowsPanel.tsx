@@ -1,5 +1,6 @@
 import { InlinePercentChange } from "@/components/market/ChangeCell";
 import { sharedStatusNote } from "@/components/ui/DataStatusLabel";
+import { Flag } from "@/components/ui/Flag";
 import { DataNote } from "@/components/ui/SourceLine";
 import { formatPrice } from "@/lib/format";
 import {
@@ -61,7 +62,10 @@ function RankedList({
             <tr key={row.country} className="border-b border-rule">
               <td className={`${TD} tnum text-ink-soft`}>{row.rank}</td>
               <th scope="row" className={`${TD} font-medium text-ink`}>
-                {countryName(row.country)}
+                <span className="flex items-center gap-2">
+                  <Flag code={row.country} decorative />
+                  {countryName(row.country)}
+                </span>
               </th>
               <td className={`${TD} tnum text-right font-semibold text-ink`}>
                 {formatPrice(row.volumeMhl, 1)}
