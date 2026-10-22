@@ -49,7 +49,8 @@ Status legend:
 6. **Gaps to cover with partners or desk estimates:** must and
    concentrate prices, and Portuguese bulk wine prices. Grape prices are
    left out by decision: no public series exists for the four countries
-   that WineTerm may republish.
+   that WineTerm may republish. So are bottle prices: see "Bottle prices"
+   below.
 7. **French regional bulk prices: DRAAF Occitanie. Imported.** Monthly
    prices of wine without GI and PGI wine by colour in
    Languedoc-Roussillon and Midi-Pyrénées since August 2023, refreshed
@@ -481,6 +482,69 @@ environment, so what follows rests on their pages as indexed.
   (for example [Bologna](https://www.bo.camcom.gov.it/it/borsa-merci/listino-settimanale-dei-prezzi-rilevati-il-gioved%C3%AC))
   quote wine products weekly and may include musts (**to validate**,
   licence to confirm). Otherwise this needs licensed broker data.
+
+## Bottle prices
+
+Left out by decision on 22 October 2026: a section of the prices of
+well-known bottles, in the manner of Liv-ex, needs per-wine prices that
+WineTerm may republish, and none was found. Checked on 22 October 2026;
+the Liv-ex and Wine-Searcher sites refused requests from the development
+environment, so what follows on them rests on their pages as indexed.
+
+### Fine wine price services
+
+- **Liv-ex: not usable without a licence.** A trade-only exchange whose
+  indices and prices are sold to members; its membership terms limit
+  members' customers to "their own personal, internal, non-commercial
+  use". Republishing needs a data licence or written permission. Link:
+  [membership terms](https://www.liv-ex.com/liv-ex-membership-terms/).
+- **Wine-Searcher: licence to confirm.** A paid API with monthly plans
+  by daily calls; its Wine Check returns the minimum, maximum and average
+  price of a wine. Whether its Trade Terms allow showing the results on a
+  public site was not read. Link: [API](https://www.wine-searcher.com/trade/api).
+- **iDealwine: not usable.** Monthly WineDex indices of French fine
+  wines from auction results, but no API and no reuse terms published.
+  Link: [WineDex](https://www.idealwine.net/les-indices-winedex-didealwine-comment-sont-ils-calcules-et-a-quoi-servent-ils/).
+
+### Portugal: online retailers
+
+Bottle prices on the retailers' product pages, which an earlier WineTerm
+prototype collected through their sitemaps. Each robots.txt allows
+crawlers on product pages, which is not permission to republish.
+
+- **Vinha.pt: not usable without permission.** Its terms of use,
+  section 12.1: all contents "não podem ser reproduzidos, modificados,
+  distribuídos, comercializados, ou sob qualquer outra forma utilizados,
+  salvo autorização prévia e expressa, por escrito." Link:
+  [terms](https://www.vinha.pt/termos-e-condicoes/).
+- **Millésima: not usable without permission.** Its general conditions
+  state that Millésima "é produtor e proprietário da base de dados" under
+  the French law of 1 July 1998, with the rights to all the site's
+  information reserved. Link: [conditions](https://www.millesima.pt/cgv.html).
+- **Garrafeira Nacional and Garrafeira Soares: licence to confirm.**
+  Their published terms are conditions of sale and say nothing on reuse.
+  That is not permission: the EU database right (Directive 96/9/EC)
+  also covers repeated extraction from a catalogue. Ask before importing.
+  Links: [Garrafeira Nacional](https://www.garrafeiranacional.com/garrafeira/info/termos-e-condicoes/),
+  [Garrafeira Soares](https://www.garrafeirasoares.pt/pt/acesso-rapido/condicoes-gerais-de-venda_251.html).
+- The prototype also dropped, in August 2026, Garrafeira Tio Pepe
+  (product sitemap out of date), Portugal Vineyards (no XML sitemap),
+  Drinks&Co (domain no longer resolves) and Berry Bros & Rudd (prices in
+  GBP); their terms were not read.
+
+### Consumer prices from official sources
+
+Prices to the consumer, not by bottle; **to validate** if a consumer
+view is ever wanted.
+
+- **MAPA, household consumption panel:** Spain's average price per
+  litre of wine bought for the home, by category, reusable under Law
+  37/2007 like MAPA's other figures. Reported from the panel: EUR 3.56/l
+  for all wine in 2024, about EUR 5 for still PDO wine.
+- **Consumer price indices for wine** (Eurostat HICP, INE, INSEE,
+  ISTAT): monthly by country, an index rather than a price. Eurostat's
+  `prc_hicp_midx` now covers 1996 to 2025 only; the dataset carrying
+  2026 is still to identify.
 
 ## Crop & Supply
 
