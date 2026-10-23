@@ -3,6 +3,7 @@ import { Fragment } from "react";
 
 import { ShareChart } from "@/components/charts/ShareChart";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
+import { PhotoCredit } from "@/components/editorial/PhotoCredit";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
 import { TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
@@ -60,21 +61,7 @@ function HeroImage({ hero }: { hero: ArticleHero }) {
       />
       <figcaption className="mt-2 text-xs leading-relaxed text-ink-soft">
         {hero.caption ? `${hero.caption} ` : null}
-        Photo:{" "}
-        <a
-          href={hero.sourceUrl}
-          className="underline decoration-rule underline-offset-2 hover:text-wine"
-        >
-          {hero.author}
-        </a>
-        ,{" "}
-        <a
-          href={hero.licence.url}
-          className="underline decoration-rule underline-offset-2 hover:text-wine"
-        >
-          {hero.licence.name}
-        </a>
-        {hero.changes ? `, ${hero.changes}` : null}
+        <PhotoCredit hero={hero} />
       </figcaption>
     </figure>
   );

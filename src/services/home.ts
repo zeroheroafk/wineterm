@@ -30,7 +30,7 @@ import {
 } from "@/services/types";
 
 export interface HomeService {
-  /** The latest Weekly Briefing, when one is published. */
+  /** The latest Weekly Briefing and its photograph, when one is published. */
   getLeadBriefing(): Promise<MarketBriefing | null>;
   /** One price per national bulk wine series. */
   getKeyPrices(): Promise<PriceQuote[]>;
@@ -137,14 +137,17 @@ async function nationalPrices(): Promise<CataloguePrice[]> {
 
 class EditorialHomeService implements HomeService {
   async getLeadBriefing(): Promise<MarketBriefing | null> {
-    const [latest] = await getEditorialService().getArticlesByKind("weekly-briefing", 1);
-    return latest
+    const editorial = getEditorialService();
+    const [latest] = await editorial.getArticlesByKind("weekly-briefing", 1);
+    const briefing = latest ? await editorial.getArticle(latest.id) : null;
+    return briefing
       ? {
-          headline: latest.headline,
-          summary: latest.standfirst,
-          updatedAt: latest.publishedAt,
-          status: "final",
-          href: latest.href,
+          headline: briefing.headline,
+          summary: briefing.standfirst,
+          updatedAt: briefing.publishedAt,
+          readingMinutes: briefing.readingMinutes,
+          href: briefing.href,
+          hero: briefing.hero,
         }
       : null;
   }

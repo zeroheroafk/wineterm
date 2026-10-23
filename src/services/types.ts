@@ -282,12 +282,12 @@ export interface ArticleDetail extends Article {
 export interface MarketBriefing {
   headline: string;
   summary: string;
-  /** At most one further development, when it adds to the summary. */
-  development?: string;
   updatedAt: string;
-  status: DataStatus;
+  readingMinutes: number;
   /** Where the full text is read. */
   href: string;
+  /** The edition's photograph, set behind its headline. */
+  hero?: ArticleHero;
 }
 
 /** One ranked row in a trade flow table; any ISO 3166-1 alpha-2 country. */
