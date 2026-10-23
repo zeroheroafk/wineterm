@@ -53,16 +53,23 @@ export default async function Home() {
             id="home-intro"
             className="wt-headline max-w-xl text-[2.25rem] leading-[1.08] font-semibold tracking-[-0.02em] text-balance text-ink sm:text-[2.625rem] lg:text-[2.875rem]"
           >
-            Market intelligence for the wine industry.
+            Wine sector news and market intelligence.
           </h1>
           <div>
             <p className="max-w-lg text-[1.0625rem] leading-[1.6] text-pretty text-ink-soft sm:text-lg">
-              Prices, supply and trade intelligence for wineries, growers and
-              the international wine trade.
+              Industry stories, bulk wine prices, supply and trade figures for
+              wineries, growers and the international wine trade.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <ButtonLink href="/markets" className="h-10 px-5">
                 Explore markets
+              </ButtonLink>
+              <ButtonLink
+                href="/insights/news"
+                variant="secondary"
+                className="h-10 px-5"
+              >
+                Latest news
               </ButtonLink>
             </div>
           </div>

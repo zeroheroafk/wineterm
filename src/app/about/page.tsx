@@ -9,7 +9,7 @@ import { PageHeader, SectionHeader } from "@/components/ui/SectionHeader";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "WineTerm is an independent market desk for the professional wine trade: prices, production, stocks, trade and crop intelligence.",
+    "WineTerm is an independent market desk for the professional wine trade: wine sector news, prices, production, stocks, trade and crop intelligence.",
 };
 
 export default function AboutPage() {
@@ -19,7 +19,7 @@ export default function AboutPage() {
       <PageHeader
         kicker="WineTerm"
         title="An independent market desk for the wine trade"
-        description="Prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade."
+        description="Wine sector news, prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade."
       />
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
@@ -85,7 +85,7 @@ export default function AboutPage() {
           <div className="border border-rule bg-paper px-5 py-4">
             <h2 className="wt-label text-wine">WineTerm is</h2>
             <ul className="mt-2 space-y-1.5 text-sm text-ink">
-              <li>Market intelligence for the wine industry</li>
+              <li>News and market intelligence for the wine industry</li>
               <li>Built for professional, repeated use</li>
               <li>Source-first and unit-exact</li>
             </ul>

@@ -27,7 +27,7 @@ export function SiteHeader() {
           <div className="flex min-w-0 items-center gap-4">
             <Wordmark />
             <p className="hidden border-l border-rule pl-4 text-sm leading-tight text-ink-soft md:block">
-              Wine market intelligence
+              Wine news and market intelligence
             </p>
           </div>
           <div className="flex items-center gap-2">

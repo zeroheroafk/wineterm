@@ -1,9 +1,9 @@
 # WineTerm
 
-Market intelligence for the wine industry. Prices, production, stocks,
-trade and crop intelligence for wineries, growers and the global wine
-trade, with a focus on the professional European market: Spain,
-Portugal, France and Italy.
+News and market intelligence for the wine industry. Industry stories,
+prices, production, stocks, trade and crop intelligence for wineries,
+growers and the global wine trade, with a focus on the professional
+European market: Spain, Portugal, France and Italy.
 
 ## Stack
 
