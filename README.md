@@ -1,9 +1,9 @@
 # WineTerm
 
-Market intelligence for the wine industry. Prices, production, stocks,
-trade and crop intelligence for wineries, growers and the global wine
-trade, with a focus on the professional European market: Spain,
-Portugal, France and Italy.
+News and market intelligence for the wine industry. Industry stories,
+prices, production, stocks, trade and crop intelligence for wineries,
+growers and the global wine trade, with a focus on the professional
+European market: Spain, Portugal, France and Italy.
 
 ## Stack
 
@@ -53,7 +53,10 @@ monthly reports are published content in `src/content/articles`, one
 file per article, read at `/insights/analysis/<id>` and
 `/insights/monthly-reports/<id>`, and weekly briefings at
 `/insights/weekly-briefing/<id>`. An article's photograph, credited with
-its author and licence, is in `public/images/insights/<id>.jpg`.
+its author and licence, is in `public/images/insights/<id>.jpg`; the
+latest weekly briefing leads the homepage across the full width, set on
+its photograph when it has one, darkened under the text and credited at
+the foot of the band.
 Industry stories, WineTerm's summaries
 of reports published elsewhere with a link to each, are in
 `src/content/industry.ts`. A section whose source is not connected yet,

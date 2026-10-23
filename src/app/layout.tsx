@@ -31,11 +31,11 @@ const dataMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "WineTerm | Wine market intelligence",
+    default: "WineTerm | Wine news and market intelligence",
     template: "%s | WineTerm",
   },
   description:
-    "Prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade.",
+    "Wine sector news, prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade.",
   robots: SITE_INDEXABLE ? null : { index: false, follow: false },
 };
 

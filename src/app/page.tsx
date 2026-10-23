@@ -14,11 +14,12 @@ import { cacheLife } from "next/cache";
 const INDUSTRY_HEADLINES = 5;
 
 /**
- * The homepage, kept to four blocks: the introduction beside the latest
- * Weekly Briefing, the key bulk wine prices, the latest analysis and
- * industry news, and the newsletter signup. The trade snapshot has its
- * own tab, Market data (/data). The key prices read the database, so the
- * page is regenerated at most hourly.
+ * The homepage, kept to four blocks: the introduction over the latest
+ * Weekly Briefing, set across the full width on its photograph, the key
+ * bulk wine prices, the latest analysis and industry news, and the
+ * newsletter signup. The trade snapshot has its own tab, Market data
+ * (/data). The key prices read the database, so the page is regenerated
+ * at most hourly.
  */
 export default async function Home() {
   "use cache";
@@ -42,106 +43,116 @@ export default async function Home() {
   ]);
 
   return (
-    <Container>
-      <section
-        aria-labelledby="home-intro"
-        className="grid grid-cols-1 items-start gap-8 pt-8 pb-10 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-12 lg:pb-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] xl:gap-16"
-      >
-        {/* The top padding sets the headline's first line level with the
-            first line of the briefing beside it. */}
-        <div className="max-w-xl lg:pt-[1.0625rem]">
+    <>
+      <Container>
+        <section
+          aria-labelledby="home-intro"
+          className="grid grid-cols-1 gap-x-12 gap-y-4 pt-8 pb-9 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:items-end lg:pb-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] xl:gap-x-16"
+        >
           <h1
             id="home-intro"
-            className="wt-headline text-[2.25rem] leading-[1.08] font-semibold tracking-[-0.02em] text-balance text-ink sm:text-[2.625rem] lg:text-[2.875rem]"
+            className="wt-headline max-w-xl text-[2.25rem] leading-[1.08] font-semibold tracking-[-0.02em] text-balance text-ink sm:text-[2.625rem] lg:text-[2.875rem]"
           >
-            Market intelligence for the wine industry.
+            Wine sector news and market intelligence.
           </h1>
-          <p className="mt-4 max-w-lg text-[1.0625rem] leading-[1.6] text-pretty text-ink-soft sm:text-lg">
-            Prices, supply and trade intelligence for wineries, growers and
-            the international wine trade.
-          </p>
-          <div className="mt-6">
-            <ButtonLink href="/markets" className="h-10 px-5">
-              Explore markets
-            </ButtonLink>
+          <div>
+            <p className="max-w-lg text-[1.0625rem] leading-[1.6] text-pretty text-ink-soft sm:text-lg">
+              Industry stories, bulk wine prices, supply and trade figures for
+              wineries, growers and the international wine trade.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <ButtonLink href="/markets" className="h-10 px-5">
+                Explore markets
+              </ButtonLink>
+              <ButtonLink
+                href="/insights/news"
+                variant="secondary"
+                className="h-10 px-5"
+              >
+                Latest news
+              </ButtonLink>
+            </div>
           </div>
-        </div>
-        {briefing ? <LeadBriefing briefing={briefing} /> : null}
-      </section>
+        </section>
+      </Container>
 
-      <section aria-labelledby="home-prices">
-        <SectionHeader
-          variant="editorial"
-          id="home-prices"
-          kicker="Markets"
-          title="Bulk wine prices"
-          action={{
-            label: "All prices",
-            href: "/markets/bulk-wine",
-          }}
-        />
-        <div className="mt-4">
-          <KeyPricesTable
-            quotes={keyPrices}
-            updatedAt={updatedAt ?? undefined}
-            methodologyHref="/insights/methodology#bulk-prices"
+      {briefing ? <LeadBriefing briefing={briefing} /> : null}
+
+      <Container>
+        <section aria-labelledby="home-prices" className="mt-12">
+          <SectionHeader
+            variant="editorial"
+            id="home-prices"
+            kicker="Markets"
+            title="Bulk wine prices"
+            action={{
+              label: "All prices",
+              href: "/markets/bulk-wine",
+            }}
           />
-        </div>
-      </section>
-
-      <section aria-labelledby="home-analysis" className="mt-16">
-        <SectionHeader
-          variant="editorial"
-          id="home-analysis"
-          kicker="Insights"
-          title="Latest analysis"
-          action={{ label: "All analysis", href: "/insights/analysis" }}
-        />
-        <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-0">
-          <div className="min-w-0 lg:pr-10">
-            {leadAnalysis ? (
-              <ArticlePreview
-                article={leadAnalysis}
-                variant="feature"
-                visual={
-                  leadAnalysis.chart ? (
-                    <ShareChart
-                      chart={leadAnalysis.chart}
-                      titleId="lead-analysis-chart"
-                    />
-                  ) : undefined
-                }
-              />
-            ) : null}
-            {secondaryAnalysis.length > 0 ? (
-              <div className="mt-8 grid grid-cols-1 gap-7 border-t border-rule pt-6 sm:grid-cols-2 sm:gap-8">
-                {secondaryAnalysis.map((article) => (
-                  <ArticlePreview
-                    key={article.id}
-                    article={article}
-                    variant="compact"
-                  />
-                ))}
-              </div>
-            ) : null}
-          </div>
-          <aside
-            aria-labelledby="home-industry"
-            className="min-w-0 border-t border-rule pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8"
-          >
-            <IndustryHeadlineList
-              title="Industry news"
-              titleId="home-industry"
-              items={industry}
-              action={{ label: "All news", href: "/insights/news" }}
+          <div className="mt-4">
+            <KeyPricesTable
+              quotes={keyPrices}
+              updatedAt={updatedAt ?? undefined}
+              methodologyHref="/insights/methodology#bulk-prices"
             />
-          </aside>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <div className="mt-16">
-        <BriefingBand />
-      </div>
-    </Container>
+        <section aria-labelledby="home-analysis" className="mt-16">
+          <SectionHeader
+            variant="editorial"
+            id="home-analysis"
+            kicker="Insights"
+            title="Latest analysis"
+            action={{ label: "All analysis", href: "/insights/analysis" }}
+          />
+          <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:gap-0">
+            <div className="min-w-0 lg:pr-10">
+              {leadAnalysis ? (
+                <ArticlePreview
+                  article={leadAnalysis}
+                  variant="feature"
+                  visual={
+                    leadAnalysis.chart ? (
+                      <ShareChart
+                        chart={leadAnalysis.chart}
+                        titleId="lead-analysis-chart"
+                      />
+                    ) : undefined
+                  }
+                />
+              ) : null}
+              {secondaryAnalysis.length > 0 ? (
+                <div className="mt-8 grid grid-cols-1 gap-7 border-t border-rule pt-6 sm:grid-cols-2 sm:gap-8">
+                  {secondaryAnalysis.map((article) => (
+                    <ArticlePreview
+                      key={article.id}
+                      article={article}
+                      variant="compact"
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            <aside
+              aria-labelledby="home-industry"
+              className="min-w-0 border-t border-rule pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8"
+            >
+              <IndustryHeadlineList
+                title="Industry news"
+                titleId="home-industry"
+                items={industry}
+                action={{ label: "All news", href: "/insights/news" }}
+              />
+            </aside>
+          </div>
+        </section>
+
+        <div className="mt-16">
+          <BriefingBand />
+        </div>
+      </Container>
+    </>
   );
 }
