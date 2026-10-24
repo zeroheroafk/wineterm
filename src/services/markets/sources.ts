@@ -35,6 +35,8 @@ export type SourceId =
   | "icqrf-cantina-italia"
   | "douane-stocks"
   | "ivv-existencias"
+  | "eurostat-hicp"
+  | "bls-average-prices"
   | "wineterm-trade-estimate";
 
 export interface MarketSource {
@@ -190,6 +192,28 @@ export const SOURCE_REGISTRY: Record<SourceId, MarketSource> = {
     cadence: "Yearly; the series workbook follows the declarations by some months",
     note: "Official statistics of the Instituto da Vinha e do Vinho, from the compulsory stock declarations at 31 July, imported unchanged in hectolitres from its series workbook. Wine and must are declared together, and products with a PDO or PGI include those eligible for one. Source: Instituto da Vinha e do Vinho, I.P.",
     url: "https://www.ivv.gov.pt/estatisticas/dados-do-vinho/",
+  },
+  "eurostat-hicp": {
+    id: "eurostat-hicp",
+    name: "Eurostat, harmonised index of consumer prices (HICP)",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "The EU, its 27 countries and Switzerland: consumer prices by product; WineTerm imports wine from grapes",
+    cadence: "Monthly, in the middle of the month, for the month before",
+    note: "Official statistics, imported unchanged: the index of the consumer prices of wine from grapes (ECOICOP ver. 2, 02.1.2.1), 2025 = 100, and its annual rate of change, as Eurostat publishes them. They follow the prices households pay for wine to take home, taxes included; wine served in restaurants and bars is not covered. Source: Eurostat, CC BY 4.0.",
+    url: "https://ec.europa.eu/eurostat/databrowser/view/prc_hicp_minr/default/table",
+  },
+  "bls-average-prices": {
+    id: "bls-average-prices",
+    name: "US Bureau of Labor Statistics, CPI average prices",
+    kind: "official-bulletin",
+    classification: "official",
+    coverage:
+      "United States: average prices of selected foods and drinks in US cities; WineTerm imports table wine",
+    cadence: "Monthly, about two weeks after the month",
+    note: "Official statistics of the US Bureau of Labor Statistics, collected for the consumer price index and imported unchanged: the average price of a litre of red, white and rosé table wine of every size, packaging and origin in US cities, in US dollars. Sparkling, dessert and fruit wines are not included. Average prices describe a month's price level; the changes WineTerm shows are computed from them. Source: US Bureau of Labor Statistics, public domain.",
+    url: "https://data.bls.gov/timeseries/APU0000720311",
   },
   "wineterm-trade-estimate": {
     id: "wineterm-trade-estimate",

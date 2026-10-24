@@ -18,7 +18,7 @@ export default async function NewsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[5]}
+        section={primaryNavigation[6]}
         crumbs={[{ label: "Insights", href: "/insights" }, { label: "News" }]}
         kicker="Insights"
         title="News"

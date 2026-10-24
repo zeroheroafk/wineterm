@@ -49,8 +49,8 @@ Status legend:
 6. **Gaps to cover with partners or desk estimates:** must and
    concentrate prices, and Portuguese bulk wine prices. Grape prices are
    left out by decision: no public series exists for the four countries
-   that WineTerm may republish. So are bottle prices: see "Bottle prices"
-   below.
+   that WineTerm may republish. So are the prices of single bottles: see
+   "Bottle prices" below.
 7. **French regional bulk prices: DRAAF Occitanie. Imported.** Monthly
    prices of wine without GI and PGI wine by colour in
    Languedoc-Roussillon and Midi-Pyrénées since August 2023, refreshed
@@ -65,6 +65,16 @@ Status legend:
    stocks France's producers and traders declare at 31 July from the
    customs' open data since 2017/2018, feed `/supply/stocks`. See
    "Stocks" below.
+10. **Consumer prices: Eurostat HICP and the BLS. Imported.** The
+    consumer price index of wine from grapes for the EU, its 27 countries
+    and Switzerland, and the average price of table wine in the United
+    States, monthly, refreshed weekly, feed `/consumer` and
+    `/consumer/shop-prices`. See "Consumer prices from official sources"
+    below.
+11. **Bottle prices at the border: WineTerm. Computed.** The average
+    value of a 75 cl bottle of each country's still and sparkling wine
+    exports, from the Comext figures, to every destination and to the
+    leading ones, feeds `/consumer` and `/consumer/bottle-prices`.
 
 ## Stocks
 
@@ -491,6 +501,13 @@ WineTerm may republish, and none was found. Checked on 22 October 2026;
 the Liv-ex and Wine-Searcher sites refused requests from the development
 environment, so what follows on them rests on their pages as indexed.
 
+The Consumer pages, added on 23 October 2026, show what can be
+published instead: what a bottle is worth when it leaves its country,
+computed from the Comext figures (the value of the exports of still
+wine in containers of up to 2 litres, CN 2204 21, and of sparkling wine,
+CN 2204 10, divided by their litres, per 75 cl), and the official
+consumer prices below.
+
 ### Fine wine price services
 
 - **Liv-ex: not usable without a licence.** A trade-only exchange whose
@@ -534,17 +551,81 @@ crawlers on product pages, which is not permission to republish.
 
 ### Consumer prices from official sources
 
-Prices to the consumer, not by bottle; **to validate** if a consumer
-view is ever wanted.
+Prices to the consumer, not of single bottles. Checked on 23 October
+2026.
 
-- **MAPA, household consumption panel:** Spain's average price per
-  litre of wine bought for the home, by category, reusable under Law
-  37/2007 like MAPA's other figures. Reported from the panel: EUR 3.56/l
-  for all wine in 2024, about EUR 5 for still PDO wine.
-- **Consumer price indices for wine** (Eurostat HICP, INE, INSEE,
-  ISTAT): monthly by country, an index rather than a price. Eurostat's
-  `prc_hicp_midx` now covers 1996 to 2025 only; the dataset carrying
-  2026 is still to identify.
+- **Eurostat, harmonised index of consumer prices: imported.** Since
+  2026 on the second version of the classification of consumption
+  (ECOICOP ver. 2), in the dataset `prc_hicp_minr`, dimension `coicop18`;
+  `prc_hicp_midx` and `prc_hicp_manr` stop at December 2025. WineTerm
+  reads wine from grapes (`CP02121`) in the units `I25` (index, 2025 =
+  100) and `RCH_A` (annual rate of change), for `EU27_2020` (stored as
+  `EU`), the 27 countries (Greece's `EL` stored as `GR`) and
+  Switzerland, in one JSON-stat 2.0 request of about 170 kB. Validated.
+  - Most series start in December 2014, their annual rates a year
+    later; the EU's in December 2016; France, Ireland, Lithuania, Malta
+    and Sweden in 1996. Eurostat flags some old French and Maltese
+    months as estimates. Norway has an index for a few months of 2026
+    and no rate, and the United Kingdom, Iceland and the United States
+    have none, so they are not read; the candidate countries are left
+    out.
+  - **Checks:** on 23 October 2026 the dataset, updated on 16 October,
+    gave 6,045 monthly figures to September 2026: Spain +2.8% on a year
+    earlier, Portugal −1.5%, France +0.1%, Italy −2.3%, the EU +0.3%,
+    the same as the rates recomputed from the indices, to the decimal.
+  - **In the database:** `public.consumer_prices`, source
+    `eurostat-hicp`, product `wine-from-grapes`, measure `index`, with
+    the published rate in `annual_rate`. **Refresh:** `pg_cron` job
+    `import-eurostat-hicp`, Fridays at 06:47 UTC. **Licence:** Eurostat's
+    reuse policy, CC BY 4.0. Confirmed.
+  - Link: [dataset](https://ec.europa.eu/eurostat/databrowser/view/prc_hicp_minr/default/table).
+- **US Bureau of Labor Statistics, average price of table wine:
+  imported.** Series `APU0000720311`, "Wine, red and white table, all
+  sizes, any origin, per 1 liter", US city average, in USD, from the
+  public data API, version 1, which needs no key. Validated.
+  - Asked by POST, the API answers up to ten years per request; a GET of
+    the series answers the latest three years, whatever years it names.
+    Requests without a key are limited to 25 a day per address: the
+    development environment's address was over the limit on 23 October
+    2026, the database's was not. The BLS's flat files and series pages
+    refuse automated requests.
+  - October 2025 is missing: "Data unavailable due to the 2025 lapse in
+    appropriations".
+  - **Checks:** 140 monthly prices from January 2015 to September 2026,
+    when a litre averaged USD 13.769, as FRED republishes it.
+  - **In the database:** `public.consumer_prices`, source
+    `bls-average-prices`, country `US`, product `table-wine`, measure
+    `average-price`. **Refresh:** `pg_cron` job `import-bls-prices`,
+    Fridays at 06:49 UTC, the current and the previous year.
+    **Licence:** public domain, as US federal statistics.
+  - Links: [series](https://data.bls.gov/timeseries/APU0000720311),
+    [FRED](https://fred.stlouisfed.org/series/APU0000720311).
+- **ONS, consumer price quotes: not usable.** The UK's item-level price
+  quotes would give the shelf prices of 75 cl bottles, but from March
+  2026 the ONS no longer publishes them for food and drink, under its
+  scanner data agreements with retailers; the item indices remain. Link:
+  [dataset](https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/consumerpriceindicescpiandretailpricesindexrpiitemindicesandpricequotes).
+- **MAPA, household consumption panel: to validate.** Spain's average
+  price per litre of wine bought for the home, by category, from a panel
+  of 12,500 households, reusable under Law 37/2007 like MAPA's other
+  figures. Reported from the panel: EUR 3.56/l for all wine in 2024,
+  about EUR 5 for still PDO wine. The monthly reports are PDFs; the
+  figures behind them appear to be sent on request.
+- **National consumer price indices** (INE, INSEE, ISTAT): the same
+  index as the HICP, nationally; Eurostat's covers the countries
+  together.
+- **Retail monopolies' catalogues: licence to confirm.** Whole
+  assortments with price and origin, from which the shelf price of a
+  country's wine could be followed. Alko (Finland) publishes its price
+  list as a workbook of about 12,000 products
+  (`alkon-hinnasto-tekstitiedostona.xlsx`), which refused the
+  development environment's request on 23 October 2026 (403).
+  Vinmonopolet (Norway) has an open API, without application: register
+  in its API portal, subscribe to the product "Open" (product details,
+  and sales by product each month) and accept its terms of service,
+  still to read, as is whether the open API carries prices.
+  Systembolaget (Sweden) has an API portal whose terms were not read.
+  Link: [Vinmonopolet data sharing](https://www.vinmonopolet.no/om-oss/presse/datadeling).
 
 ## Crop & Supply
 
@@ -765,3 +846,9 @@ when a new release appears. Checked on 30 September 2026.
    up; Portugal: no regional source exists.
 5. Ask the Bologna and Alessandria-Asti chambers of commerce for
    permission to republish their wine, must and grape prices.
+6. Consumer prices: ask MAPA for the household panel's monthly figures
+   by category of wine; read Vinmonopolet's API terms and check whether
+   its open API carries prices; ask Alko whether its price list may be
+   republished. Should the BLS refuse the database's requests too,
+   register a BLS key, kept in Vault, and move the import to version 2
+   of its API.

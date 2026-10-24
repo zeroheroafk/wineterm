@@ -121,6 +121,23 @@ export const primaryNavigation: NavSection[] = [
     ],
   },
   {
+    label: "Consumer",
+    href: "/consumer",
+    code: "CON",
+    items: [
+      {
+        label: "Bottle Prices",
+        href: "/consumer/bottle-prices",
+        description: "What a bottle is worth when it leaves Spain, Portugal, France and Italy",
+      },
+      {
+        label: "Shop Prices",
+        href: "/consumer/shop-prices",
+        description: "How the price of wine in the shops moves, country by country",
+      },
+    ],
+  },
+  {
     label: "Companies",
     href: "/companies",
     code: "CMP",
@@ -176,6 +193,7 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
       { label: "Market Data", href: "/data" },
       { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
       { label: "Imports & Exports", href: "/trade" },
+      { label: "Bottle & Shop Prices", href: "/consumer" },
       { label: "Companies", href: "/companies" },
     ],
   },

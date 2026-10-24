@@ -86,7 +86,7 @@ export default function MethodologyPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[5]}
+        section={primaryNavigation[6]}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Methodology" },
@@ -104,10 +104,12 @@ export default function MethodologyPage() {
             WineTerm publishes price series for bulk wine, with must prices
             to follow as sources allow; the stocks each country declares;
             Spain&apos;s declared supply balance of stocks, production,
-            entries and exits; the official harvest estimates; and customs
-            trade aggregates. Coverage spans Spain, Portugal, France and
-            Italy. A section without a source yet says so rather than
-            showing a stand-in.
+            entries and exits; the official harvest estimates; customs
+            trade aggregates; and, for the consumer, the value of a bottle
+            at the border and the consumer prices of wine. Coverage spans
+            Spain, Portugal, France and Italy, and the consumer prices the
+            EU, Switzerland and the United States. A section without a
+            source yet says so rather than showing a stand-in.
           </p>
           <p>
             Every observation carries its source, unit, observation date,
@@ -347,6 +349,43 @@ export default function MethodologyPage() {
         </Prose>
       </section>
 
+      <section id="consumer" className="mt-12 scroll-mt-6">
+        <SectionHeader
+          kicker="Consumer"
+          title="Bottle prices and shop prices"
+          description="The Consumer pages follow wine from the border to the shelf: what a bottle is worth when it leaves its country, and how the price of wine in the shops moves."
+        />
+        <Prose>
+          <p>
+            A bottle&apos;s price at the border is a WineTerm calculation from
+            Eurostat&apos;s trade figures: the statistical value of a
+            country&apos;s exports divided by their volume in litres, times
+            0.75, the value of a 75 cl bottle. Still wine is the customs
+            subheading for containers of up to 2 litres (CN 2204 21), mostly
+            75 cl bottles with litre bottles, magnums and cartons among them;
+            sparkling wine has its own (CN 2204 10). Like the bulk estimates,
+            it is an average over every colour, category and price point a
+            country sells, valued at its border, and it moves with the mix of
+            wines as well as with prices. It is not a shelf price: freight,
+            duties and excise, the trade&apos;s margins and VAT come after it.
+          </p>
+          <p>
+            Shop prices are official statistics, imported unchanged.
+            Eurostat&apos;s harmonised index of consumer prices of wine from
+            grapes follows the prices households pay for wine to take home,
+            taxes included, in the same way in every EU country and
+            Switzerland, with 2025 as the reference year; wine served in
+            restaurants and bars is priced with catering and is not covered.
+            The change on a year earlier is Eurostat&apos;s, and the change
+            over five years is computed from the indices. An index compares
+            a country with itself, never with another country. For the United
+            States, the Bureau of Labor Statistics publishes the average price
+            of a litre of table wine in US cities; WineTerm shows it per 75 cl
+            bottle and compares it with the same month a year earlier.
+          </p>
+        </Prose>
+      </section>
+
       <section id="supply-balance" className="mt-12 scroll-mt-6">
         <SectionHeader
           kicker="Definitions"
@@ -481,7 +520,10 @@ export default function MethodologyPage() {
             estimates credited to Agreste, the IVV and MAPA are official
             too, entered by hand from each release. The bulk wine prices for
             Portugal, France and Italy are WineTerm&apos;s monthly estimates
-            from the Eurostat trade figures, described above. Must prices
+            from the Eurostat trade figures, described above, and so are the
+            bottle prices at the border. The consumer prices credited to
+            Eurostat and to the US Bureau of Labor Statistics are official
+            statistics, checked for new months every week. Must prices
             and the supply balances of Portugal, France and Italy wait for
             sources WineTerm may republish, and their pages say so; grape
             prices are not covered. Nothing on the platform is investment
