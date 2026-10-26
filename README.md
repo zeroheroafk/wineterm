@@ -19,8 +19,8 @@ European market: Spain, Portugal, France and Italy.
 ```
 src/
   app/               Routes: home, Markets, Market data, Crop & Supply, Trade,
-                     Insights, Industry, Directory, institutional pages,
-                     /design-system
+                     Consumer, Insights, Industry, Directory, institutional
+                     pages, /design-system
   components/
     layout/          Global shell: header, navigation, footer, breadcrumbs
     ui/              Section headers, buttons, filters, tabs, labels, states
@@ -47,6 +47,11 @@ stocks and production pages read Spain's monthly declarations, and the
 stocks page also Italy's month-end stocks from the ICQRF's Cantina
 Italia reports and the stocks France and Portugal declare at 31 July,
 from the customs' open data and the wine institute's series. The
+Consumer pages read what a bottle is worth when it leaves each country,
+computed in the database from the Eurostat trade figures, and the
+consumer prices of wine: Eurostat's price index of wine for the EU, its
+countries and Switzerland, and the US Bureau of Labor Statistics'
+average price of table wine. The
 harvest page shows each country's official production estimate, entered
 by hand in `src/services/harvest/official.ts`. Insights articles and
 monthly reports are published content in `src/content/articles`, one
@@ -89,8 +94,10 @@ from the sitemap and marked noindex.
   prices and the national bulk prices of Portugal, France and Italy
   computed from the trade figures; `/supply`, `/supply/stocks` and
   `/supply/production` show Spain's INFOVI balance, stocks and wine
-  production; and `/supply/stocks` shows the stocks of Italy, France
-  and Portugal. Pages regenerate at most hourly and database reads are
+  production; `/supply/stocks` shows the stocks of Italy, France and
+  Portugal; and `/consumer`, `/consumer/bottle-prices` and
+  `/consumer/shop-prices` show the bottle prices at the border and the
+  consumer prices. Pages regenerate at most hourly and database reads are
   cached for an hour; the build then reads the database, and fails
   rather than publish trade volumes missing litres. Without them,
   submissions are discarded and the reply says so, and the price,
@@ -120,7 +127,11 @@ The trade pages do not page through `trade_flows`: the functions
 `trade_top_flows` and `trade_monthly` aggregate it in the database and
 the site calls them through the Data API. Their reference period ends at
 the latest month all four reporters have published, since France and
-Italy often publish a month after Spain and Portugal.
+Italy often publish a month after Spain and Portugal. The bottle prices
+come the same way from `trade_bottle_destinations` and
+`trade_bottle_monthly`, which sum each reporter's exports of still wine
+in containers of up to 2 litres and of sparkling wine, by destination
+and by month; the site divides each value by its litres, per 75 cl.
 
 The Markets pages read `market_series` and `market_observations` whole,
 paging through the observations, and cache them for an hour: the site
@@ -132,8 +143,9 @@ read only cached data carry `"use cache"` themselves and are regenerated
 at most hourly. A stored series appears only when its source is in
 `src/services/markets/sources.ts`. The supply, stocks and production
 pages read `supply_figures` the same way (`"use cache"`, tag
-`supply-data`), and the trade pages their aggregates (tag
-`trade-data`).
+`supply-data`), the trade pages their aggregates (tag `trade-data`,
+which the bottle prices share), and the Consumer pages
+`consumer_prices` (tag `consumer-prices`).
 
 The data providers, with their coverage, access and licence status, and
 the candidates still to connect, are catalogued in
@@ -295,6 +307,31 @@ outcome on the run.
   `import-ivv-stocks` runs it on Tuesdays from January to June, when the
   series follows the declarations.
 
+- **Eurostat, HICP** (`supabase/functions/import-eurostat-hicp`) loads
+  the harmonised index of consumer prices of wine from grapes (ECOICOP
+  ver. 2, 02.1.2.1) into `consumer_prices`: the monthly index, 2025 =
+  100, with the annual rate of change Eurostat publishes beside it, for
+  the EU (stored as `EU`), its 27 countries and Switzerland, every month
+  the dataset `prc_hicp_minr` holds. `hicp.ts` reads its JSON-stat
+  answer, stores Greece's `EL` as `GR`, and checks that every country
+  has an index and that each index and rate is plausible; a run that
+  finds no index 2025 = 100 means Eurostat has changed the reference
+  year. A changed month is stored as a revision.
+  `private.start_eurostat_hicp_imports()` queues one run, and the job
+  `import-eurostat-hicp` runs it on Friday mornings.
+
+- **BLS, CPI average prices** (`supabase/functions/import-bls-prices`)
+  loads the US Bureau of Labor Statistics' monthly average price of a
+  litre of table wine in US cities (series `APU0000720311`) into
+  `consumer_prices`, in USD per litre. `bls.ts` asks the public API,
+  version 1, which needs no key, by POST for ten years at a time; a
+  month the BLS did not collect, such as October 2025, is left out.
+  Requests without a key are limited to 25 a day per address.
+  `private.start_bls_price_imports()` queues one run for the current and
+  the previous year, and the job `import-bls-prices` runs it on Friday
+  mornings. For a backfill, run
+  `select private.start_bls_price_imports(2015);`.
+
 Scheduled calls need two Vault secrets, set once per project and never
 committed: `project_url` (the project's API URL) and `anon_key` (the
 legacy anon key, because the function verifies JWTs). Without them the
@@ -306,9 +343,9 @@ The job `check-imports` runs `private.check_imports()` every morning:
 it reports, once each, the failed runs no later run of the same scope
 recovered, the runs left queued or running for a day, and the sources
 without a successful run for longer than `private.import_schedule`
-allows (five days for MAPA's prices, nine for INFOVI, DRAAF and the
-Cantina Italia, 35 for Comext, 370 for the annual stock statements of
-France and Portugal). The report goes to a webhook (Vault secret
+allows (five days for MAPA's prices, nine for INFOVI, DRAAF, the
+Cantina Italia and the consumer prices, 35 for Comext, 370 for the
+annual stock statements of France and Portugal). The report goes to a webhook (Vault secret
 `alert_webhook_url`) and by email through Resend (`resend_api_key`,
 `alert_email_to` and, optionally, `alert_email_from`); with neither
 set, it is only logged as a warning, so set one before launch.
@@ -316,5 +353,6 @@ set, it is only logged as a warning, so set one before launch.
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise
 `import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie`,
-`import-infovi`, `import-cantina-italia`, `import-douane-stocks` and
-`import-ivv-stocks`) or the dashboard.
+`import-infovi`, `import-cantina-italia`, `import-douane-stocks`,
+`import-ivv-stocks`, `import-eurostat-hicp` and `import-bls-prices`) or
+the dashboard.

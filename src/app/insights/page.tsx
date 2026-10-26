@@ -32,7 +32,7 @@ export default async function InsightsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[5]}
+        section={primaryNavigation[6]}
         crumbs={[{ label: "Insights" }]}
         kicker="Insights"
         title="Insights"
