@@ -8,9 +8,7 @@
  * Pages without content yet stay out of the menus, the footer and the
  * sitemap, though their routes answer: Must & Concentrates
  * (/markets/must-concentrates, no licensed source). Add each back here
- * when it has something to show. Companies (/companies) is the
- * exception: it is in the menu before its first listing, as the place
- * the directory will fill.
+ * when it has something to show.
  *
  * Crop & Supply (/supply, /supply/production, /supply/stocks, /harvest)
  * is hidden the same way for now, along with its supply and harvest
@@ -141,7 +139,38 @@ export const primaryNavigation: NavSection[] = [
     label: "Companies",
     href: "/companies",
     code: "CMP",
-    items: [],
+    items: [
+      {
+        label: "Wineries & Cooperatives",
+        href: "/companies#wineries-cooperatives",
+        description: "Wine groups, producers and growers' cooperatives",
+      },
+      {
+        label: "Bulk Buyers & Sellers",
+        href: "/companies#bulk-buyers-sellers",
+        description: "Bulk wine, must and concentrates",
+      },
+      {
+        label: "Brokers & Intermediaries",
+        href: "/companies#brokers-intermediaries",
+        description: "Brokerage desks and agents",
+      },
+      {
+        label: "Bottlers & Packers",
+        href: "/companies#bottlers-packers",
+        description: "Contract bottling and packing",
+      },
+      {
+        label: "Importers & Exporters",
+        href: "/companies#importers-exporters",
+        description: "Trading houses and distributors",
+      },
+      {
+        label: "Suppliers & Services",
+        href: "/companies#suppliers-services",
+        description: "Closures, glass, oenology and equipment",
+      },
+    ],
   },
   {
     label: "Insights",

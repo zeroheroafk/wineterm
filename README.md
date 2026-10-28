@@ -19,8 +19,8 @@ European market: Spain, Portugal, France and Italy.
 ```
 src/
   app/               Routes: home, Markets, Market data, Crop & Supply, Trade,
-                     Consumer, Insights, Industry, Directory, institutional
-                     pages, /design-system
+                     Consumer, Companies, Insights, institutional pages,
+                     /design-system
   components/
     layout/          Global shell: header, navigation, footer, breadcrumbs
     ui/              Section headers, buttons, filters, tabs, labels, states
@@ -30,7 +30,8 @@ src/
   services/          Typed service layer: Supabase for prices, supply and
                      trade; the official harvest estimates entered by hand
   content/           Published editorial content: the Insights articles
-                     and monthly reports, and the Industry stories
+                     and monthly reports, the Industry stories and the
+                     directory's companies
 ```
 
 The service interfaces in `src/services` are the seam between the pages
@@ -64,7 +65,11 @@ its photograph when it has one, darkened under the text and credited at
 the foot of the band.
 Industry stories, WineTerm's summaries
 of reports published elsewhere with a link to each, are in
-`src/content/industry.ts`. A section whose source is not connected yet,
+`src/content/industry.ts`. The directory's companies are in
+`src/content/directory.ts`: each with its main activity and the other
+categories it works in, its country and website, and the pages it was
+checked against and when. The Companies tab lists them under their main
+activity. A section whose source is not connected yet,
 such as must prices or the balances of Portugal, France and Italy, says
 so instead of showing sample figures; grape prices are not covered.
 
