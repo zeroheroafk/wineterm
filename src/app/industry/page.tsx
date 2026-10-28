@@ -92,8 +92,15 @@ export default async function IndustryPage() {
             ))}
           </ul>
           <p className="wt-label mt-4 leading-relaxed text-ink-soft">
-            Company profiles and the professional directory open with the
-            Directory section at launch.
+            Wineries, traders, bottlers and suppliers are listed by activity
+            in the{" "}
+            <Link
+              href="/directory"
+              className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
+            >
+              Directory
+            </Link>
+            .
           </p>
         </aside>
       </div>

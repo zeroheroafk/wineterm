@@ -442,3 +442,51 @@ export interface IndustryDigest {
   deals: IndustryItem[];
   regulation: IndustryItem[];
 }
+
+/** What a directory company does; each is a section of the directory. */
+export type DirectoryCategory =
+  | "wineries-cooperatives"
+  | "bulk-buyers-sellers"
+  | "brokers-intermediaries"
+  | "bottlers-packers"
+  | "importers-exporters"
+  | "suppliers-services";
+
+/** The directory's categories, in the order it lists them. */
+export const DIRECTORY_CATEGORIES: DirectoryCategory[] = [
+  "wineries-cooperatives",
+  "bulk-buyers-sellers",
+  "brokers-intermediaries",
+  "bottlers-packers",
+  "importers-exporters",
+  "suppliers-services",
+];
+
+export const DIRECTORY_CATEGORY_LABELS: Record<DirectoryCategory, string> = {
+  "wineries-cooperatives": "Wineries and cooperatives",
+  "bulk-buyers-sellers": "Bulk buyers and sellers",
+  "brokers-intermediaries": "Brokers and intermediaries",
+  "bottlers-packers": "Bottlers and packers",
+  "importers-exporters": "Importers and exporters",
+  "suppliers-services": "Suppliers and services",
+};
+
+/** One company listed in the professional directory. */
+export interface DirectoryCompany {
+  /** Stable identifier, which is also the anchor of its entry. */
+  id: string;
+  name: string;
+  /** Country of the business or local entity listed. */
+  country: CountryCode;
+  /** Its main activity, the category it is listed under. */
+  category: DirectoryCategory;
+  /** The other categories it works in. */
+  otherCategories: DirectoryCategory[];
+  /** What the company does, in WineTerm's words. */
+  description: string;
+  website: string;
+  /** The published pages the entry was checked against. */
+  sources: string[];
+  /** When it was checked against them. */
+  checkedAt: string;
+}

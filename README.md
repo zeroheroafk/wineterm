@@ -29,6 +29,7 @@ src/
   services/          Typed service layer: Supabase for trade and imported
                      prices, fixtures elsewhere
   content/           Published editorial content: the Insights articles
+                     and the Directory listings
   fixtures/          Illustrative sample data only; see fixtures/README.md
 ```
 
@@ -45,7 +46,11 @@ price of the country's bulk exports, computed in the database from the
 Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
 month-end wine stocks and wine made since 1 August. Insights articles
 are published content in `src/content/articles`, one file per article,
-each read at `/insights/analysis/<id>`. Everything else
+each read at `/insights/analysis/<id>`. The Directory's companies are
+published content too, in `src/content/directory`: each with its main
+activity and the other categories it works in, its website, and the
+pages it was checked against and when. `/directory` lists them under
+their main activity. Everything else
 still uses the fixtures, and nothing
 in `src/fixtures` is real market data: every fixture observation carries
 the Illustrative status, which is how the site tells samples from real

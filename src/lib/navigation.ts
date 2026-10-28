@@ -181,7 +181,38 @@ export const primaryNavigation: NavSection[] = [
     label: "Directory",
     href: "/directory",
     code: "DIR",
-    items: [],
+    items: [
+      {
+        label: "Wineries & Cooperatives",
+        href: "/directory#wineries-cooperatives",
+        description: "Wine groups, producers and growers' cooperatives",
+      },
+      {
+        label: "Bulk Buyers & Sellers",
+        href: "/directory#bulk-buyers-sellers",
+        description: "Bulk wine, must and concentrates",
+      },
+      {
+        label: "Brokers & Intermediaries",
+        href: "/directory#brokers-intermediaries",
+        description: "Brokerage desks and agents",
+      },
+      {
+        label: "Bottlers & Packers",
+        href: "/directory#bottlers-packers",
+        description: "Contract bottling and packing",
+      },
+      {
+        label: "Importers & Exporters",
+        href: "/directory#importers-exporters",
+        description: "Trading houses and distributors",
+      },
+      {
+        label: "Suppliers & Services",
+        href: "/directory#suppliers-services",
+        description: "Closures, glass, oenology and equipment",
+      },
+    ],
   },
 ];
 
