@@ -3,10 +3,8 @@ import Link from "next/link";
 import { PriceCell } from "@/components/market/PriceCell";
 import { MaybePercent, RangeCell } from "@/components/markets/cells";
 import { CountryLabel } from "@/components/ui/CountryLabel";
-import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatDateTime, formatPrice } from "@/lib/format";
-import { isIllustrative } from "@/services/markets/service";
 import {
   referenceUnit,
   type MarketRow,
@@ -50,9 +48,10 @@ function categoryLabel(row: MarketRow): string {
 
 /**
  * The bulk wine price table: original observation first, labelled
- * normalisation alongside, movements over three horizons. Only samples
- * carry a status; the source is on each series page. Secondary columns yield below lg; the full table scrolls
- * inside its frame rather than the page.
+ * normalisation alongside, movements over three horizons. The source and
+ * how the price is established are on each series page. Secondary
+ * columns yield below lg; the full table scrolls inside its frame rather
+ * than the page.
  */
 export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
   if (rows.length === 0) {
@@ -102,9 +101,6 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
             <th scope="col" className={TH}>
               Date
             </th>
-            <th scope="col" className={`${TH} hidden sm:table-cell`}>
-              Status
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -129,13 +125,6 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
                 !row.series.appellation.includes(row.series.region) ? (
                   <span className="mt-0.5 block text-xs text-ink-soft">
                     {row.series.region}
-                  </span>
-                ) : null}
-                {/* On phones the status column is out of view, so a
-                    sample's label rides under the market name. */}
-                {isIllustrative(row) ? (
-                  <span className="mt-1 block sm:hidden">
-                    <DataStatusLabel status="illustrative" />
                   </span>
                 ) : null}
               </td>
@@ -181,11 +170,6 @@ export function BulkPricesTable({ rows }: { rows: MarketRow[] }) {
                 title={`Last updated ${formatDateTime(row.latest.updatedAt)}`}
               >
                 {shortDate(row.latest.date)}
-              </td>
-              <td className={`${TD} hidden sm:table-cell`}>
-                {isIllustrative(row) ? (
-                  <DataStatusLabel status="illustrative" />
-                ) : null}
               </td>
             </tr>
           ))}

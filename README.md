@@ -1,9 +1,9 @@
 # WineTerm
 
-Market intelligence for the wine industry. Prices, production, stocks,
-trade and crop intelligence for wineries, growers and the global wine
-trade, with a focus on the professional European market (Spain and
-Portugal first, comparative data for France and Italy).
+News and market intelligence for the wine industry. Industry stories,
+prices, production, stocks, trade and crop intelligence for wineries,
+growers and the global wine trade, with a focus on the professional
+European market: Spain, Portugal, France and Italy.
 
 ## Stack
 
@@ -18,43 +18,60 @@ Portugal first, comparative data for France and Italy).
 
 ```
 src/
-  app/               Routes: home, Markets, Crop & Supply, Trade, Insights,
-                     Industry, Directory, institutional pages, /design-system
+  app/               Routes: home, Markets, Market data, Crop & Supply, Trade,
+                     Consumer, Companies, Insights, institutional pages,
+                     /design-system
   components/
     layout/          Global shell: header, navigation, footer, breadcrumbs
     ui/              Section headers, buttons, filters, tabs, labels, states
     market/          Tables, price cells, changes, charts, commentary
     editorial/       Article previews, newsletter modules
   lib/               Navigation, formatting, Supabase client and form actions
-  services/          Typed service layer: Supabase for trade and imported
-                     prices, fixtures elsewhere
+  services/          Typed service layer: Supabase for prices, supply and
+                     trade; the official harvest estimates entered by hand
   content/           Published editorial content: the Insights articles
-                     and the Directory listings
-  fixtures/          Illustrative sample data only; see fixtures/README.md
+                     and monthly reports, the Industry stories and the
+                     directory's companies
 ```
 
-The service interfaces in `src/services` are the seam for real data
-sources; components depend only on those interfaces. Trade reads Eurostat
-figures from the database, Markets reads the Spanish Ministry of
-Agriculture's weekly national wine prices and its weekly prices in
-seven representative markets from it, the French Ministry of
-Agriculture's monthly prices in Languedoc-Roussillon and Midi-Pyrénées
-(DRAAF Occitanie), listed before the illustrative series, with one
-national bulk wine price each for
-Portugal, France and Italy: WineTerm's monthly estimate, the average
-price of the country's bulk exports, computed in the database from the
-Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
-month-end wine stocks and wine made since 1 August. Insights articles
-are published content in `src/content/articles`, one file per article,
-each read at `/insights/analysis/<id>`. The Directory's companies are
-published content too, in `src/content/directory`: each with its main
-activity and the other categories it works in, its website, and the
-pages it was checked against and when. `/directory` lists them under
-their main activity. Everything else
-still uses the fixtures, and nothing
-in `src/fixtures` is real market data: every fixture observation carries
-the Illustrative status, which is how the site tells samples from real
-prices.
+The service interfaces in `src/services` are the seam between the pages
+and the data; components depend only on those interfaces, and every
+figure comes from a named source. Trade reads Eurostat figures from the
+database. Markets reads from it the Spanish Ministry of Agriculture's
+weekly national wine prices and its weekly prices in seven
+representative markets, the French Ministry of Agriculture's monthly
+prices in Languedoc-Roussillon and Midi-Pyrénées (DRAAF Occitanie), and
+one national bulk wine price each for Portugal, France and Italy:
+WineTerm's monthly estimate, the average price of the country's bulk
+exports, computed in the database from the Eurostat figures. The supply,
+stocks and production pages read Spain's monthly declarations, and the
+stocks page also Italy's month-end stocks from the ICQRF's Cantina
+Italia reports and the stocks France and Portugal declare at 31 July,
+from the customs' open data and the wine institute's series. The
+Consumer pages read what a bottle is worth when it leaves each country,
+computed in the database from the Eurostat trade figures, and the
+consumer prices of wine: Eurostat's price index of wine for the EU, its
+countries and Switzerland, and the US Bureau of Labor Statistics'
+average price of table wine. The
+harvest page shows each country's official production estimate, entered
+by hand in `src/services/harvest/official.ts`. Insights articles and
+monthly reports are published content in `src/content/articles`, one
+file per article, read at `/insights/analysis/<id>` and
+`/insights/monthly-reports/<id>`, and weekly briefings at
+`/insights/weekly-briefing/<id>`. An article's photograph, credited with
+its author and licence, is in `public/images/insights/<id>.jpg`; the
+latest weekly briefing leads the homepage across the full width, set on
+its photograph when it has one, darkened under the text and credited at
+the foot of the band.
+Industry stories, WineTerm's summaries
+of reports published elsewhere with a link to each, are in
+`src/content/industry.ts`. The directory's companies are in
+`src/content/directory.ts`: each with its main activity and the other
+categories it works in, its country and website, and the pages it was
+checked against and when. The Companies tab lists them under their main
+activity. A section whose source is not connected yet,
+such as must prices or the balances of Portugal, France and Italy, says
+so instead of showing sample figures; grape prices are not covered.
 
 ## Commands
 
@@ -76,22 +93,26 @@ from the sitemap and marked noindex.
   use `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
-  and contact messages; `/trade` and the homepage trade panel show
-  Eurostat figures, the Markets pages, the homepage key prices and the
-  market strip add MAPA's national wine prices to the illustrative series,
-  the Markets pages add the Spanish and French regional prices, the
-  Markets pages and the homepage show the national bulk prices of
-  Portugal, France and Italy computed from the trade figures,
-  and `/supply`, `/supply/stocks` and `/supply/production` show Spain's
-  INFOVI balance, stocks and wine production.
-  Pages regenerate at most hourly and database reads are cached for an
-  hour; the build then reads the database, and fails rather than publish
-  trade volumes missing litres. Without them, submissions are discarded
-  and the reply says so, and trade and markets show only the illustrative
-  fixtures.
+  and contact messages; `/trade` and the Market data trade snapshot
+  show Eurostat figures; the Markets pages and the homepage key prices
+  show MAPA's national wine prices, the Spanish and French regional
+  prices and the national bulk prices of Portugal, France and Italy
+  computed from the trade figures; `/supply`, `/supply/stocks` and
+  `/supply/production` show Spain's INFOVI balance, stocks and wine
+  production; `/supply/stocks` shows the stocks of Italy, France and
+  Portugal; and `/consumer`, `/consumer/bottle-prices` and
+  `/consumer/shop-prices` show the bottle prices at the border and the
+  consumer prices. Pages regenerate at most hourly and database reads are
+  cached for an hour; the build then reads the database, and fails
+  rather than publish trade volumes missing litres. Without them,
+  submissions are discarded and the reply says so, and the price,
+  supply and trade pages say that no database is connected.
 - `SITE_INDEXABLE`: set to `true` to let search engines index the site.
-  Until then every page is marked noindex, because most figures are
-  still illustrative fixtures.
+  Until then every page is marked noindex.
+- `SHOW_DESIGN_SYSTEM`: set to `true` to serve `/design-system`, the
+  component gallery, from a production build, as on a preview
+  deployment; otherwise it answers 404 there. `next dev` always serves
+  it.
 
 ## Database
 
@@ -111,19 +132,29 @@ The trade pages do not page through `trade_flows`: the functions
 `trade_top_flows` and `trade_monthly` aggregate it in the database and
 the site calls them through the Data API. Their reference period ends at
 the latest month all four reporters have published, since France and
-Italy often publish a month after Spain and Portugal.
+Italy often publish a month after Spain and Portugal. The bottle prices
+come the same way from `trade_bottle_destinations` and
+`trade_bottle_monthly`, which sum each reporter's exports of still wine
+in containers of up to 2 litres and of sparkling wine, by destination
+and by month; the site divides each value by its litres, per 75 cl.
 
 The Markets pages read `market_series` and `market_observations` whole,
-paging through the observations, and cache them for an hour
-(`unstable_cache`, tag `market-data`). A stored series appears only when
-its source is in `src/services/markets/sources.ts`; a fixture with the
-same code gives way to it, as does a fixture naming it in `givesWayTo`.
-Sample publications such as the Outlook read every fixture through
-`getIllustrativeMarketsService()`. The supply, stocks and production pages read
-Spain's rows of `supply_figures` the same way (tag `supply-data`).
+paging through the observations, and cache them for an hour: the site
+uses Cache Components (`cacheComponents` in `next.config.ts`), so the
+read is a `"use cache: remote"` function with `cacheLife("hours")` and
+the tag `market-data`, shared by every server instance because the
+pages that filter by query string render at request time. The pages that
+read only cached data carry `"use cache"` themselves and are regenerated
+at most hourly. A stored series appears only when its source is in
+`src/services/markets/sources.ts`. The supply, stocks and production
+pages read `supply_figures` the same way (`"use cache"`, tag
+`supply-data`), the trade pages their aggregates (tag `trade-data`,
+which the bottle prices share), and the Consumer pages
+`consumer_prices` (tag `consumer-prices`).
 
-Real data providers that will replace the fixtures, with their coverage,
-access and licence status, are catalogued in `docs/data-sources.md`.
+The data providers, with their coverage, access and licence status, and
+the candidates still to connect, are catalogued in
+`docs/data-sources.md`.
 
 ### Imports
 
@@ -220,18 +251,91 @@ outcome on the run.
   stocks at the end of each month by colour, bulk and packaged, stocks of
   must that is not concentrated, wine made since 1 August, and the wine
   that came in during the month from Spain and from abroad and went out
-  by destination, national totals in hectolitres. They cover producers of
+  by destination, with the exits abroad also by colour, bulk and
+  packaged, national totals in hectolitres. They cover producers of
   1,000 hl or more and warehouse holders. The ministry publishes a
   workbook per month, from 2018, about six weeks after the month ends;
   `infovi.ts` finds each by its link label on the year's page, anchors on
-  the TOTAL row of tables 5, 2.2, 3.1, 3.2, 4.0 and 4.6, checks each
-  table's title and the headings above its totals, and that the parts add
-  up to the printed totals. September 2018's entries and exits are
+  the TOTAL row of tables 5, 2.2, 3.1, 3.2, 4.0, 4.3, 4.4 and 4.6, checks
+  each table's title and the headings above its totals, and that the parts
+  add up to the printed totals. A stored total with colour and
+  presentation `all` stands for its parts, which are stored beside it. September 2018's entries and exits are
   skipped, because that month's tables contradict one another. A run
   covers one year; the job `import-infovi` starts the
   current year every Monday, and the previous one until mid-March. For a
   backfill, run `select private.start_infovi_imports(2018, 2020);`. A
   failed run names the table and the check that did not hold.
+
+- **ICQRF, Cantina Italia** (`supabase/functions/import-cantina-italia`)
+  loads Italy's month-end stocks into `supply_figures`: wine with a PDO
+  and with a PGI by colour, varietal and other wine, must that is not
+  concentrated, concentrated and rectified concentrated must, and new
+  wine still in fermentation, national totals in hectolitres. The
+  ministry lists one report per month, 8 to 12 days after the month
+  ends, each with a spreadsheet by region and province; `cantina.ts`
+  reads the ministry's listing of a year, keeps the reports dated at a
+  month's end (a report dated the 1st counts the month before, as the
+  bulletins of 2018 and 2019 were dated), finds each report's
+  spreadsheet and reads the national totals, checking that the regions
+  add up to them. A run covers one month's report, which keeps the
+  parsing within the function's CPU time;
+  `private.start_cantina_italia_imports()` queues one run per month,
+  from December of the year before to the last month ended, and posts
+  them at once, and the job `import-cantina-italia` starts the current
+  year every Thursday. The bulletins up to the autumn of 2018 lay the
+  figures out in other sheets and are not read. For a backfill, run a
+  year at a time, `select private.start_cantina_italia_imports(2019,
+  2019);`, to spare the ministry's server a hundred downloads at once.
+
+- **DGDDI, stock declarations** (`supabase/functions/import-douane-stocks`)
+  loads France's stocks at 31 July into `supply_figures`: the wine
+  producers and traders declared to customs at the end of each campaign,
+  by category (PDO, PGI, without GI, and wine from third countries at
+  traders) and colour, national totals in hectolitres, with the holder
+  in the `holder` column. The customs' open data lists one workbook per
+  campaign since 2017/2018; `douane.ts` reads the listing's pages, keeps
+  the statements of production and trade stocks, and reads each
+  workbook's TOTAL rows, checking that the categories add up to them.
+  `private.start_douane_stock_imports()` queues one run that reads
+  every campaign, and the job `import-douane-stocks` runs it on Tuesdays
+  from October to December, when a campaign's statement comes out.
+
+- **IVV, declarações de existências** (`supabase/functions/import-ivv-stocks`)
+  loads Portugal's stocks at 31 July into `supply_figures`: the wine and
+  must operators declared to the wine institute, by category (PDO, PDO
+  liqueur wine, PGI, varietal, without certification) and colour,
+  national totals in hectolitres, from the series workbook the institute
+  keeps among its documents. `ivv.ts` finds the latest series in the
+  documents' sitemap, its workbook on the page, and reads every year's
+  table, checking that the categories add up to the total.
+  `private.start_ivv_stock_imports()` queues one run, and the job
+  `import-ivv-stocks` runs it on Tuesdays from January to June, when the
+  series follows the declarations.
+
+- **Eurostat, HICP** (`supabase/functions/import-eurostat-hicp`) loads
+  the harmonised index of consumer prices of wine from grapes (ECOICOP
+  ver. 2, 02.1.2.1) into `consumer_prices`: the monthly index, 2025 =
+  100, with the annual rate of change Eurostat publishes beside it, for
+  the EU (stored as `EU`), its 27 countries and Switzerland, every month
+  the dataset `prc_hicp_minr` holds. `hicp.ts` reads its JSON-stat
+  answer, stores Greece's `EL` as `GR`, and checks that every country
+  has an index and that each index and rate is plausible; a run that
+  finds no index 2025 = 100 means Eurostat has changed the reference
+  year. A changed month is stored as a revision.
+  `private.start_eurostat_hicp_imports()` queues one run, and the job
+  `import-eurostat-hicp` runs it on Friday mornings.
+
+- **BLS, CPI average prices** (`supabase/functions/import-bls-prices`)
+  loads the US Bureau of Labor Statistics' monthly average price of a
+  litre of table wine in US cities (series `APU0000720311`) into
+  `consumer_prices`, in USD per litre. `bls.ts` asks the public API,
+  version 1, which needs no key, by POST for ten years at a time; a
+  month the BLS did not collect, such as October 2025, is left out.
+  Requests without a key are limited to 25 a day per address.
+  `private.start_bls_price_imports()` queues one run for the current and
+  the previous year, and the job `import-bls-prices` runs it on Friday
+  mornings. For a backfill, run
+  `select private.start_bls_price_imports(2015);`.
 
 Scheduled calls need two Vault secrets, set once per project and never
 committed: `project_url` (the project's API URL) and `anon_key` (the
@@ -240,7 +344,20 @@ job only logs a warning. If legacy keys are ever disabled, redeploy the
 function with JWT verification off: it trusts only runs the database
 queued, not the caller.
 
+The job `check-imports` runs `private.check_imports()` every morning:
+it reports, once each, the failed runs no later run of the same scope
+recovered, the runs left queued or running for a day, and the sources
+without a successful run for longer than `private.import_schedule`
+allows (five days for MAPA's prices, nine for INFOVI, DRAAF, the
+Cantina Italia and the consumer prices, 35 for Comext, 370 for the
+annual stock statements of France and Portugal). The report goes to a webhook (Vault secret
+`alert_webhook_url`) and by email through Resend (`resend_api_key`,
+`alert_email_to` and, optionally, `alert_email_from`); with neither
+set, it is only logged as a warning, so set one before launch.
+
 Deploy a function with the Supabase CLI
 (`supabase functions deploy import-comext`, and likewise
-`import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie` and
-`import-infovi`) or the dashboard.
+`import-mapa-prices`, `import-mapa-markets`, `import-draaf-occitanie`,
+`import-infovi`, `import-cantina-italia`, `import-douane-stocks`,
+`import-ivv-stocks`, `import-eurostat-hicp` and `import-bls-prices`) or
+the dashboard.

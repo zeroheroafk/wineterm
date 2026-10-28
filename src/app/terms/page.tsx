@@ -13,14 +13,14 @@ export default function TermsPage() {
     <LegalPage
       title="Terms of Use"
       description="The terms under which WineTerm content and data are provided."
-      updatedAt="2026-09-29"
+      updatedAt="2026-10-22"
       sections={[
         {
           heading: "What WineTerm provides",
           paragraphs: [
-            "WineTerm provides market information for the professional wine trade: price series, supply and trade statistics, harvest reporting and editorial analysis. Content is provided for professional information purposes only. It is not investment advice, not a recommendation to buy or sell any product, and not a substitute for commercial judgement.",
-            "During the development period, figures on the platform are illustrative samples and are marked as such, except those credited to an official source such as Eurostat or the Spanish Ministry of Agriculture, Fisheries and Food (MAPA). Illustrative figures must not be relied on for any commercial decision.",
-            "Official statistics are reproduced with attribution under their publishers' terms: Eurostat data under the Creative Commons Attribution 4.0 licence, and MAPA data under the general conditions for reuse of public sector information of Law 37/2007, citing the ministry as the source together with the date of the data.",
+            "WineTerm provides market information for the professional wine trade: price series, supply and trade statistics, harvest estimates and editorial analysis. Content is provided for professional information purposes only. It is not investment advice, not a recommendation to buy or sell any product, and not a substitute for commercial judgement.",
+            "Every figure on the platform is credited to its source, an official body such as Eurostat or the Spanish Ministry of Agriculture, Fisheries and Food (MAPA), or is marked as a WineTerm estimate with its method stated. WineTerm estimates are not official figures and must not be relied on as such.",
+            "Official statistics are reproduced with attribution under their publishers' terms, stated source by source on the methodology page: Eurostat data under the Creative Commons Attribution 4.0 licence, MAPA data under the general conditions for reuse of public sector information of Law 37/2007, citing the ministry as the source together with the date of the data, the Italian ministry's Cantina Italia reports under the Creative Commons Attribution licence, and the French customs' open data under the Licence Ouverte 2.0.",
           ],
         },
         {
@@ -50,7 +50,7 @@ export default function TermsPage() {
         {
           heading: "Changes",
           paragraphs: [
-            "These terms will be finalised and may change before launch. Material changes will be announced on the platform, and continued use after a change constitutes acceptance.",
+            "These terms may change. Material changes will be announced on the platform, and continued use after a change constitutes acceptance.",
           ],
         },
       ]}

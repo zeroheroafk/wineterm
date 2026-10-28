@@ -1,21 +1,14 @@
 /**
  * Markets service: the typed seam between the Markets interface and the
- * data layer. Series come from two catalogues read through one
- * implementation: the database, which holds the series imported from
- * real sources, and the illustrative fixtures for everything not yet
- * connected. A real series and a sample behave alike in every table,
- * filter and chart; their source and observation status say which is
- * which, and real series are listed first. A sample leaves the live
- * catalogue once a real series covering it is imported, and stays in the
- * illustrative one that sample publications read.
+ * data layer. Every series comes from the database, where the imports
+ * from real sources store it; without a database the catalogue is empty
+ * and the pages say so. A series' source and observation status say how
+ * each price was established, and national averages are listed first.
  */
 
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { cache } from "react";
 
-import { marketCommentary } from "@/fixtures/markets/commentary";
-import { FIXTURES_UPDATED_AT, generateHistory } from "@/fixtures/markets/history";
-import { seriesFixtures, type SeriesFixture } from "@/fixtures/markets/series";
 import type { Database } from "@/lib/database.types";
 import { getSupabase } from "@/lib/supabase";
 import {
@@ -38,10 +31,8 @@ import {
 } from "@/services/markets/types";
 import {
   COUNTRY_NAMES,
-  perHectolitre,
   type CountryCode,
   type DataStatus,
-  type MarketCommentary,
 } from "@/services/types";
 
 /**
@@ -87,16 +78,9 @@ export interface MarketsService {
   getCampaignAverages(code: string): Promise<CampaignAverage[]>;
   getRelated(code: string, limit?: number): Promise<MarketRow[]>;
   getFilterOptions(kind: MarketKind): Promise<FilterOptions>;
-  getCommentary(kind: MarketKind): Promise<MarketCommentary | null>;
 }
 
 const DAY_MS = 86400000;
-
-/**
- * The day the fixtures were written for. Recency filters count back from
- * it for sample series, and from today for real ones.
- */
-const FIXTURES_TODAY_MS = Date.parse(`${FIXTURES_UPDATED_AT.slice(0, 10)}T00:00:00Z`);
 
 /** Marketing campaign (Aug to Jul) containing a date. */
 export function campaignOf(isoDate: string): string {
@@ -151,47 +135,6 @@ function computeChanges(history: SeriesObservation[]): SeriesChanges {
 export interface CatalogueEntry {
   series: MarketSeries;
   history: SeriesObservation[];
-  /** Samples only: the real series it gives way to, by code. */
-  givesWayTo?: string[];
-}
-
-/**
- * Whether a row is an illustrative sample rather than a real price: every
- * fixture observation says so, and no imported one does.
- */
-export function isIllustrative(row: MarketRow): boolean {
-  return row.latest.status === "illustrative";
-}
-
-let fixtureEntries: CatalogueEntry[] | null = null;
-
-/**
- * A fixture's observations in its series unit. A series recorded per
- * hectolitre-degree is converted to EUR/hl at its strength, and each
- * observation keeps the value as recorded.
- */
-function fixtureHistory({ series, history }: SeriesFixture): SeriesObservation[] {
-  const observations = generateHistory(series.code, history);
-  const basis = series.perDegree;
-  if (!basis) return observations;
-  const convert = (value: number) => perHectolitre(value, basis.alcoholPercent);
-  return observations.map((observation) => ({
-    ...observation,
-    value: convert(observation.value),
-    min: observation.min === undefined ? undefined : convert(observation.min),
-    max: observation.max === undefined ? undefined : convert(observation.max),
-    perDegreeValue: observation.value,
-  }));
-}
-
-/** The illustrative series, generated once per server. */
-function fixtureCatalogue(): CatalogueEntry[] {
-  fixtureEntries ??= seriesFixtures.map((fixture) => ({
-    series: fixture.series,
-    history: fixtureHistory(fixture),
-    givesWayTo: fixture.givesWayTo,
-  }));
-  return fixtureEntries;
 }
 
 type SeriesRow = Database["public"]["Tables"]["market_series"]["Row"];
@@ -249,74 +192,55 @@ function toObservation(row: ObservationRow): SeriesObservation {
 /**
  * The series imported from real sources, with every observation. Read at
  * most hourly: the sources publish weekly, and the pages that filter by
- * query string would otherwise read the tables on each request.
+ * query string would otherwise read the tables on each request. Those
+ * pages render at request time, outside the static shell, so the entry
+ * lives in the remote cache, shared by every server instance.
  */
-const loadDatabaseCatalogue = unstable_cache(
-  async (): Promise<CatalogueEntry[]> => {
-    const supabase = getSupabase();
-    if (!supabase) return [];
+async function loadDatabaseCatalogue(): Promise<CatalogueEntry[]> {
+  "use cache: remote";
+  cacheLife("hours");
+  cacheTag("market-data");
 
-    const series = await supabase.from("market_series").select("*").order("code");
-    if (series.error) {
-      throw new Error(`Reading market series failed: ${series.error.message}`);
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  const series = await supabase.from("market_series").select("*").order("code");
+  if (series.error) {
+    throw new Error(`Reading market series failed: ${series.error.message}`);
+  }
+
+  const observations: ObservationRow[] = [];
+  for (;;) {
+    const page = await supabase
+      .from("market_observations")
+      .select("*", { count: "exact" })
+      .order("series_code")
+      .order("observed_on")
+      .range(observations.length, observations.length + PAGE_SIZE - 1);
+    if (page.error) {
+      throw new Error(`Reading market observations failed: ${page.error.message}`);
     }
+    observations.push(...page.data);
+    if (page.data.length === 0 || observations.length >= (page.count ?? 0)) break;
+  }
 
-    const observations: ObservationRow[] = [];
-    for (;;) {
-      const page = await supabase
-        .from("market_observations")
-        .select("*", { count: "exact" })
-        .order("series_code")
-        .order("observed_on")
-        .range(observations.length, observations.length + PAGE_SIZE - 1);
-      if (page.error) {
-        throw new Error(`Reading market observations failed: ${page.error.message}`);
-      }
-      observations.push(...page.data);
-      if (page.data.length === 0 || observations.length >= (page.count ?? 0)) break;
-    }
-
-    const histories = new Map<string, SeriesObservation[]>();
-    for (const row of observations) {
-      const history = histories.get(row.series_code) ?? [];
-      history.push(toObservation(row));
-      histories.set(row.series_code, history);
-    }
-    return series.data.flatMap((row) => {
-      const mapped = toSeries(row);
-      const history = histories.get(row.code);
-      return mapped && history ? [{ series: mapped, history }] : [];
-    });
-  },
-  ["market-catalogue"],
-  { revalidate: 3600, tags: ["market-data"] },
-);
-
-/**
- * The imported series, then the samples still needed beside them: a
- * sample gives way when its own code is imported, or one of the real
- * series it names.
- */
-export function mergeCatalogues(
-  imported: CatalogueEntry[],
-  samples: CatalogueEntry[],
-): CatalogueEntry[] {
-  const codes = new Set(imported.map((entry) => entry.series.code));
-  return [
-    ...imported,
-    ...samples.filter(
-      (entry) =>
-        !codes.has(entry.series.code) &&
-        !entry.givesWayTo?.some((code) => codes.has(code)),
-    ),
-  ];
+  const histories = new Map<string, SeriesObservation[]>();
+  for (const row of observations) {
+    const history = histories.get(row.series_code) ?? [];
+    history.push(toObservation(row));
+    histories.set(row.series_code, history);
+  }
+  return series.data.flatMap((row) => {
+    const mapped = toSeries(row);
+    const history = histories.get(row.code);
+    return mapped && history ? [{ series: mapped, history }] : [];
+  });
 }
 
-/** Every series, once per request: the imported ones, then the samples. */
-const loadCatalogue = cache(async (): Promise<CatalogueEntry[]> => {
-  const imported = getSupabase() ? await loadDatabaseCatalogue() : [];
-  return mergeCatalogues(imported, fixtureCatalogue());
-});
+/** Every series, once per request; none without a database. */
+const loadCatalogue = cache(async (): Promise<CatalogueEntry[]> =>
+  getSupabase() ? loadDatabaseCatalogue() : [],
+);
 
 function buildRow({ series, history }: CatalogueEntry): MarketRow | null {
   const latest = history[history.length - 1];
@@ -361,22 +285,19 @@ function matches(row: MarketRow, filter: SeriesFilter): boolean {
   if (filter.window) {
     const days = Number(filter.window);
     if (Number.isFinite(days)) {
-      const today = isIllustrative(row) ? FIXTURES_TODAY_MS : Date.now();
-      const age = (today - new Date(`${latest.date}T00:00:00Z`).getTime()) / DAY_MS;
+      // Only pages that read the query string filter by recency, so the
+      // clock is read at request time, never while prerendering.
+      const age = (Date.now() - new Date(`${latest.date}T00:00:00Z`).getTime()) / DAY_MS;
       if (age > days) return false;
     }
   }
   return true;
 }
 
-/**
- * Real series first, national averages before regional prices, then by
- * country, region and code.
- */
+/** National averages before regional prices, then by country, region and code. */
 function compareRows(a: MarketRow, b: MarketRow): number {
   const regional = (row: MarketRow) => Number(row.series.region !== NATIONAL_AVERAGE);
   return (
-    Number(isIllustrative(a)) - Number(isIllustrative(b)) ||
     regional(a) - regional(b) ||
     `${a.series.country}-${a.series.region}-${a.series.code}`.localeCompare(
       `${b.series.country}-${b.series.region}-${b.series.code}`,
@@ -479,7 +400,6 @@ class CatalogueMarketsService implements MarketsService {
     const current = entry ? buildRow(entry) : null;
     if (!current) return [];
     const { series } = current;
-    // Real series relate first to real ones, samples to samples.
     return entries
       .filter((e) => e.series.code !== code && e.series.kind === series.kind)
       .flatMap((e) => {
@@ -489,7 +409,6 @@ class CatalogueMarketsService implements MarketsService {
       .map((row) => ({
         row,
         score:
-          (isIllustrative(row) === isIllustrative(current) ? 3 : 0) +
           (row.series.region === series.region ? 2 : 0) +
           (row.series.country === series.country ? 1 : 0) +
           (row.series.colour && row.series.colour === series.colour ? 1 : 0) +
@@ -513,26 +432,12 @@ class CatalogueMarketsService implements MarketsService {
       harvestYears: distinct(series.map((s) => s.harvestYear?.toString())),
     };
   }
-
-  async getCommentary(kind: MarketKind): Promise<MarketCommentary | null> {
-    return marketCommentary[kind] ?? null;
-  }
 }
 
 let service: MarketsService | null = null;
-let illustrative: MarketsService | null = null;
 
-/** Imported series when Supabase is configured, beside the fixtures. */
+/** The imported series, read from the database when it is configured. */
 export function getMarketsService(): MarketsService {
   service ??= new CatalogueMarketsService(loadCatalogue);
   return service;
-}
-
-/**
- * Always every illustrative series, for sample publications such as the
- * Market Outlook, whose text was written against them.
- */
-export function getIllustrativeMarketsService(): MarketsService {
-  illustrative ??= new CatalogueMarketsService(async () => fixtureCatalogue());
-  return illustrative;
 }

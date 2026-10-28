@@ -5,10 +5,6 @@ const STATUS_STYLES: Record<DataStatus, { label: string; className: string }> = 
   provisional: { label: "Provisional", className: "border-ochre text-ochre-deep" },
   estimate: { label: "Estimate", className: "border-ochre text-ochre-deep" },
   forecast: { label: "Forecast", className: "border-wine text-wine" },
-  illustrative: {
-    label: "Illustrative",
-    className: "border-ochre bg-ochre/10 text-ochre-deep",
-  },
 };
 
 /** Plain status names, for editorial layouts that state status in text. */
@@ -22,7 +18,6 @@ export const DATA_STATUS_LABELS = Object.fromEntries(
  */
 export function sharedStatusNote(status: DataStatus): string | null {
   if (status === "final") return null;
-  if (status === "illustrative") return "Illustrative sample data.";
   return `${DATA_STATUS_LABELS[status]} figures.`;
 }
 

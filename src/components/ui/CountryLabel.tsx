@@ -1,12 +1,14 @@
+import { Flag, hasFlag } from "@/components/ui/Flag";
 import { countryName } from "@/services/types";
 
 /**
- * Country identifier: ISO code, optionally followed by the country name.
- * No flags; codes keep tables scannable and sortable.
+ * Country identifier: the country's flag, optionally followed by its
+ * name. The flag names the country on hover and to assistive technology;
+ * beside the name it is decorative.
  *
- * "badge" (default) boxes the code in the monospace label style; "plain"
- * sets it as quiet sans text for editorial tables where a box on every
- * row would add noise.
+ * A code with no flag is set as text: "badge" (default) boxes it in the
+ * monospace label style; "plain" sets it as quiet sans text for editorial
+ * tables where a box on every row would add noise.
  */
 export function CountryLabel({
   code,
@@ -18,6 +20,16 @@ export function CountryLabel({
   variant?: "badge" | "plain";
 }) {
   const name = countryName(code);
+  const label = withName ? <span className="text-sm text-ink">{name}</span> : null;
+
+  if (hasFlag(code)) {
+    return (
+      <span className="inline-flex items-center gap-2">
+        <Flag code={code} decorative={withName} />
+        {label}
+      </span>
+    );
+  }
 
   if (variant === "plain") {
     return (
@@ -28,7 +40,7 @@ export function CountryLabel({
         >
           {code}
         </abbr>
-        {withName ? <span className="text-sm text-ink">{name}</span> : null}
+        {label}
       </span>
     );
   }
@@ -41,7 +53,7 @@ export function CountryLabel({
       >
         {code}
       </abbr>
-      {withName ? <span className="text-sm text-ink">{name}</span> : null}
+      {label}
     </span>
   );
 }

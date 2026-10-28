@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { Container } from "@/components/layout/Container";
-import { MarketCommentaryBlock } from "@/components/market/MarketCommentaryBlock";
 import {
   MarketFilterPanel,
   type FilterFieldConfig,
 } from "@/components/markets/MarketFilterPanel";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
 import { MustPricesTable } from "@/components/markets/MustPricesTable";
+import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { UpdatedAt } from "@/components/ui/SourceLine";
+import { EmptyState } from "@/components/ui/states";
 import { getMarketsService } from "@/services/markets/service";
 import {
   filterFromParams,
@@ -24,7 +25,32 @@ export const metadata: Metadata = {
     "Grape must, concentrated must and RCGM quotations with technical specifications and original units.",
 };
 
-export default async function MustConcentratesPage({
+/**
+ * The header is prerendered; the filtered table reads the query string,
+ * so it renders at request time behind the fallback.
+ */
+export default function MustConcentratesPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  return (
+    <Container className="pb-16">
+      <MarketsPageHeader
+        crumb="Must & Concentrates"
+        title="Must & Concentrates"
+        description="Quotations for grape must, concentrated grape must and rectified concentrated grape must, with the technical specification each price refers to. Must is quoted by volume and concentrates by mass; the two are never converted into each other."
+        activeHref="/markets/must-concentrates"
+      />
+
+      <Suspense fallback={<ResultsFallback />}>
+        <MustPricesResults searchParams={searchParams} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function MustPricesResults({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
@@ -33,11 +59,21 @@ export default async function MustConcentratesPage({
   const markets = getMarketsService();
   const filter = filterFromParams(params);
 
-  const [rows, options, commentary] = await Promise.all([
+  const [rows, allRows, options] = await Promise.all([
     markets.getRows("must", filter),
+    markets.getRows("must"),
     markets.getFilterOptions("must"),
-    markets.getCommentary("must"),
   ]);
+  if (allRows.length === 0) {
+    return (
+      <div className="mt-8">
+        <EmptyState
+          title="No must or concentrate quotations yet"
+          detail="No public series of grape must, concentrated must or rectified concentrated must prices exists for the covered countries that WineTerm may republish: the Italian chambers of commerce that quote them reserve their rights. Series are added as a licensed source provides them."
+        />
+      </div>
+    );
+  }
 
   const updatedAt = rows[0]?.latest.updatedAt;
 
@@ -89,22 +125,13 @@ export default async function MustConcentratesPage({
   ];
 
   return (
-    <Container className="pb-16">
-      <MarketsPageHeader
-        crumb="Must & Concentrates"
-        title="Must & Concentrates"
-        description="Quotations for grape must, concentrated grape must and rectified concentrated grape must, with the technical specification each price refers to. Must is quoted by volume and concentrates by mass; the two are never converted into each other. Development figures are illustrative samples."
-        activeHref="/markets/must-concentrates"
-      />
-
+    <>
       <div className="mt-8">
-        <Suspense fallback={<div className="h-16 border-y border-rule bg-paper" />}>
-          <MarketFilterPanel
-            fields={fields}
-            resultCount={rows.length}
-            end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
-          />
-        </Suspense>
+        <MarketFilterPanel
+          fields={fields}
+          resultCount={rows.length}
+          end={updatedAt ? <UpdatedAt iso={updatedAt} /> : undefined}
+        />
       </div>
 
       <div className="mt-5">
@@ -114,16 +141,10 @@ export default async function MustConcentratesPage({
           must, Brix for concentrates). Quotations with different
           specifications are separate series and are not averaged together.
           {rows.some((row) => row.series.perDegree)
-            ? " Must samples recorded per hectolitre-degree are shown in EUR/hl at the stated potential alcohol, or the midpoint of a stated range; each series page gives the recorded value and the strength used."
+            ? " Must quoted per hectolitre-degree is shown in EUR/hl at the stated potential alcohol, or the midpoint of a stated range; each series page gives the recorded value and the strength used."
             : null}
         </p>
       </div>
-
-      {commentary ? (
-        <div className="mt-10 max-w-3xl">
-          <MarketCommentaryBlock commentary={commentary} />
-        </div>
-      ) : null}
-    </Container>
+    </>
   );
 }

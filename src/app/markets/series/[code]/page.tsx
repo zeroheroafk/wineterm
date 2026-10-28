@@ -1,26 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
-import { MarketCommentaryBlock } from "@/components/market/MarketCommentaryBlock";
 import { ChartFrame } from "@/components/market/ChartFrame";
 import { PriceLineChart } from "@/components/market/PriceLineChart";
 import { CampaignComparisonTable } from "@/components/markets/CampaignComparisonTable";
 import { MaybePercent } from "@/components/markets/cells";
 import { RelatedMarketsList } from "@/components/markets/RelatedMarketsList";
-import {
-  DataClassificationTag,
-  SourceTypeTag,
-  VerificationTag,
-} from "@/components/markets/tags";
+import { DataClassificationTag } from "@/components/markets/tags";
 import { TimeRangeControls } from "@/components/markets/TimeRangeControls";
 import { CountryLabel } from "@/components/ui/CountryLabel";
-import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime, formatPrice } from "@/lib/format";
-import { getMarketsService, isIllustrative } from "@/services/markets/service";
+import { getMarketsService } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
 import { getSource } from "@/services/markets/sources";
 import {
@@ -33,7 +28,6 @@ import { COUNTRY_NAMES, describeDegreeBasis } from "@/services/types";
 
 const KIND_META: Record<MarketKind, { label: string; href: string }> = {
   "bulk-wine": { label: "Bulk Wine Prices", href: "/markets/bulk-wine" },
-  grape: { label: "Grape Prices", href: "/markets/grapes" },
   must: { label: "Must & Concentrates", href: "/markets/must-concentrates" },
 };
 
@@ -51,13 +45,37 @@ export async function generateMetadata({
   };
 }
 
-export default async function MarketDetailPage({
-  params,
-  searchParams,
-}: {
+interface MarketDetailProps {
   params: Promise<{ code: string }>;
   searchParams: Promise<SearchParams>;
-}) {
+}
+
+/**
+ * The series and the chart range are only known at request time, so the
+ * page streams in behind a placeholder of the same shape.
+ */
+export default function MarketDetailPage(props: MarketDetailProps) {
+  return (
+    <Suspense fallback={<MarketDetailFallback />}>
+      <MarketDetail {...props} />
+    </Suspense>
+  );
+}
+
+function MarketDetailFallback() {
+  return (
+    <Container className="pb-16">
+      <div aria-busy="true">
+        <p className="sr-only">Loading the series</p>
+        <div className="h-4 w-48 bg-paper" />
+        <div className="mt-6 h-28 border-b border-rule" />
+        <div className="mt-8 h-72 border border-rule bg-paper" />
+      </div>
+    </Container>
+  );
+}
+
+async function MarketDetail({ params, searchParams }: MarketDetailProps) {
   const [{ code }, query] = await Promise.all([params, searchParams]);
   const markets = getMarketsService();
 
@@ -67,7 +85,6 @@ export default async function MarketDetailPage({
   const { series, latest, changes } = row;
   const kindMeta = KIND_META[series.kind];
   const source = getSource(series.sourceId);
-  const sample = isIllustrative(row);
 
   const available = await markets.getAvailableRanges(code);
   const requested = firstParam(query, "r") as TimeRangeKey | undefined;
@@ -78,11 +95,10 @@ export default async function MarketDetailPage({
         ? "1y"
         : "max";
 
-  const [history, campaigns, related, commentary] = await Promise.all([
+  const [history, campaigns, related] = await Promise.all([
     markets.getHistory(code, range),
     markets.getCampaignAverages(code),
     markets.getRelated(code),
-    markets.getCommentary(series.kind),
   ]);
 
   const points = history.map((obs) => ({ date: obs.date, value: obs.value }));
@@ -119,17 +135,6 @@ export default async function MarketDetailPage({
           <span className="text-sm text-ink-soft">
             {series.appellation ?? series.region}
           </span>
-          {/* Samples show how they would be classified and that they are
-              samples; how a real price is established is on the
-              methodology page and in the provenance below. */}
-          {sample ? (
-            <>
-              <DataClassificationTag classification={source.classification} />
-              <SourceTypeTag type={series.sourceType} />
-              <VerificationTag status={series.verification} />
-              <DataStatusLabel status={latest.status} />
-            </>
-          ) : null}
         </div>
       </header>
 
@@ -147,7 +152,6 @@ export default async function MarketDetailPage({
             title={series.name}
             code={series.code}
             unit={series.unit}
-            status={sample ? latest.status : undefined}
             source={{ name: source.name, url: source.url }}
             updatedAt={latest.updatedAt}
           >
@@ -168,7 +172,11 @@ export default async function MarketDetailPage({
           ) : null}
 
           <section className="mt-10">
-            <SectionHeader kicker="Provenance" title="Source and methodology" />
+            <SectionHeader
+              kicker="Provenance"
+              title="Source and methodology"
+              description="How this price is established: the publisher, how WineTerm classifies its figures, and what the series measures."
+            />
             <div className="mt-5 border border-rule bg-paper px-5 py-4">
               <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
                 <div>
@@ -186,16 +194,14 @@ export default async function MarketDetailPage({
                     )}
                   </dd>
                 </div>
-                {sample ? (
-                  <div>
-                    <dt className="wt-label text-ink-soft">Classification</dt>
-                    <dd className="mt-1">
-                      <DataClassificationTag
-                        classification={source.classification}
-                      />
-                    </dd>
-                  </div>
-                ) : null}
+                <div>
+                  <dt className="wt-label text-ink-soft">Classification</dt>
+                  <dd className="mt-1">
+                    <DataClassificationTag
+                      classification={source.classification}
+                    />
+                  </dd>
+                </div>
                 <div>
                   <dt className="wt-label text-ink-soft">Coverage</dt>
                   <dd className="mt-1 text-sm text-ink">{source.coverage}</dd>
@@ -318,8 +324,6 @@ export default async function MarketDetailPage({
               </div>
             </div>
           ) : null}
-
-          {commentary ? <MarketCommentaryBlock commentary={commentary} /> : null}
         </aside>
       </div>
     </Container>

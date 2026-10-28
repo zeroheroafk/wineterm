@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
@@ -65,8 +64,6 @@ const STATUS_NOTES: Record<DataStatus, string> = {
   estimate:
     "A quantified assessment rather than a published figure: a WineTerm estimate, or a figure ahead of its publication by the source.",
   forecast: "Forward-looking, expressed as a range wherever possible.",
-  illustrative:
-    "Development sample data demonstrating the interface; never a real observation.",
 };
 
 const UNITS: SeriesUnit[] = [
@@ -89,7 +86,7 @@ export default function MethodologyPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={primaryNavigation[6]}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Methodology" },
@@ -104,11 +101,15 @@ export default function MethodologyPage() {
         <SectionHeader kicker="Scope" title="What WineTerm publishes" />
         <Prose>
           <p>
-            WineTerm maintains price series for bulk wine, grapes, and must
-            and concentrates; supply balances covering stocks, production,
-            availability, use and trade; harvest field reporting; and customs
-            trade aggregates. Coverage starts with Spain and Portugal, with
-            comparative series for France and Italy.
+            WineTerm publishes price series for bulk wine, with must prices
+            to follow as sources allow; the stocks each country declares;
+            Spain&apos;s declared supply balance of stocks, production,
+            entries and exits; the official harvest estimates; customs
+            trade aggregates; and, for the consumer, the value of a bottle
+            at the border and the consumer prices of wine. Coverage spans
+            Spain, Portugal, France and Italy, and the consumer prices the
+            EU, Switzerland and the United States. A section without a
+            source yet says so rather than showing a stand-in.
           </p>
           <p>
             Every observation carries its source, unit, observation date,
@@ -231,8 +232,7 @@ export default function MethodologyPage() {
             prices are shown in EUR/hl, so that every bulk price reads in one
             unit: the price per degree multiplied by the wine&apos;s strength,
             or the must&apos;s potential strength. The strength is the one
-            the product states, the midpoint of a stated range, or, for the
-            illustrative samples that state none, an assumed 12% vol. Each
+            the product states, or the midpoint of a stated range. Each
             series page gives the value as recorded and the strength used.
           </p>
         </Prose>
@@ -344,8 +344,44 @@ export default function MethodologyPage() {
             later, when Eurostat publishes it; Eurostat revises recent months,
             and WineTerm applies its revisions and marks the months they
             change as revised. An estimate gives way to an official or
-            reported price once one can be published. Illustrative samples,
-            which remain for other markets, are always marked as such.
+            reported price once one can be published.
+          </p>
+        </Prose>
+      </section>
+
+      <section id="consumer" className="mt-12 scroll-mt-6">
+        <SectionHeader
+          kicker="Consumer"
+          title="Bottle prices and shop prices"
+          description="The Consumer pages follow wine from the border to the shelf: what a bottle is worth when it leaves its country, and how the price of wine in the shops moves."
+        />
+        <Prose>
+          <p>
+            A bottle&apos;s price at the border is a WineTerm calculation from
+            Eurostat&apos;s trade figures: the statistical value of a
+            country&apos;s exports divided by their volume in litres, times
+            0.75, the value of a 75 cl bottle. Still wine is the customs
+            subheading for containers of up to 2 litres (CN 2204 21), mostly
+            75 cl bottles with litre bottles, magnums and cartons among them;
+            sparkling wine has its own (CN 2204 10). Like the bulk estimates,
+            it is an average over every colour, category and price point a
+            country sells, valued at its border, and it moves with the mix of
+            wines as well as with prices. It is not a shelf price: freight,
+            duties and excise, the trade&apos;s margins and VAT come after it.
+          </p>
+          <p>
+            Shop prices are official statistics, imported unchanged.
+            Eurostat&apos;s harmonised index of consumer prices of wine from
+            grapes follows the prices households pay for wine to take home,
+            taxes included, in the same way in every EU country and
+            Switzerland, with 2025 as the reference year; wine served in
+            restaurants and bars is priced with catering and is not covered.
+            The change on a year earlier is Eurostat&apos;s, and the change
+            over five years is computed from the indices. An index compares
+            a country with itself, never with another country. For the United
+            States, the Bureau of Labor Statistics publishes the average price
+            of a litre of table wine in US cities; WineTerm shows it per 75 cl
+            bottle and compares it with the same month a year earlier.
           </p>
         </Prose>
       </section>
@@ -369,31 +405,31 @@ export default function MethodologyPage() {
             leave unaccounted.
           </p>
           <p>
-            Stock declarations are compared within a country against the
-            same reference a year earlier. Cross-country stock comparisons
-            are indicative because reference dates and coverage differ; the
-            differences are documented on the{" "}
-            <Link
-              href="/supply/stocks"
-              className="text-wine underline decoration-rule underline-offset-2 hover:text-wine-deep"
-            >
-              stocks page
-            </Link>
-            .
+            Stocks are shown as each country declares them: Spain&apos;s and
+            Italy&apos;s at the end of each month, from the INFOVI
+            declarations and the telematic wine register; France&apos;s and
+            Portugal&apos;s at 31 July, from the declarations to customs and
+            to the wine institute. Each is compared against itself a year
+            earlier. Cross-country comparisons are indicative because who
+            declares and what is counted differ.
           </p>
         </Prose>
       </section>
 
       <section className="mt-12">
-        <SectionHeader kicker="Field reporting" title="Harvest reporting" />
+        <SectionHeader kicker="Harvest" title="Harvest estimates" />
         <Prose>
           <p>
-            Harvest coverage is qualitative field reporting made explicit.
-            Picking progress is published in 5 percent steps and marked as
-            approximate; production forecasts are ranges, not points, until
-            declarations narrow them; yield expectations use a four-band
-            scale. WineTerm does not add precision the underlying reporting
-            does not carry.
+            Harvest coverage is each country&apos;s official production
+            estimate, entered by hand from each release with its date:
+            Agreste&apos;s monthly estimates for France, the IVV&apos;s
+            forecast for Portugal, MAPA&apos;s crop estimates for Spain and
+            the trade associations&apos; report for Italy. Before the harvest
+            the figures are forecasts; from the first estimate after picking
+            starts they are provisional figures of the crop that is in,
+            revised until the declarations close. Each source counts its own
+            scope, which is stated next to the figure; ranges are kept as
+            ranges, and WineTerm adds no precision the sources do not carry.
           </p>
         </Prose>
       </section>
@@ -415,7 +451,7 @@ export default function MethodologyPage() {
         <SectionHeader
           kicker="Registry"
           title="Source registry"
-          description="Every observation references one entry in this registry. During development most entries are stand-ins, marked as samples; real providers, so far Eurostat for trade and the Spanish Ministry of Agriculture for national bulk wine prices and the monthly wine declarations, are added as their data is licensed and connected, as are WineTerm's own estimates from them."
+          description="Every observation references one entry in this registry: the official statistics WineTerm imports, the bodies whose harvest estimates it enters by hand, and its own estimates computed from them. Providers are added as their data is licensed and connected."
         />
         <ScrollRegion className="mt-5 border border-rule bg-paper">
           <table className="w-full border-collapse text-left">
@@ -470,20 +506,28 @@ export default function MethodologyPage() {
         <SectionHeader kicker="Status" title="Development status" />
         <Prose>
           <p>
-            WineTerm is in development. Trade figures credited to Eurostat
-            Comext are official statistics, refreshed every month, and
-            Spain&apos;s national average bulk wine prices and its monthly
-            declarations of wine stocks, production, entries and exits
-            credited to MAPA are official statistics, refreshed every week.
-            The harvest forecasts credited to Agreste, the IVV and MAPA are
-            official too, entered by hand from each release. The bulk wine
-            prices for Portugal, France and Italy are WineTerm&apos;s monthly
-            estimates from the Eurostat trade figures, described above. Every
-            other
-            figure currently shown is an illustrative sample carrying the
-            Illustrative status, every other named source is a stand-in, and
-            nothing on the platform is investment advice. This page describes the methodology those samples
-            demonstrate and that live data follows.
+            WineTerm is in development, and every figure it shows is read
+            from a named source or computed from one by a stated method.
+            Trade figures credited to Eurostat Comext are official
+            statistics, refreshed every month. Spain&apos;s national and
+            regional bulk wine prices and its monthly declarations of wine
+            stocks, production, entries and exits credited to MAPA are
+            official statistics, refreshed every week, as are the regional
+            bulk prices credited to DRAAF Occitanie. Italy&apos;s monthly
+            stocks credited to the ICQRF, and the stocks France and Portugal
+            declare at 31 July, credited to the customs and to the IVV, are
+            official statistics imported from each release. The harvest
+            estimates credited to Agreste, the IVV and MAPA are official
+            too, entered by hand from each release. The bulk wine prices for
+            Portugal, France and Italy are WineTerm&apos;s monthly estimates
+            from the Eurostat trade figures, described above, and so are the
+            bottle prices at the border. The consumer prices credited to
+            Eurostat and to the US Bureau of Labor Statistics are official
+            statistics, checked for new months every week. Must prices
+            and the supply balances of Portugal, France and Italy wait for
+            sources WineTerm may republish, and their pages say so; grape
+            prices are not covered. Nothing on the platform is investment
+            advice.
           </p>
         </Prose>
       </section>

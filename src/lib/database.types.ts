@@ -10,10 +10,63 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
+      consumer_prices: {
+        Row: {
+          annual_rate: number | null
+          country: string
+          measure: string
+          period: string
+          product: string
+          published_at: string
+          revised: boolean
+          source_id: string
+          status: string
+          unit: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          annual_rate?: number | null
+          country: string
+          measure: string
+          period: string
+          product: string
+          published_at: string
+          revised?: boolean
+          source_id: string
+          status: string
+          unit: string
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          annual_rate?: number | null
+          country?: string
+          measure?: string
+          period?: string
+          product?: string
+          published_at?: string
+          revised?: boolean
+          source_id?: string
+          status?: string
+          unit?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consumer_prices_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -46,6 +99,7 @@ export type Database = {
       }
       import_runs: {
         Row: {
+          alerted_at: string | null
           dispatched_at: string | null
           error: string | null
           finished_at: string | null
@@ -61,6 +115,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          alerted_at?: string | null
           dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
@@ -76,6 +131,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          alerted_at?: string | null
           dispatched_at?: string | null
           error?: string | null
           finished_at?: string | null
@@ -287,6 +343,44 @@ export type Database = {
         }
         Relationships: []
       }
+      price_alerts: {
+        Row: {
+          condition: string
+          created_at: string
+          email: string
+          id: string
+          series_code: string
+          status: string
+          threshold: number | null
+        }
+        Insert: {
+          condition?: string
+          created_at?: string
+          email: string
+          id?: string
+          series_code: string
+          status?: string
+          threshold?: number | null
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          email?: string
+          id?: string
+          series_code?: string
+          status?: string
+          threshold?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_alerts_series_code_fkey"
+            columns: ["series_code"]
+            isOneToOne: false
+            referencedRelation: "market_series"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       sources: {
         Row: {
           cadence: string
@@ -327,6 +421,7 @@ export type Database = {
         Row: {
           colour: string
           country: string
+          holder: string
           measure: string
           period: string
           presentation: string
@@ -340,6 +435,7 @@ export type Database = {
         Insert: {
           colour: string
           country: string
+          holder?: string
           measure: string
           period: string
           presentation: string
@@ -353,6 +449,7 @@ export type Database = {
         Update: {
           colour?: string
           country?: string
+          holder?: string
           measure?: string
           period?: string
           presentation?: string
@@ -425,6 +522,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      trade_bottle_destinations: {
+        Args: { end_month: string; top_n?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          litres_prior_year: number
+          partner: string
+          place: number
+          product: string
+          reporter: string
+          value_eur: number
+          value_eur_prior_year: number
+        }[]
+      }
+      trade_bottle_monthly: {
+        Args: { end_month: string; months?: number }
+        Returns: {
+          litres: number
+          litres_complete: boolean
+          period: string
+          product: string
+          reporter: string
+          value_eur: number
+        }[]
+      }
       trade_destinations: {
         Args: { end_month: string; top_n?: number }
         Returns: {

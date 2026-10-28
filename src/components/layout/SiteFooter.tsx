@@ -18,12 +18,12 @@ export function SiteFooter() {
           <div>
             <WordmarkInverted />
             <p className="mt-3 max-w-xs text-sm leading-relaxed">
-              Prices, supply and trade intelligence for the international
-              wine trade.
+              Wine sector news and market intelligence for the
+              international wine trade.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-3">
             {footerNavigation.map((group) => (
               <nav key={group.heading} aria-label={group.heading}>
                 <h2 className="text-sm font-semibold text-paper">
@@ -51,9 +51,8 @@ export function SiteFooter() {
             &copy; <CurrentDate options={{ year: "numeric" }} unit="year" />{" "}
             WineTerm. All rights reserved. Content is provided for
             professional information purposes and is not investment advice.
-            During development, figures are illustrative samples, not live
-            market data, unless credited to an official source such as
-            Eurostat or MAPA.
+            Every figure is credited to its source, such as Eurostat or
+            MAPA, or marked as a WineTerm estimate.
           </p>
         </div>
       </Container>

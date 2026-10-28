@@ -2,8 +2,8 @@
  * WineTerm domain types.
  *
  * These types define the contract between the interface and the data
- * services. Real data sources can replace the fixture-backed services in
- * src/services without touching any component.
+ * services in src/services, so a data source can be replaced without
+ * touching any component.
  */
 
 /** ISO 3166-1 alpha-2, uppercase. Producer countries plus trade partners. */
@@ -109,12 +109,7 @@ export function describeDegreeBasis(basis: DegreeBasis): string {
  * Lifecycle status of a data series or a single observation.
  * Rendered by the DataStatus component.
  */
-export type DataStatus =
-  | "final"
-  | "provisional"
-  | "estimate"
-  | "forecast"
-  | "illustrative";
+export type DataStatus = "final" | "provisional" | "estimate" | "forecast";
 
 export interface DataSource {
   /** Publishing body, e.g. a ministry or statistics office. */
@@ -177,19 +172,6 @@ export interface PricePoint {
   value: number;
 }
 
-/** A historical series backing a chart. */
-export interface PriceSeries {
-  id: string;
-  code: string;
-  name: string;
-  unit: PriceUnit;
-  country: CountryCode;
-  points: PricePoint[];
-  status: DataStatus;
-  source: DataSource;
-  updatedAt: string;
-}
-
 export type ArticleKind =
   | "news"
   | "analysis"
@@ -214,6 +196,8 @@ export type CitationText = string | { title: string };
 
 /** One paragraph of an article, with the sources it cites at its end. */
 export interface ArticleParagraph {
+  /** A subheading set before the paragraph, opening a section. */
+  heading?: string;
   text: string;
   /** Numbers of the sources cited, counting from 1. */
   cites?: number[];
@@ -247,97 +231,63 @@ export interface ArticleChart {
   afterParagraph: number;
 }
 
+/**
+ * A table of figures an article cites, set after one of its paragraphs.
+ * Cells are printed as written, so they carry their own units and signs.
+ */
+export interface ArticleTable {
+  title: string;
+  /** Headings of the figure columns, after the row labels'. */
+  columns: string[];
+  rows: { label: string; cells: string[] }[];
+  /** Numbers of the sources the figures come from, counting from 1. */
+  cites: number[];
+  /** The paragraph the table follows, counting from 0. */
+  afterParagraph: number;
+}
+
+/**
+ * A photograph set under the article's header, credited as its licence
+ * asks: the author linked to the page the picture is published on, and
+ * the licence linked to its terms.
+ */
+export interface ArticleHero {
+  /** The file under public/, e.g. "/images/insights/<article id>.jpg". */
+  src: string;
+  width: number;
+  height: number;
+  /** What the picture shows, for readers who cannot see it. */
+  alt: string;
+  /** Where it was taken, printed before the credit. */
+  caption?: string;
+  /** The author as the source credits them. */
+  author: string;
+  /** The page the picture is published on. */
+  sourceUrl: string;
+  licence: { name: string; url: string };
+  /** What was changed from the original, e.g. "cropped". */
+  changes?: string;
+}
+
 /** A published article: its preview fields, full text and sources. */
 export interface ArticleDetail extends Article {
+  hero?: ArticleHero;
   body: ArticleParagraph[];
   sources: ArticleSource[];
   chart?: ArticleChart;
-}
-
-/** A short dated commentary block attached to a market table. */
-export interface MarketCommentary {
-  id: string;
-  market: string;
-  body: string;
-  author: string;
-  publishedAt: string;
-}
-
-/** One entry in the compact market status strip. */
-export interface StripQuote {
-  id: string;
-  /** Short display name, e.g. "CLM red". */
-  name: string;
-  country: CountryCode;
-  value: number;
-  unit: PriceUnit;
-  changePercent: number;
-  observedAt: string;
-  status: DataStatus;
-  /** Publisher of a real quote; illustrative quotes have none. */
-  source?: DataSource;
+  tables?: ArticleTable[];
 }
 
 /** The editorial market briefing that leads the homepage. */
 export interface MarketBriefing {
   headline: string;
   summary: string;
-  /** At most one further development, when it adds to the summary. */
-  development?: string;
   updatedAt: string;
-  status: DataStatus;
-  outlookHref: string;
-}
-
-/**
- * One producer country's row in the supply snapshot, taken from the
- * campaign's supply balance.
- */
-export interface SupplyCountryRow {
-  country: ProducerCountry;
-  /** Estimated production for the campaign, million hl. */
-  productionMhl: number;
-  /** Opening stocks carried into the campaign, million hl. */
-  openingStocksMhl: number;
-  /** Imports expected over the campaign, as stated in the balance, million hl. */
-  importsMhl: number;
-  /** Opening stocks plus production plus imports, million hl. */
-  availabilityMhl: number;
-  /** Availability against the previous campaign's balance, percent. */
-  vsPreviousPercent: number;
-}
-
-export interface SupplySnapshot {
-  /** Campaign code, e.g. "2026/27". */
-  campaign: string;
-  /** Campaign the comparison column refers to, e.g. "2025/26". */
-  previousCampaign: string;
-  rows: SupplyCountryRow[];
-  /** The desk's one-sentence reading of the rows. */
-  takeaway: string;
-  /** Short definition of the figures; full methodology lives elsewhere. */
-  note: string;
-  status: DataStatus;
-  source: DataSource;
-  updatedAt: string;
-}
-
-export type HarvestStageDirection = "up" | "down" | "flat";
-export type HarvestCondition = "good" | "mixed" | "stressed";
-
-/** One region's row in the harvest monitor. */
-export interface HarvestRegion {
-  id: string;
-  region: string;
-  country: ProducerCountry;
-  /** Current phenological or picking stage. */
-  stage: string;
-  condition: HarvestCondition;
-  conditionNote: string;
-  /** Expected crop against the previous vintage. */
-  expected: HarvestStageDirection;
-  updatedAt: string;
-  status: DataStatus;
+  readingMinutes: number;
+  /** Where the full text is read. */
+  href: string;
+  /** The edition's photograph, set behind its headline. */
+  hero?: ArticleHero;
 }
 
 /** One ranked row in a trade flow table; any ISO 3166-1 alpha-2 country. */
@@ -384,26 +334,6 @@ export interface TradeOverview {
   updatedAt: string;
 }
 
-/** One edition of the Weekly Briefing. */
-export interface BriefingEdition {
-  id: string;
-  date: string;
-  headline: string;
-  summary: string;
-  isCurrent: boolean;
-}
-
-/** One monthly market report. */
-export interface MonthlyReport {
-  id: string;
-  /** Display month, e.g. "July 2026". */
-  month: string;
-  title: string;
-  summary: string;
-  /** "scheduled" until report production launches. */
-  status: "scheduled" | "available";
-}
-
 /** Industry coverage topics, matching the Industry navigation. */
 export type IndustryTopic =
   | "companies"
@@ -420,13 +350,19 @@ export const INDUSTRY_TOPIC_LABELS: Record<IndustryTopic, string> = {
   "packaging-logistics": "Packaging & Logistics",
 };
 
-/** One industry story, assigned to a coverage topic. */
+/**
+ * One industry story, assigned to a coverage topic: WineTerm's own
+ * headline and summary of a report published elsewhere, which it links.
+ */
 export interface IndustryStory {
   id: string;
   topic: IndustryTopic;
   headline: string;
   summary: string;
+  /** When the source published the report, e.g. "2026-09-30". */
   publishedAt: string;
+  /** The publication that reported it, and the report's address. */
+  source: { name: string; url: string };
 }
 
 /** A compact dated headline for the industry rail. */
@@ -435,12 +371,8 @@ export interface IndustryItem {
   headline: string;
   publishedAt: string;
   href: string;
-}
-
-export interface IndustryDigest {
-  news: IndustryItem[];
-  deals: IndustryItem[];
-  regulation: IndustryItem[];
+  /** Short topic name shown in the meta line, e.g. "Regulation". */
+  topic: string;
 }
 
 /** What a directory company does; each is a section of the directory. */
@@ -471,7 +403,7 @@ export const DIRECTORY_CATEGORY_LABELS: Record<DirectoryCategory, string> = {
   "suppliers-services": "Suppliers and services",
 };
 
-/** One company listed in the professional directory. */
+/** One company listed in the directory. */
 export interface DirectoryCompany {
   /** Stable identifier, which is also the anchor of its entry. */
   id: string;

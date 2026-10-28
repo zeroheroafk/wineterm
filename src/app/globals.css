@@ -22,6 +22,11 @@
   --wt-wine-deep: #421724; /* dark burgundy */
   --wt-wine-wash: #e8dadd; /* light burgundy surface */
 
+  /* Logo wine drop: gradient from its lit top left to its deep bottom right */
+  --wt-drop-light: #c64760;
+  --wt-drop: #9a2240;
+  --wt-drop-deep: #6e1029;
+
   /* Lines */
   --wt-rule: #d6cfc5; /* borders and rules */
 
@@ -32,6 +37,16 @@
   /* Accent */
   --wt-ochre: #a67c3d; /* restrained ochre accent: rules, swatches, charts */
   --wt-ochre-deep: #77592c; /* ochre for text: 4.5:1 or more on every surface */
+
+  /*
+   * Producer countries in charts, one colour each wherever they appear.
+   * Checked together on paper: every pair stays apart under colour vision
+   * deficiencies (OKLab difference 9 or more) and each line holds 3:1.
+   */
+  --wt-country-es: #9a2240;
+  --wt-country-pt: #2a6fc7;
+  --wt-country-fr: #b07600;
+  --wt-country-it: #14946b;
 }
 
 @theme inline {

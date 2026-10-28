@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { MaybePercent, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { Flag } from "@/components/ui/Flag";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { formatPrice } from "@/lib/format";
 import {
@@ -111,7 +112,8 @@ export function TradeCategorySummaryTable({
         </table>
       </ScrollRegion>
       <figcaption className="wt-label mt-2 max-w-3xl leading-relaxed text-ink-soft">
-        Trade of ES, PT, FR and IT with every partner, {period}: exports and
+        Trade of <Flag code="ES" />, <Flag code="PT" />, <Flag code="FR" /> and{" "}
+        <Flag code="IT" /> with every partner, {period}: exports and
         imports each add up the four countries. Categories are distinct
         customs subheadings and are never summed: bulk, bottled, bag-in-box
         and sparkling volumes are wine; grape must volumes are product as

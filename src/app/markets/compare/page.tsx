@@ -18,10 +18,11 @@ import {
   type CompareOption,
 } from "@/components/markets/ComparePicker";
 import { MarketsPageHeader } from "@/components/markets/MarketsPageHeader";
-import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
+import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
+import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatPrice } from "@/lib/format";
-import { getMarketsService, isIllustrative } from "@/services/markets/service";
+import { getMarketsService } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
 import {
   FAMILY_REFERENCE_UNIT,
@@ -29,6 +30,7 @@ import {
   UNIT_FAMILY,
   UNIT_TO_REFERENCE,
   type MarketKind,
+  type MarketRow,
   type MarketSeries,
 } from "@/services/markets/types";
 
@@ -38,6 +40,9 @@ export const metadata: Metadata = {
     "Compare compatible wine market price series side by side, with explicit unit handling.",
 };
 
+const KINDS: MarketKind[] = ["bulk-wine", "must"];
+
+/** Suggested comparisons; each is offered only when every series exists. */
 const PRESETS: { label: string; codes: string[] }[] = [
   {
     label: "Spain national averages, white and red (MAPA)",
@@ -59,37 +64,61 @@ const PRESETS: { label: string; codes: string[] }[] = [
     label: "National bulk wine averages: Spain (red), Portugal, France, Italy",
     codes: ["ES-NAT-RED-NGI", "PT-NAT-BULK", "FR-NAT-BULK", "IT-NAT-BULK"],
   },
-  {
-    label: "Iberian generic red",
-    codes: ["ES-CLM-RED-GEN", "ES-EXT-RED-GEN", "PT-ALE-RED-GEN"],
-  },
-  {
-    label: "Generic white, Spain and Portugal",
-    codes: ["ES-CLM-WHT-GEN", "PT-LIS-WHT-GEN"],
-  },
-  {
-    label: "PDO bulk red, quoted per litre",
-    codes: ["ES-RIO-RED-PDO", "PT-DOU-RED-PDO"],
-  },
-  {
-    label: "RCGM, Spain and Italy",
-    codes: ["MU-ES-RCGM-WHT", "MU-IT-RCGM"],
-  },
 ];
 
-export default async function ComparePage({
+/** Every comparable row of the catalogue, across the three market kinds. */
+async function comparableRows(): Promise<MarketRow[]> {
+  const markets = getMarketsService();
+  return (await Promise.all(KINDS.map((kind) => markets.getRows(kind)))).flat();
+}
+
+/**
+ * The header is prerendered; the picker and the chart read the selection
+ * from the query string, so they render at request time behind the
+ * fallback.
+ */
+export default function ComparePage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  return (
+    <Container className="pb-16">
+      <MarketsPageHeader
+        crumb="Market Comparison"
+        title="Market Comparison"
+        description="Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed."
+        activeHref="/markets/compare"
+      />
+
+      <Suspense fallback={<ResultsFallback />}>
+        <CompareResults searchParams={searchParams} />
+      </Suspense>
+    </Container>
+  );
+}
+
+async function CompareResults({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
   const query = await searchParams;
   const markets = getMarketsService();
-  const kinds: MarketKind[] = ["bulk-wine", "grape", "must"];
-  const allRows = (await Promise.all(kinds.map((kind) => markets.getRows(kind)))).flat();
+  const allRows = await comparableRows();
+  if (allRows.length === 0) {
+    return (
+      <div className="mt-8">
+        <EmptyState
+          title="No series to compare"
+          detail="Series are read from the database, which this build is not connected to."
+        />
+      </div>
+    );
+  }
+
   const allSeries = allRows.map((row) => row.series);
-  const illustrative = new Map(
-    allRows.map((row) => [row.series.code, isIllustrative(row)]),
-  );
+  const codes = new Set(allSeries.map((s) => s.code));
 
   const options: CompareOption[] = allSeries.map((s) => ({
     code: s.code,
@@ -98,12 +127,10 @@ export default async function ComparePage({
     unitFamily: UNIT_FAMILY[s.unit],
     unit: s.unit,
     currency: s.currency,
-    illustrative: illustrative.get(s.code) ?? true,
   }));
   const presets = PRESETS.filter((preset) =>
-    preset.codes.every((code) => illustrative.has(code)),
+    preset.codes.every((code) => codes.has(code)),
   );
-  const hasReal = [...illustrative.values()].some((value) => !value);
 
   const requested = (firstParam(query, "s") ?? "")
     .split(",")
@@ -127,8 +154,7 @@ export default async function ComparePage({
     const compatible =
       series.kind === first.kind &&
       UNIT_FAMILY[series.unit] === UNIT_FAMILY[first.unit] &&
-      series.currency === first.currency &&
-      illustrative.get(series.code) === illustrative.get(first.code);
+      series.currency === first.currency;
     if (compatible) {
       selected.push(series);
     } else {
@@ -163,25 +189,12 @@ export default async function ComparePage({
   );
 
   return (
-    <Container className="pb-16">
-      <MarketsPageHeader
-        crumb="Market Comparison"
-        title="Market Comparison"
-        description={
-          hasReal
-            ? "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed, and real prices are compared only with real prices, illustrative samples with samples."
-            : "Chart up to four compatible series over the last 12 months. Comparisons stay within one market type, unit family and currency; grape and wine prices are never mixed. Development figures are illustrative samples."
-        }
-        activeHref="/markets/compare"
-      />
-
+    <>
       <div className="mt-8">
-        <Suspense fallback={<div className="h-16 border-y border-rule bg-paper" />}>
-          <ComparePicker
-            options={options}
-            selected={selected.map((s) => s.code)}
-          />
-        </Suspense>
+        <ComparePicker
+          options={options}
+          selected={selected.map((s) => s.code)}
+        />
       </div>
 
       {dropped.length > 0 ? (
@@ -190,7 +203,7 @@ export default async function ComparePage({
           {dropped.join(", ")}{" "}
           {dropped.length === 1 ? "was" : "were"} removed: series must share
           the same market type, unit family and currency as the first
-          selection, and be real prices or illustrative samples like it.
+          selection.
         </p>
       ) : null}
 
@@ -215,26 +228,28 @@ export default async function ComparePage({
               wine prices, volume and mass units, or currencies.
             </p>
           </div>
-          <div>
-            <h2 className="wt-label border-b-2 border-ink pb-1.5 text-wine">
-              Suggested comparisons
-            </h2>
-            <ul className="mt-3 space-y-2">
-              {presets.map((preset) => (
-                <li key={preset.label}>
-                  <Link
-                    href={`/markets/compare?s=${preset.codes.join(",")}`}
-                    className="text-sm font-medium text-ink underline decoration-rule underline-offset-2 hover:text-wine-deep"
-                  >
-                    {preset.label}
-                  </Link>
-                  <span className="wt-label ml-2 text-ink-soft">
-                    {preset.codes.length} series
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {presets.length > 0 ? (
+            <div>
+              <h2 className="wt-label border-b-2 border-ink pb-1.5 text-wine">
+                Suggested comparisons
+              </h2>
+              <ul className="mt-3 space-y-2">
+                {presets.map((preset) => (
+                  <li key={preset.label}>
+                    <Link
+                      href={`/markets/compare?s=${preset.codes.join(",")}`}
+                      className="text-sm font-medium text-ink underline decoration-rule underline-offset-2 hover:text-wine-deep"
+                    >
+                      {preset.label}
+                    </Link>
+                    <span className="wt-label ml-2 text-ink-soft">
+                      {preset.codes.length} series
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       ) : (
         <>
@@ -286,9 +301,6 @@ export default async function ComparePage({
                   <th scope="col" className={TH}>
                     Date
                   </th>
-                  <th scope="col" className={TH}>
-                    Status
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -334,11 +346,6 @@ export default async function ComparePage({
                       <td className={`${TD} tnum font-mono text-xs text-ink-soft`}>
                         {formatDate(row.latest.date)}
                       </td>
-                      <td className={TD}>
-                        {isIllustrative(row) ? (
-                          <DataStatusLabel status="illustrative" />
-                        ) : null}
-                      </td>
                     </tr>
                   ) : null,
                 )}
@@ -347,13 +354,13 @@ export default async function ComparePage({
           </ScrollRegion>
           {rows.some((row) => row?.series.perDegree) ? (
             <p className="wt-label mt-2 text-ink-soft">
-              Samples recorded per hectolitre-degree are shown in EUR/hl at the
+              Series recorded per hectolitre-degree are shown in EUR/hl at the
               product&apos;s strength; each series page gives the recorded
               value and the strength used.
             </p>
           ) : null}
         </>
       )}
-    </Container>
+    </>
   );
 }
