@@ -4,7 +4,7 @@ import { BriefingBand } from "@/components/editorial/BriefingBand";
 import { IndustryHeadlineList } from "@/components/editorial/IndustryHeadlineList";
 import { Container } from "@/components/layout/Container";
 import { KeyPricesTable } from "@/components/market/KeyPricesTable";
-import { LeadBriefing } from "@/components/market/LeadBriefing";
+import { LeadArticle } from "@/components/market/LeadArticle";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getHomeService } from "@/services/home";
@@ -15,9 +15,9 @@ const INDUSTRY_HEADLINES = 5;
 
 /**
  * The homepage, kept to four blocks: the introduction over the latest
- * Weekly Briefing, set across the full width on its photograph, the key
- * bulk wine prices, the latest analysis and industry news, and the
- * newsletter signup. The trade snapshot has its own tab, Market data
+ * article, whether an analysis, a Weekly Briefing or a monthly report, set
+ * across the full width on its photograph, the key bulk wine prices, the
+ * latest analysis and industry news, and the newsletter signup. The trade snapshot has its own tab, Market data
  * (/data). The key prices read the database, so the page is regenerated
  * at most hourly.
  */
@@ -27,14 +27,14 @@ export default async function Home() {
 
   const home = getHomeService();
   const [
-    briefing,
+    lead,
     keyPrices,
     leadAnalysis,
     secondaryAnalysis,
     industry,
     updatedAt,
   ] = await Promise.all([
-    home.getLeadBriefing(),
+    home.getLeadArticle(),
     home.getKeyPrices(),
     home.getLeadAnalysis(),
     home.getSecondaryAnalysis(),
@@ -76,7 +76,7 @@ export default async function Home() {
         </section>
       </Container>
 
-      {briefing ? <LeadBriefing briefing={briefing} /> : null}
+      {lead ? <LeadArticle article={lead} /> : null}
 
       <Container>
         <section aria-labelledby="home-prices" className="mt-12">
