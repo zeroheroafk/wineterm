@@ -1,6 +1,7 @@
 /**
  * Consistency checks for the published articles, briefings and reports:
- * each is served at the address its preview links to, every citation
+ * each is served at the address its preview links to, its description
+ * fits in search results, every citation
  * names a listed source and every source is cited, a photograph is in
  * public/ with its credit, a chart shows the figures the paragraph it
  * follows states, and every table row fills its columns.
@@ -26,6 +27,13 @@ describe("published articles", () => {
       assert.ok(article.kind in sections, `${article.id} is a ${article.kind}`);
       const section = sections[article.kind as keyof typeof sections];
       assert.equal(article.href, `/insights/${section}/${article.id}`);
+    }
+  });
+
+  it("describe themselves in the 160 characters search results print", () => {
+    for (const article of publishedArticles) {
+      const description = article.description ?? article.standfirst;
+      assert.ok(description.length <= 160, `${article.id}: ${description.length}`);
     }
   });
 

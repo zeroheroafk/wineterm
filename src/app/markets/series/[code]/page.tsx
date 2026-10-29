@@ -95,9 +95,13 @@ export default function MarketDetailPage(props: MarketDetailProps) {
   );
 }
 
+/**
+ * At least the screen's height, so the footer starts below the fold and
+ * the series landing in its place moves nothing the reader can see.
+ */
 function MarketDetailFallback() {
   return (
-    <Container className="pb-16">
+    <Container className="min-h-svh pb-16">
       <div aria-busy="true">
         <p className="sr-only">Loading the series</p>
         <div className="h-4 w-48 bg-paper" />

@@ -9,6 +9,8 @@ export const weeklyBriefing20261022: ArticleDetail = {
   headline: "Spanish white wine rebounds as an early crop fills Italy's cellars",
   standfirst:
     "Spain's white wine without a GI gained 8.5% in two weeks, Italy's cellars hold 14% more wine than a year ago with the new crop already fermenting, French stocks are the lowest since 2018, and EU governments set their line on wine in the farm market reform.",
+  description:
+    "Spain's white wine without a GI gained 8.5% in two weeks, Italy's cellars hold 14% more wine than a year ago, and French stocks are the lowest since 2018.",
   publishedAt: "2026-10-22",
   readingMinutes: 3,
   href: `/insights/weekly-briefing/${id}`,

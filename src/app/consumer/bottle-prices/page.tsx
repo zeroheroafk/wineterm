@@ -18,7 +18,7 @@ import { BOTTLE_CATEGORY_LABELS, type BottleCategory } from "@/services/consumer
 export const metadata: Metadata = {
   title: "Wine Bottle Prices at the Border",
   description:
-    "What a 75 cl bottle of wine is worth when it leaves Spain, Portugal, France and Italy, still and sparkling, to every destination and to the leading ones, from the official trade statistics.",
+    "What a 75 cl bottle of still or sparkling wine is worth when it leaves Spain, Portugal, France and Italy, by destination, from official trade statistics.",
   alternates: { canonical: "/consumer/bottle-prices" },
 };
 

@@ -12,6 +12,8 @@ export const wineTradeYouNeverSeeOnALabel: ArticleDetail = {
   headline: "The wine trade you never see on a label",
   standfirst:
     "A third of internationally traded wine travels in bulk. Behind those shipments sits a business in sourcing, bottling and distribution that shapes how producers reach their customers.",
+  description:
+    "A third of internationally traded wine travels in bulk, behind it a business in sourcing, bottling and distribution that shapes how producers reach buyers.",
   publishedAt: "2026-10-01",
   readingMinutes: 5,
   href: `/insights/analysis/${id}`,

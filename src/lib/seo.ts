@@ -60,16 +60,17 @@ export function organizationJsonLd() {
  * when it has none.
  */
 export function articleMetadata(article: ArticleDetail): Metadata {
+  const description = article.description ?? article.standfirst;
   return {
     title: article.headline,
-    description: article.standfirst,
+    description,
     alternates: { canonical: article.href },
     openGraph: {
       ...SITE_OPEN_GRAPH,
       type: "article",
       url: article.href,
       title: article.headline,
-      description: article.standfirst,
+      description,
       publishedTime: article.publishedAt,
       section: article.section,
       images: [

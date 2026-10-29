@@ -9,6 +9,8 @@ export const weeklyBriefing20261008: ArticleDetail = {
   headline: "An early Spanish harvest fills cellars as white wine slips",
   standfirst:
     "Spain declared 10.6 Mhl of wine made in August, the most since 2018, its white wine without a GI trades 17% below last year, France races to finish its grubbing-up, and EU ministers near a deal on wine's place in the farm reform.",
+  description:
+    "Spain declared 10.6 Mhl of wine made in August, the most since 2018, and its white wine without a GI trades 17% below last year.",
   publishedAt: "2026-10-08",
   readingMinutes: 3,
   href: `/insights/weekly-briefing/${id}`,
