@@ -18,9 +18,10 @@ import {
 } from "@/services/trade/types";
 
 export const metadata: Metadata = {
-  title: "Trade",
+  title: "Wine Trade: Spain, Portugal, France and Italy",
   description:
     "Wine trade of Spain, Portugal, France and Italy by customs category: bulk, bottled and bag-in-box still wine, sparkling wine and grape must. Volumes, values, unit values and partners.",
+  alternates: { canonical: "/trade" },
 };
 
 const header = (

@@ -8,9 +8,10 @@ import { primaryNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 
 export const metadata: Metadata = {
-  title: "Monthly Reports",
+  title: "Monthly Wine Market Reports",
   description:
     "Structured monthly reviews of the wine market: prices, supply, stocks and trade in one dated document.",
+  alternates: { canonical: "/insights/monthly-reports" },
 };
 
 export default async function MonthlyReportsPage() {

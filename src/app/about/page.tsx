@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "WineTerm is an independent market desk for the professional wine trade: wine sector news, prices, production, stocks, trade and crop intelligence.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

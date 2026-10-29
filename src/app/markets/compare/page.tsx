@@ -35,9 +35,10 @@ import {
 } from "@/services/markets/types";
 
 export const metadata: Metadata = {
-  title: "Market Comparison",
+  title: "Compare Wine Price Series",
   description:
     "Compare compatible wine market price series side by side, with explicit unit handling.",
+  alternates: { canonical: "/markets/compare" },
 };
 
 const KINDS: MarketKind[] = ["bulk-wine", "must"];

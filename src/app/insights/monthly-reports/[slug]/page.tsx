@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ArticleView } from "@/components/editorial/ArticleView";
+import { articleMetadata } from "@/lib/seo";
 import { getEditorialService } from "@/services/editorial";
 import type { ArticleDetail } from "@/services/types";
 
@@ -23,10 +24,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const report = await getReport(slug);
   if (!report) return { title: "Report not found" };
-  return {
-    title: report.headline,
-    description: report.standfirst,
-  };
+  return articleMetadata(report);
 }
 
 export default async function MonthlyReportPage({

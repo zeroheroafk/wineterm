@@ -13,15 +13,18 @@ import { RelatedMarketsList } from "@/components/markets/RelatedMarketsList";
 import { DataClassificationTag } from "@/components/markets/tags";
 import { TimeRangeControls } from "@/components/markets/TimeRangeControls";
 import { CountryLabel } from "@/components/ui/CountryLabel";
+import { JsonLd } from "@/components/ui/JsonLd";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime, formatPrice } from "@/lib/format";
+import { absoluteUrl, organizationJsonLd } from "@/lib/seo";
 import { getMarketsService } from "@/services/markets/service";
 import { firstParam, type SearchParams } from "@/services/markets/params";
-import { getSource } from "@/services/markets/sources";
+import { getSource, type MarketSource } from "@/services/markets/sources";
 import {
   referenceUnit,
   UNIT_TO_REFERENCE,
   type MarketKind,
+  type MarketRow,
   type TimeRangeKey,
 } from "@/services/markets/types";
 import { COUNTRY_NAMES, describeDegreeBasis } from "@/services/types";
@@ -38,10 +41,40 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { code } = await params;
   const series = await getMarketsService().getSeries(code);
-  if (!series) return { title: "Market not found" };
+  // Crawlers wait for the metadata (htmlLimitedBots in next.config.ts),
+  // so an unknown code answers them with a 404 rather than a soft one.
+  if (!series) notFound();
   return {
     title: series.name,
-    description: `${series.product}. ${series.region}, ${COUNTRY_NAMES[series.country]}. Price series in ${series.unit}.`,
+    description: `${series.product}. ${series.region}, ${COUNTRY_NAMES[series.country]}. Price history in ${series.unit} from ${getSource(series.sourceId).name}.`,
+    alternates: { canonical: `/markets/series/${series.code}` },
+  };
+}
+
+/**
+ * The series as Dataset structured data, which Google Dataset Search
+ * lists: what it measures and where, who compiles it and from what.
+ */
+function datasetJsonLd(row: MarketRow, source: MarketSource) {
+  const { series, latest } = row;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: series.name,
+    description: `${series.name}, in ${series.unit}, from ${source.name}. ${series.methodology}`,
+    url: absoluteUrl(`/markets/series/${series.code}`),
+    identifier: series.code,
+    spatialCoverage: `${series.appellation ?? series.region}, ${COUNTRY_NAMES[series.country]}`,
+    variableMeasured: {
+      "@type": "PropertyValue",
+      name: "Price",
+      description: series.product,
+      unitText: series.unit,
+    },
+    dateModified: latest.updatedAt,
+    isAccessibleForFree: true,
+    creator: organizationJsonLd(),
+    ...(source.url ? { isBasedOn: source.url } : {}),
   };
 }
 
@@ -110,6 +143,7 @@ async function MarketDetail({ params, searchParams }: MarketDetailProps) {
 
   return (
     <Container className="pb-16">
+      <JsonLd data={datasetJsonLd(row, source)} />
       <Breadcrumbs
         items={[
           { label: "Markets", href: "/markets" },

@@ -4,7 +4,12 @@ import { Analytics } from "@vercel/analytics/next";
 
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
+import { SITE_OPEN_GRAPH } from "@/lib/seo";
+import {
+  GOOGLE_SITE_VERIFICATION,
+  SITE_INDEXABLE,
+  SITE_URL,
+} from "@/lib/site";
 
 import "./globals.css";
 
@@ -36,7 +41,12 @@ export const metadata: Metadata = {
   },
   description:
     "Wine sector news, prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade.",
+  // No canonical here: metadata merges shallowly, so a canonical set in
+  // the layout would point every page that sets none at the homepage.
+  // Each page names its own.
+  openGraph: { ...SITE_OPEN_GRAPH, type: "website" },
   robots: SITE_INDEXABLE ? null : { index: false, follow: false },
+  verification: { google: GOOGLE_SITE_VERIFICATION },
 };
 
 export default function RootLayout({

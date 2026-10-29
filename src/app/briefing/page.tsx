@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Get the briefing",
   description:
     "The WineTerm Weekly Briefing: prices, supply signals and trade developments across the European wine market, every Friday.",
+  alternates: { canonical: "/briefing" },
 };
 
 /** Landing route for the newsletter call to action across the shell. */

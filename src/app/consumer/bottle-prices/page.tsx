@@ -16,9 +16,10 @@ import { getConsumerService } from "@/services/consumer/service";
 import { BOTTLE_CATEGORY_LABELS, type BottleCategory } from "@/services/consumer/types";
 
 export const metadata: Metadata = {
-  title: "Bottle Prices",
+  title: "Wine Bottle Prices at the Border",
   description:
     "What a 75 cl bottle of wine is worth when it leaves Spain, Portugal, France and Italy, still and sparkling, to every destination and to the leading ones, from the official trade statistics.",
+  alternates: { canonical: "/consumer/bottle-prices" },
 };
 
 const header = (

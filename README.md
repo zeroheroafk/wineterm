@@ -88,9 +88,11 @@ from the sitemap and marked noindex.
 ## Environment
 
 - `SITE_URL`: canonical origin, including the scheme, used for
-  `metadataBase`, the sitemap and robots.txt. Optional: without it,
-  Vercel builds use the project's production domain and local builds
-  use `http://localhost:3000`.
+  `metadataBase` and so every page's canonical link, the structured
+  data, the sitemap and robots.txt: `https://www.wineterm.com`, since the
+  apex domain redirects to it. Optional: without it, Vercel builds use
+  the project's production domain and local builds use
+  `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
   and contact messages; `/trade` and the Market data trade snapshot
@@ -108,7 +110,14 @@ from the sitemap and marked noindex.
   submissions are discarded and the reply says so, and the price,
   supply and trade pages say that no database is connected.
 - `SITE_INDEXABLE`: set to `true` to let search engines index the site.
-  Until then every page is marked noindex.
+  Until then every page is marked noindex. Set it for the Production
+  environment only: preview deployments stay out of search results.
+  Pages kept out of the menus (see `src/lib/navigation.ts`) stay noindex
+  either way.
+- `GOOGLE_SITE_VERIFICATION`: optional, the token of Google Search
+  Console's HTML tag, printed as the `google-site-verification` meta
+  tag. Not needed for a Domain property, which is verified with a DNS
+  TXT record.
 - `SHOW_DESIGN_SYSTEM`: set to `true` to serve `/design-system`, the
   component gallery, from a production build, as on a preview
   deployment; otherwise it answers 404 there. `next dev` always serves

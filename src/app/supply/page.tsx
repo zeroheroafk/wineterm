@@ -16,6 +16,7 @@ import { SourceLine } from "@/components/ui/SourceLine";
 import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatMonthYear } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
+import { UNLISTED_ROBOTS } from "@/lib/seo";
 import { getSource } from "@/services/markets/sources";
 import { getSupplyService } from "@/services/supply/service";
 
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
   title: "Crop & Supply",
   description:
     "Spain's declared wine balance: stocks, wine made, entries and exits in million hectolitres, from the monthly INFOVI declarations to the Ministry of Agriculture.",
+  alternates: { canonical: "/supply" },
+  robots: UNLISTED_ROBOTS,
 };
 
 /** Spain's balance is read from the database; regenerated at most hourly. */

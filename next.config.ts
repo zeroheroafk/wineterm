@@ -1,9 +1,24 @@
 import type { NextConfig } from "next";
+import { HTML_LIMITED_BOT_UA_RE } from "next/dist/shared/lib/router/utils/html-bots";
+
+import { SITE_URL } from "./src/lib/site";
+
+/**
+ * The project's vercel.app address, which serves the production site as
+ * well as the custom domain. It redirects to the canonical origin, so
+ * search engines find one copy of each page.
+ */
+const VERCEL_APP_HOST = "wineterm.vercel.app";
 
 const nextConfig: NextConfig = {
   // Pages are prerendered as static shells; the database reads behind
   // them are cached with "use cache" and refreshed hourly (cacheLife).
   cacheComponents: true,
+  // Pages rendered at request time, such as the series pages, stream
+  // their metadata into the body, and Google reads a canonical link only
+  // in the head. Next's list of crawlers that wait for the head leaves
+  // Googlebot out, because it runs JavaScript; it is added here.
+  htmlLimitedBots: new RegExp(`${HTML_LIMITED_BOT_UA_RE.source}|Googlebot`, "i"),
   async headers() {
     // The headers a public site is expected to send. A Content Security
     // Policy is left for a pass of its own: the inline scripts of the
@@ -27,6 +42,16 @@ const nextConfig: NextConfig = {
     // Early information architecture used /crop-supply/*; the built
     // sections live at /supply, /harvest and /trade.
     return [
+      ...(new URL(SITE_URL).host === VERCEL_APP_HOST
+        ? []
+        : [
+            {
+              source: "/:path*",
+              has: [{ type: "host" as const, value: VERCEL_APP_HOST }],
+              destination: `${SITE_URL}/:path*`,
+              permanent: true,
+            },
+          ]),
       { source: "/crop-supply", destination: "/supply", permanent: true },
       {
         source: "/crop-supply/production",

@@ -9,6 +9,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
+import { UNLISTED_ROBOTS } from "@/lib/seo";
 import { getHarvestService } from "@/services/harvest/service";
 import { getSource } from "@/services/markets/sources";
 
@@ -22,6 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Harvest",
     description: `The ${harvestYear(campaign)} European harvest: the official production estimates for Spain, Portugal, France and Italy, as each country's statistical body publishes them.`,
+    alternates: { canonical: "/harvest" },
+    robots: UNLISTED_ROBOTS,
   };
 }
 

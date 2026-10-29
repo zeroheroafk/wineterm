@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Contact WineTerm about data partnerships, directory listings, coverage suggestions or corrections.",
+  alternates: { canonical: "/contact" },
 };
 
 const SUBJECTS = [

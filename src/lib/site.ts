@@ -17,3 +17,11 @@ export const SITE_URL = (
  * built never surface in search results.
  */
 export const SITE_INDEXABLE = process.env.SITE_INDEXABLE === "true";
+
+/**
+ * Google Search Console's HTML tag token, the content of its
+ * google-site-verification meta tag. Optional: a Domain property is
+ * verified with a DNS record instead and needs no tag.
+ */
+export const GOOGLE_SITE_VERIFICATION =
+  process.env.GOOGLE_SITE_VERIFICATION || undefined;

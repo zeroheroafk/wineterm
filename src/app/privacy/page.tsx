@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Privacy",
   description:
     "How WineTerm handles personal data: what is collected, why, and the rights you hold.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

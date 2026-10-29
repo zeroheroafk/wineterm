@@ -11,9 +11,10 @@ import { primaryNavigation } from "@/lib/navigation";
 import { getTradeService } from "@/services/trade/service";
 
 export const metadata: Metadata = {
-  title: "Market data",
+  title: "Wine Market Data",
   description:
     "Wine trade at a glance: the leading exporters among Spain, Portugal, France and Italy, where their wine goes, and in what form.",
+  alternates: { canonical: "/data" },
 };
 
 /**

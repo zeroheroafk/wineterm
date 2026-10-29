@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ArticleView } from "@/components/editorial/ArticleView";
+import { articleMetadata } from "@/lib/seo";
 import { getEditorialService } from "@/services/editorial";
 import type { ArticleDetail } from "@/services/types";
 
@@ -23,10 +24,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getAnalysis(slug);
   if (!article) return { title: "Article not found" };
-  return {
-    title: article.headline,
-    description: article.standfirst,
-  };
+  return articleMetadata(article);
 }
 
 export default async function AnalysisArticlePage({

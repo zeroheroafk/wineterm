@@ -11,9 +11,10 @@ import { primaryNavigation } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 
 export const metadata: Metadata = {
-  title: "Weekly Briefing",
+  title: "Weekly Wine Market Briefing",
   description:
     "The wine market, once a week: prices, harvest conditions, supply and trade for professionals.",
+  alternates: { canonical: "/insights/weekly-briefing" },
 };
 
 export default async function WeeklyBriefingPage() {

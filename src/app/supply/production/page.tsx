@@ -12,6 +12,7 @@ import { SourceLine } from "@/components/ui/SourceLine";
 import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatMonthYear, formatPrice } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
+import { UNLISTED_ROBOTS } from "@/lib/seo";
 import { getSource } from "@/services/markets/sources";
 import { getSupplyService } from "@/services/supply/service";
 
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
   title: "Production",
   description:
     "Spain's wine production as declared every month to the Ministry of Agriculture: wine made since 1 August by colour, against the campaign before, and the totals of completed campaigns.",
+  alternates: { canonical: "/supply/production" },
+  robots: UNLISTED_ROBOTS,
 };
 
 function percentChange(current: number, previous: number | null): number | null {

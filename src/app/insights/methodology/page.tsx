@@ -30,6 +30,7 @@ export const metadata: Metadata = {
   title: "Methodology",
   description:
     "How WineTerm series are collected, classified and defined: sources, data classifications, units, normalisation, campaigns, balances, harvest reporting and revisions.",
+  alternates: { canonical: "/insights/methodology" },
 };
 
 const CLASSIFICATION_NOTES: Record<DataClassification, string> = {

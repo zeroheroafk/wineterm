@@ -17,14 +17,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   cacheLife("hours");
 
   const base = SITE_URL;
-  const series = await getMarketsService().listSeries();
-  const seriesEntries: MetadataRoute.Sitemap = series.map((s) => ({
+  const markets = getMarketsService();
+  const series = await markets.listSeries();
+  const rows = await Promise.all(series.map((s) => markets.getRow(s.code)));
+  // lastmod is the one field Google reads, and only when it is accurate:
+  // when the latest price was recorded, when an article was published.
+  const seriesEntries: MetadataRoute.Sitemap = series.map((s, index) => ({
     url: `${base}/markets/series/${s.code}`,
+    lastModified: rows[index]?.latest.updatedAt,
     changeFrequency: "weekly",
     priority: 0.5,
   }));
   const articleEntries: MetadataRoute.Sitemap = publishedArticles.map((a) => ({
     url: `${base}${a.href}`,
+    lastModified: a.publishedAt,
     changeFrequency: "monthly",
     priority: 0.6,
   }));

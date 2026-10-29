@@ -16,9 +16,10 @@ import { getConsumerService } from "@/services/consumer/service";
 import { PRODUCER_COUNTRIES } from "@/services/types";
 
 export const metadata: Metadata = {
-  title: "Consumer",
+  title: "Consumer Wine Prices",
   description:
     "Wine prices from the border to the shelf: what a bottle is worth when it leaves Spain, Portugal, France and Italy, and how the price of wine in the shops moves, country by country.",
+  alternates: { canonical: "/consumer" },
 };
 
 const header = (

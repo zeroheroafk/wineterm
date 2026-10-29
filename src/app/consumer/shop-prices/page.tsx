@@ -17,9 +17,10 @@ import { primaryNavigation } from "@/lib/navigation";
 import { getConsumerService } from "@/services/consumer/service";
 
 export const metadata: Metadata = {
-  title: "Shop Prices",
+  title: "Wine Prices in the Shops",
   description:
     "How the price of wine in the shops moves, country by country: the official consumer price index of wine for the EU, its 27 countries and Switzerland, and the average price of table wine in the United States.",
+  alternates: { canonical: "/consumer/shop-prices" },
 };
 
 const header = (
