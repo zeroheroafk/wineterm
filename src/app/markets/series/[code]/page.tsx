@@ -34,6 +34,19 @@ const KIND_META: Record<MarketKind, { label: string; href: string }> = {
   must: { label: "Must & Concentrates", href: "/markets/must-concentrates" },
 };
 
+/**
+ * Every series is prerendered, so its metadata, the canonical link
+ * included, sits in the head of the static shell that crawlers and
+ * readers alike receive; only the chart range (?r=) is read at request
+ * time. A build without the database, such as a preview, has no series,
+ * and Cache Components needs a param to prerender the route, so it
+ * prerenders a code that answers 404.
+ */
+export async function generateStaticParams() {
+  const series = await getMarketsService().listSeries();
+  return series.length > 0 ? series.map((s) => ({ code: s.code })) : [{ code: "none" }];
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -41,8 +54,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { code } = await params;
   const series = await getMarketsService().getSeries(code);
-  // Crawlers wait for the metadata (htmlLimitedBots in next.config.ts),
-  // so an unknown code answers them with a 404 rather than a soft one.
   if (!series) notFound();
   return {
     title: series.name,
