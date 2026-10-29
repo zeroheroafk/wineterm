@@ -5,25 +5,34 @@ import { PhotoCredit } from "@/components/editorial/PhotoCredit";
 import { Container } from "@/components/layout/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { formatDate } from "@/lib/format";
-import type { MarketBriefing } from "@/services/types";
+import type { ArticleKind, LeadArticle as Lead } from "@/services/types";
+
+/** The label over the headline and the way to the full text, by kind. */
+const KIND_COPY: Record<ArticleKind, { label: string; action: string }> = {
+  analysis: { label: "Analysis", action: "Read the analysis" },
+  "weekly-briefing": { label: "Weekly briefing", action: "Read the briefing" },
+  "monthly-report": { label: "Monthly report", action: "Read the report" },
+  news: { label: "News", action: "Read the story" },
+};
 
 /**
- * The latest Weekly Briefing across the full width of the homepage: its
- * photograph darkened behind the label, the headline, the summary and the
- * way to the edition, with the photograph's caption and credit at the
- * foot of the band. An edition without a photograph sits on the dark
- * burgundy surface instead.
+ * The latest article across the full width of the homepage, whether an
+ * analysis, a Weekly Briefing or a monthly report: its photograph darkened
+ * behind the label, the headline, the summary and the way to the article,
+ * with the photograph's caption and credit at the foot of the band. An
+ * article without a photograph sits on the dark burgundy surface instead.
  */
-export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
-  const { hero } = briefing;
+export function LeadArticle({ article }: { article: Lead }) {
+  const { hero } = article;
+  const copy = KIND_COPY[article.kind];
   return (
     <article
-      aria-labelledby="market-briefing-headline"
+      aria-labelledby="lead-article-headline"
       className={`wt-on-dark relative overflow-hidden text-paper ${hero ? "bg-ink" : "bg-wine-deep"}`}
     >
       {hero ? (
         // Narrower than a laptop the photograph takes a 3:2 frame at the top
-        // of the band, the shape the briefings' photographs are cropped to,
+        // of the band, the shape the articles' photographs are cropped to,
         // and fades into the dark under the text; wider, it fills the band,
         // darkened from the left where the text runs.
         <div className="absolute inset-x-0 top-0 aspect-[3/2] lg:inset-0 lg:aspect-auto">
@@ -48,38 +57,38 @@ export function LeadBriefing({ briefing }: { briefing: MarketBriefing }) {
       >
         <div className="max-w-3xl">
           <p className="wt-kicker inline-block bg-wine px-2 py-1 text-paper">
-            Weekly briefing
+            {copy.label}
           </p>
           <h2
-            id="market-briefing-headline"
+            id="lead-article-headline"
             className="wt-headline mt-4 text-[2rem] leading-[1.1] font-semibold tracking-[-0.015em] text-balance sm:text-[2.625rem] lg:text-[3.25rem]"
           >
             <Link
-              href={briefing.href}
+              href={article.href}
               className="decoration-2 underline-offset-[6px] hover:underline"
             >
-              {briefing.headline}
+              {article.headline}
             </Link>
           </h2>
           <p className="mt-4 max-w-2xl text-[1.0625rem] leading-[1.6] text-pretty text-paper/85 sm:text-lg">
-            {briefing.summary}
+            {article.summary}
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
             <ButtonLink
-              href={briefing.href}
+              href={article.href}
               variant="secondary"
               className="h-10 px-5"
             >
-              Read the briefing
+              {copy.action}
             </ButtonLink>
             <p className="text-[0.8125rem] text-paper/75">
-              <time dateTime={briefing.updatedAt}>
-                {formatDate(briefing.updatedAt)}
+              <time dateTime={article.publishedAt}>
+                {formatDate(article.publishedAt)}
               </time>
               <span aria-hidden="true" className="mx-1.5">
                 &middot;
               </span>
-              {briefing.readingMinutes} min read
+              {article.readingMinutes} min read
             </p>
           </div>
         </div>
