@@ -9,6 +9,8 @@ export const marketReportSeptember2026: ArticleDetail = {
   headline: "Market Report, September 2026",
   standfirst:
     "Spanish white wine ended September 17% cheaper than a year earlier as an early harvest filled cellars, while exports from the four main producers kept shrinking and France gathered one of its smallest crops in decades.",
+  description:
+    "Spanish white wine ended September 17% cheaper than a year earlier as an early harvest filled cellars, and exports from the four main producers kept shrinking.",
   publishedAt: "2026-10-08",
   readingMinutes: 5,
   href: `/insights/monthly-reports/${id}`,

@@ -9,6 +9,8 @@ export const portugalWineHarvestReboundSalesTest2026: ArticleDetail = {
   headline: "Portugal expects more wine. The sales test comes next",
   standfirst:
     "Portugal's harvest forecast points to more wine as export volumes contract. The Douro's production rules show why the commercial outcome will differ across the industry.",
+  description:
+    "Portugal's harvest forecast points to more wine as export volumes contract. The Douro's rules show why the outcome will differ across the industry.",
   publishedAt: "2026-10-29",
   readingMinutes: 4,
   href: `/insights/analysis/${id}`,

@@ -1,17 +1,18 @@
 "use client";
 
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import dynamic from "next/dynamic";
 
-import { formatDate, formatPrice } from "@/lib/format";
+import { ChartBox } from "@/components/charts/ChartBox";
 import type { PricePoint } from "@/services/types";
+
+/**
+ * Recharts draws in the browser only, so its plot is loaded apart from
+ * the page, when its ChartBox comes near the screen.
+ */
+const PriceLinePlot = dynamic(
+  () => import("@/components/market/PriceLinePlot").then((m) => m.PriceLinePlot),
+  { ssr: false },
+);
 
 /**
  * Restrained single-series line chart. Flat colours from the design
@@ -28,72 +29,8 @@ export function PriceLineChart({
   height?: number;
 }) {
   return (
-    <div style={{ height }} className="w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={points}
-          margin={{ top: 8, right: 12, bottom: 0, left: 0 }}
-        >
-          <CartesianGrid
-            stroke="var(--wt-rule)"
-            strokeWidth={1}
-            vertical={false}
-          />
-          <XAxis
-            dataKey="date"
-            tickFormatter={(value: string) => formatDate(value)}
-            tick={{
-              fill: "var(--wt-ink-soft)",
-              fontSize: 10,
-              fontFamily: "var(--font-mono)",
-            }}
-            tickLine={false}
-            axisLine={{ stroke: "var(--wt-rule)" }}
-            minTickGap={40}
-          />
-          <YAxis
-            width={44}
-            domain={["auto", "auto"]}
-            tickFormatter={(value: number) => formatPrice(value)}
-            tick={{
-              fill: "var(--wt-ink-soft)",
-              fontSize: 10,
-              fontFamily: "var(--font-mono)",
-            }}
-            tickLine={false}
-            axisLine={false}
-          />
-          <Tooltip
-            cursor={{ stroke: "var(--wt-ink-soft)", strokeDasharray: "3 3" }}
-            contentStyle={{
-              background: "var(--wt-paper)",
-              border: "1px solid var(--wt-rule)",
-              borderRadius: 0,
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              color: "var(--wt-ink)",
-            }}
-            labelFormatter={(value) => formatDate(String(value))}
-            formatter={(value) => [
-              `${formatPrice(Number(value))} ${unit}`,
-              undefined,
-            ]}
-          />
-          <Line
-            type="linear"
-            dataKey="value"
-            stroke="var(--wt-wine)"
-            strokeWidth={1.5}
-            dot={false}
-            activeDot={{
-              r: 3,
-              fill: "var(--wt-wine)",
-              stroke: "var(--wt-paper)",
-            }}
-            isAnimationActive={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <ChartBox height={height}>
+      <PriceLinePlot points={points} unit={unit} />
+    </ChartBox>
   );
 }

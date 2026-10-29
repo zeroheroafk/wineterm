@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { ShareChart } from "@/components/charts/ShareChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { BriefingBand } from "@/components/editorial/BriefingBand";
@@ -6,12 +8,30 @@ import { Container } from "@/components/layout/Container";
 import { KeyPricesTable } from "@/components/market/KeyPricesTable";
 import { LeadArticle } from "@/components/market/LeadArticle";
 import { ButtonLink } from "@/components/ui/Button";
+import { JsonLd } from "@/components/ui/JsonLd";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { absoluteUrl, organizationJsonLd, SITE_NAME } from "@/lib/seo";
 import { getHomeService } from "@/services/home";
 import { cacheLife } from "next/cache";
 
 /** Headlines in the news rail; Insights > News carries the rest. */
 const INDUSTRY_HEADLINES = 5;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
+/**
+ * The site and its publisher, which search results draw on for the site
+ * name and logo. Google reads them from the homepage.
+ */
+const SITE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebSite", name: SITE_NAME, url: absoluteUrl("/") },
+    organizationJsonLd(),
+  ],
+};
 
 /**
  * The homepage, kept to four blocks: the introduction over the latest
@@ -44,6 +64,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={SITE_JSON_LD} />
       <Container>
         <section
           aria-labelledby="home-intro"

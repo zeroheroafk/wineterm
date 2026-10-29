@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ArticleView } from "@/components/editorial/ArticleView";
+import { articleMetadata } from "@/lib/seo";
 import { getEditorialService } from "@/services/editorial";
 import type { ArticleDetail } from "@/services/types";
 
@@ -23,10 +24,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const edition = await getEdition(slug);
   if (!edition) return { title: "Briefing not found" };
-  return {
-    title: edition.headline,
-    description: edition.standfirst,
-  };
+  return articleMetadata(edition);
 }
 
 export default async function WeeklyBriefingEditionPage({

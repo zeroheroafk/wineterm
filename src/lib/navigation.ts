@@ -6,14 +6,16 @@
  * built so the shell is stable while sections come online.
  *
  * Pages without content yet stay out of the menus, the footer and the
- * sitemap, though their routes answer: Must & Concentrates
- * (/markets/must-concentrates, no licensed source). Add each back here
- * when it has something to show.
+ * sitemap, though their routes answer, and their metadata keeps them out
+ * of search results (UNLISTED_ROBOTS in lib/seo.ts): Must & Concentrates
+ * (/markets/must-concentrates, no licensed source). Add each back here,
+ * to the sitemap and to the index when it has something to show.
  *
  * Crop & Supply (/supply, /supply/production, /supply/stocks, /harvest)
  * is hidden the same way for now, along with its supply and harvest
  * panels on Market data. Its section stays below, marked hidden, so its
- * pages keep their headers; drop the mark to show it again.
+ * pages keep their headers; drop the mark, and the pages' robots, to
+ * show it again.
  */
 
 export interface NavLeaf {

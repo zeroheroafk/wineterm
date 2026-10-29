@@ -8,7 +8,9 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
 import { TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
 import { ArrowLink } from "@/components/ui/ArrowLink";
+import { JsonLd } from "@/components/ui/JsonLd";
 import { formatDate } from "@/lib/format";
+import { articleJsonLd } from "@/lib/seo";
 import type {
   ArticleDetail,
   ArticleHero,
@@ -123,6 +125,7 @@ export function ArticleView({
 }) {
   return (
     <Container className="pb-16">
+      <JsonLd data={articleJsonLd(article)} />
       <Breadcrumbs
         items={[
           { label: "Insights", href: "/insights" },

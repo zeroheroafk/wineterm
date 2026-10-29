@@ -11,12 +11,15 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/states";
 import { formatDate, formatMonthYear } from "@/lib/format";
 import { primaryNavigation } from "@/lib/navigation";
+import { UNLISTED_ROBOTS } from "@/lib/seo";
 import { getSupplyService } from "@/services/supply/service";
 
 export const metadata: Metadata = {
   title: "Stocks",
   description:
     "Wine stocks in Spain, Italy, France and Portugal as their operators declare them: Spain and Italy at the end of each month, France and Portugal at 31 July, in million hectolitres.",
+  alternates: { canonical: "/supply/stocks" },
+  robots: UNLISTED_ROBOTS,
 };
 
 /** The stocks are read from the database; regenerated at most hourly. */

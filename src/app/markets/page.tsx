@@ -14,9 +14,10 @@ import { getMarketsService } from "@/services/markets/service";
 import type { MarketKind, MarketRow } from "@/services/markets/types";
 
 export const metadata: Metadata = {
-  title: "Markets",
+  title: "Wine Market Prices",
   description:
     "Bulk wine, grape and must price intelligence for the professional European wine market.",
+  alternates: { canonical: "/markets" },
 };
 
 const PRODUCTS: {

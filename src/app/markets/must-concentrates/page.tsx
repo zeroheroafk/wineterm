@@ -11,6 +11,7 @@ import { MustPricesTable } from "@/components/markets/MustPricesTable";
 import { ResultsFallback } from "@/components/markets/ResultsFallback";
 import { UpdatedAt } from "@/components/ui/SourceLine";
 import { EmptyState } from "@/components/ui/states";
+import { UNLISTED_ROBOTS } from "@/lib/seo";
 import { getMarketsService } from "@/services/markets/service";
 import {
   filterFromParams,
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
   title: "Must & Concentrates",
   description:
     "Grape must, concentrated must and RCGM quotations with technical specifications and original units.",
+  alternates: { canonical: "/markets/must-concentrates" },
+  robots: UNLISTED_ROBOTS,
 };
 
 /**

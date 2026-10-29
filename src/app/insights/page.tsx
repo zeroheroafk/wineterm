@@ -13,9 +13,10 @@ import { getIndustryService } from "@/services/industry";
 import { INDUSTRY_TOPIC_LABELS } from "@/services/types";
 
 export const metadata: Metadata = {
-  title: "Insights",
+  title: "Wine Market Insights",
   description:
     "WineTerm editorial: analysis, news, the Weekly Briefing and monthly reports for the professional wine trade.",
+  alternates: { canonical: "/insights" },
 };
 
 export default async function InsightsPage() {

@@ -186,6 +186,11 @@ export interface Article {
   section: string;
   headline: string;
   standfirst: string;
+  /**
+   * What search results and link previews show under the headline, when
+   * the standfirst is longer than the 160 characters they print whole.
+   */
+  description?: string;
   publishedAt: string;
   readingMinutes: number;
   href: string;

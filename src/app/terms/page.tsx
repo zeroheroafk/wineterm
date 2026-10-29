@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Terms of Use",
   description:
     "Terms of use for the WineTerm platform: professional information, permitted use, and limits of liability.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

@@ -24,6 +24,18 @@ const TOPIC_INTROS: Record<IndustryTopic, string> = {
     "Glass, closures, cartons, flexitanks and freight: the cost and capacity layer between cellar and shelf.",
 };
 
+/**
+ * Page titles, which name the subject for search results; the page
+ * itself keeps the topic label. "Companies" alone is the Companies tab's.
+ */
+const TOPIC_TITLES: Record<IndustryTopic, string> = {
+  companies: "Wine Company News",
+  deals: "Wine Deals and Investments",
+  regulation: "Wine Regulation News",
+  technology: "Wine Technology News",
+  "packaging-logistics": "Wine Packaging and Logistics News",
+};
+
 export function generateStaticParams() {
   return NEWS_TOPICS.map((topic) => ({ topic }));
 }
@@ -37,8 +49,9 @@ export async function generateMetadata({
   if (!NEWS_TOPICS.includes(topic as IndustryTopic)) return { title: "News" };
   const key = topic as IndustryTopic;
   return {
-    title: INDUSTRY_TOPIC_LABELS[key],
+    title: TOPIC_TITLES[key],
     description: TOPIC_INTROS[key],
+    alternates: { canonical: `/insights/news/${key}` },
   };
 }
 

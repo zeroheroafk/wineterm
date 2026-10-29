@@ -24,9 +24,10 @@ import {
 } from "@/services/types";
 
 export const metadata: Metadata = {
-  title: "Bulk Wine Prices",
+  title: "Bulk Wine Prices: Spain, France, Italy, Portugal",
   description:
     "Bulk wine prices by country, region, classification and colour, with original units preserved.",
+  alternates: { canonical: "/markets/bulk-wine" },
 };
 
 /**

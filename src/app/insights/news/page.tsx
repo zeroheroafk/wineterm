@@ -7,9 +7,10 @@ import { primaryNavigation } from "@/lib/navigation";
 import { getIndustryService } from "@/services/industry";
 
 export const metadata: Metadata = {
-  title: "News",
+  title: "Wine Industry News",
   description:
     "Industry news for the professional wine trade: companies, deals and investments, regulation, technology, packaging and logistics.",
+  alternates: { canonical: "/insights/news" },
 };
 
 export default async function NewsPage() {

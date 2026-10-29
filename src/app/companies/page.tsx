@@ -18,9 +18,10 @@ import {
 } from "@/services/types";
 
 export const metadata: Metadata = {
-  title: "Companies",
+  title: "Wine Trade Companies",
   description:
     "The companies of the professional wine trade: wineries, cooperatives, bottlers, brokers, suppliers and service providers.",
+  alternates: { canonical: "/companies" },
 };
 
 const CATEGORY_DESCRIPTIONS: Record<DirectoryCategory, string> = {
