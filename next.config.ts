@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { HTML_LIMITED_BOT_UA_RE } from "next/dist/shared/lib/router/utils/html-bots";
 
 import { SITE_URL } from "./src/lib/site";
 
@@ -14,11 +13,6 @@ const nextConfig: NextConfig = {
   // Pages are prerendered as static shells; the database reads behind
   // them are cached with "use cache" and refreshed hourly (cacheLife).
   cacheComponents: true,
-  // Pages rendered at request time, such as the series pages, stream
-  // their metadata into the body, and Google reads a canonical link only
-  // in the head. Next's list of crawlers that wait for the head leaves
-  // Googlebot out, because it runs JavaScript; it is added here.
-  htmlLimitedBots: new RegExp(`${HTML_LIMITED_BOT_UA_RE.source}|Googlebot`, "i"),
   async headers() {
     // The headers a public site is expected to send. A Content Security
     // Policy is left for a pass of its own: the inline scripts of the
