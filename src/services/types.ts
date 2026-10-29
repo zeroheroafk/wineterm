@@ -283,15 +283,19 @@ export interface ArticleDetail extends Article {
   tables?: ArticleTable[];
 }
 
-/** The editorial market briefing that leads the homepage. */
-export interface MarketBriefing {
+/**
+ * The article that leads the homepage: the latest published, whether an
+ * analysis, a Weekly Briefing or a monthly report.
+ */
+export interface LeadArticle {
+  kind: ArticleKind;
   headline: string;
   summary: string;
-  updatedAt: string;
+  publishedAt: string;
   readingMinutes: number;
   /** Where the full text is read. */
   href: string;
-  /** The edition's photograph, set behind its headline. */
+  /** The article's photograph, set behind its headline. */
   hero?: ArticleHero;
 }
 

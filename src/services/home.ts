@@ -4,8 +4,8 @@
  * Aggregates what the homepage needs behind one typed interface. Figures
  * that exist in another domain are read from that domain's service and
  * never copied: the key prices are the national series of the markets
- * catalogue, the briefing and the analysis are the latest published by
- * the editorial service, and the industry headlines the latest stories.
+ * catalogue, the lead article and the analysis are the latest published
+ * by the editorial service, and the industry headlines the latest stories.
  */
 
 import { getEditorialService } from "@/services/editorial";
@@ -24,18 +24,25 @@ import {
   type DataSource,
   INDUSTRY_TOPIC_LABELS,
   type IndustryItem,
-  type MarketBriefing,
+  type LeadArticle,
   type PriceQuote,
   type PriceUnit,
 } from "@/services/types";
 
 export interface HomeService {
-  /** The latest Weekly Briefing and its photograph, when one is published. */
-  getLeadBriefing(): Promise<MarketBriefing | null>;
+  /**
+   * The latest published article, of any kind, and its photograph, when
+   * one is published.
+   */
+  getLeadArticle(): Promise<LeadArticle | null>;
   /** One price per national bulk wine series. */
   getKeyPrices(): Promise<PriceQuote[]>;
-  /** The latest analysis with its full text, when one is published. */
+  /**
+   * The latest analysis with its full text, when one is published, after
+   * the lead article: an analysis that leads the page is not shown twice.
+   */
   getLeadAnalysis(): Promise<ArticleDetail | null>;
+  /** The two analyses after the lead analysis. */
   getSecondaryAnalysis(): Promise<Article[]>;
   /** The latest industry stories, each linked to its row on News. */
   getIndustryHeadlines(limit: number): Promise<IndustryItem[]>;
@@ -135,19 +142,33 @@ async function nationalPrices(): Promise<CataloguePrice[]> {
   );
 }
 
+/**
+ * The latest analyses, leaving out the one that leads the homepage when
+ * the latest article of all is an analysis.
+ */
+async function analysisAfterLead(limit: number): Promise<Article[]> {
+  const editorial = getEditorialService();
+  const [[lead], analyses] = await Promise.all([
+    editorial.getLatestArticles(1),
+    editorial.getArticlesByKind("analysis", limit + 1),
+  ]);
+  return analyses.filter((article) => article.id !== lead?.id).slice(0, limit);
+}
+
 class EditorialHomeService implements HomeService {
-  async getLeadBriefing(): Promise<MarketBriefing | null> {
+  async getLeadArticle(): Promise<LeadArticle | null> {
     const editorial = getEditorialService();
-    const [latest] = await editorial.getArticlesByKind("weekly-briefing", 1);
-    const briefing = latest ? await editorial.getArticle(latest.id) : null;
-    return briefing
+    const [latest] = await editorial.getLatestArticles(1);
+    const article = latest ? await editorial.getArticle(latest.id) : null;
+    return article
       ? {
-          headline: briefing.headline,
-          summary: briefing.standfirst,
-          updatedAt: briefing.publishedAt,
-          readingMinutes: briefing.readingMinutes,
-          href: briefing.href,
-          hero: briefing.hero,
+          kind: article.kind,
+          headline: article.headline,
+          summary: article.standfirst,
+          publishedAt: article.publishedAt,
+          readingMinutes: article.readingMinutes,
+          href: article.href,
+          hero: article.hero,
         }
       : null;
   }
@@ -157,14 +178,12 @@ class EditorialHomeService implements HomeService {
   }
 
   async getLeadAnalysis(): Promise<ArticleDetail | null> {
-    const editorial = getEditorialService();
-    const [lead] = await editorial.getArticlesByKind("analysis", 1);
-    return lead ? editorial.getArticle(lead.id) : null;
+    const [lead] = await analysisAfterLead(1);
+    return lead ? getEditorialService().getArticle(lead.id) : null;
   }
 
   async getSecondaryAnalysis(): Promise<Article[]> {
-    const latest = await getEditorialService().getArticlesByKind("analysis", 3);
-    return latest.slice(1);
+    return (await analysisAfterLead(3)).slice(1);
   }
 
   async getIndustryHeadlines(limit: number): Promise<IndustryItem[]> {
