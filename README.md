@@ -289,12 +289,13 @@ outcome on the run.
   add up to them. A run covers one month's report, which keeps the
   parsing within the function's CPU time;
   `private.start_cantina_italia_imports()` queues one run per month,
-  from December of the year before to the last month ended, and posts
-  them at once, and the job `import-cantina-italia` starts the current
-  year every Thursday. The bulletins up to the autumn of 2018 lay the
-  figures out in other sheets and are not read. For a backfill, run a
-  year at a time, `select private.start_cantina_italia_imports(2019,
-  2019);`, to spare the ministry's server a hundred downloads at once.
+  from December of the year before to the last month ended, and the job
+  `dispatch-cantina-italia-imports` posts them one at a time and removes
+  itself when none is left: runs posted together share a worker's CPU
+  time and run out of it. The job `import-cantina-italia` starts the
+  current year every Thursday. The bulletins up to the autumn of 2018 lay
+  the figures out in other sheets and are not read. For a backfill, run
+  `select private.start_cantina_italia_imports(2019);`.
 
 - **DGDDI, stock declarations** (`supabase/functions/import-douane-stocks`)
   loads France's stocks at 31 July into `supply_figures`: the wine
