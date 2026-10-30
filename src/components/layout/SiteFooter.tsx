@@ -8,7 +8,8 @@ import { footerNavigation } from "@/lib/navigation";
 /**
  * Global footer on the dark burgundy institutional surface: brand line,
  * link groups in cream and the legal and data notice in sentence case.
- * The newsletter signup lives on the pages themselves, not here.
+ * The newsletter signup lives on the pages themselves and in the
+ * briefing bar at the foot of the window, not here.
  */
 export function SiteFooter() {
   return (

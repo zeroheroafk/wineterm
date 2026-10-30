@@ -441,7 +441,11 @@ export default async function DesignSystemPage() {
       </Block>
 
       <Block title="Newsletter modules">
-        <Spec>Panel and inline variants of the briefing signup.</Spec>
+        <Spec>
+          Panel and inline variants of the briefing signup. The briefing bar,
+          fixed to the foot of the window on every page but /briefing, steps
+          aside while either is on screen.
+        </Spec>
         <div className="grid gap-6 lg:grid-cols-2">
           <NewsletterSignup />
           <div className="self-center">

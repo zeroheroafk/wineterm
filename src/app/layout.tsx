@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono, Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { Suspense } from "react";
 
+import { BriefingBar } from "@/components/editorial/BriefingBar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SITE_OPEN_GRAPH } from "@/lib/seo";
@@ -63,6 +65,12 @@ export default function RootLayout({
         <SiteHeader />
         <main className="grow">{children}</main>
         <SiteFooter />
+        {/* The bar reads the pathname, which suspends while the static
+            shell of a route with dynamic params is prerendered; it renders
+            nothing on the server anyway. */}
+        <Suspense fallback={null}>
+          <BriefingBar />
+        </Suspense>
         <Analytics />
       </body>
     </html>

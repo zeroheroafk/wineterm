@@ -1,12 +1,15 @@
 import { ActionForm } from "@/components/ui/ActionForm";
 import { Button } from "@/components/ui/Button";
 import { subscribeToBriefing } from "@/lib/actions";
+import { BRIEFING_SUBSCRIBED_KEY } from "@/lib/briefing-bar";
 
 /**
  * The main newsletter module. Submissions go to the briefing Server
  * Action; subscription handling arrives with the backend phase. Each form
  * is named by its own visible heading, so a page showing both variants
- * has two distinguishable form landmarks.
+ * has two distinguishable form landmarks. Both carry
+ * `data-briefing-form`, which the briefing bar reads to step aside while
+ * one is on screen, and a stored signup retires the bar.
  */
 export function NewsletterSignup({
   variant = "panel",
@@ -23,6 +26,8 @@ export function NewsletterSignup({
     return (
       <ActionForm
         action={subscribeToBriefing}
+        rememberAs={BRIEFING_SUBSCRIBED_KEY}
+        data-briefing-form
         aria-labelledby={nameId}
         className="border-y border-rule py-4"
         messageClassName="text-wine"
@@ -50,6 +55,8 @@ export function NewsletterSignup({
   return (
     <ActionForm
       action={subscribeToBriefing}
+      rememberAs={BRIEFING_SUBSCRIBED_KEY}
+      data-briefing-form
       aria-labelledby={nameId}
       className="border border-rule border-t-2 border-t-wine bg-paper p-6"
       messageClassName="text-wine"

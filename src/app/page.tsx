@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { ShareChart } from "@/components/charts/ShareChart";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
-import { BriefingBand } from "@/components/editorial/BriefingBand";
 import { IndustryHeadlineList } from "@/components/editorial/IndustryHeadlineList";
 import { Container } from "@/components/layout/Container";
 import { KeyPricesTable } from "@/components/market/KeyPricesTable";
@@ -34,10 +33,11 @@ const SITE_JSON_LD = {
 };
 
 /**
- * The homepage, kept to four blocks: the introduction over the latest
+ * The homepage, kept to three blocks: the introduction over the latest
  * article, whether an analysis, a Weekly Briefing or a monthly report, set
- * across the full width on its photograph, the key bulk wine prices, the
- * latest analysis and industry news, and the newsletter signup. The trade snapshot has its own tab, Market data
+ * across the full width on its photograph, the key bulk wine prices, and
+ * the latest analysis and industry news. The newsletter signup is the
+ * briefing bar at the foot of the window. The trade snapshot has its own tab, Market data
  * (/data). The key prices read the database, so the page is regenerated
  * at most hourly.
  */
@@ -169,10 +169,6 @@ export default async function Home() {
             </aside>
           </div>
         </section>
-
-        <div className="mt-16">
-          <BriefingBand />
-        </div>
       </Container>
     </>
   );

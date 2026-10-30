@@ -16,6 +16,11 @@ import { getSupabase } from "@/lib/supabase";
 export interface FormState {
   /** Reply shown under the form; empty before the first submission. */
   message: string;
+  /**
+   * True when the reply is the thank-you: the submission is stored, or
+   * was a bot's and is discarded with the same reply.
+   */
+  ok?: boolean;
 }
 
 export type FormAction = (
@@ -27,8 +32,14 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const FAILED =
   "Something went wrong on our side and nothing was saved. Please try again in a moment.";
-const SUBSCRIBED = "Thank you. You are on the list for the Weekly Briefing.";
-const SENT = "Thank you. Your message has reached the market desk.";
+const SUBSCRIBED: FormState = {
+  message: "Thank you. You are on the list for the Weekly Briefing.",
+  ok: true,
+};
+const SENT: FormState = {
+  message: "Thank you. Your message has reached the market desk.",
+  ok: true,
+};
 
 function field(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -53,7 +64,7 @@ export async function subscribeToBriefing(
     return { message: "Enter a valid work email address." };
   }
 
-  if (isTrapped(formData)) return { message: SUBSCRIBED };
+  if (isTrapped(formData)) return SUBSCRIBED;
 
   const supabase = getSupabase();
   if (!supabase) {
@@ -73,7 +84,7 @@ export async function subscribeToBriefing(
     console.error("Briefing signup failed:", error.code, error.message);
     return { message: FAILED };
   }
-  return { message: SUBSCRIBED };
+  return SUBSCRIBED;
 }
 
 export async function sendContactMessage(
@@ -104,7 +115,7 @@ export async function sendContactMessage(
     };
   }
 
-  if (isTrapped(formData)) return { message: SENT };
+  if (isTrapped(formData)) return SENT;
 
   const supabase = getSupabase();
   if (!supabase) {
@@ -125,5 +136,5 @@ export async function sendContactMessage(
     console.error("Contact message failed:", error.code, error.message);
     return { message: FAILED };
   }
-  return { message: SENT };
+  return SENT;
 }
