@@ -11,11 +11,13 @@ import { marketReportSeptember2026 } from "@/content/articles/market-report-sept
 import { portugalWineHarvestReboundSalesTest2026 } from "@/content/articles/portugal-wine-harvest-rebound-sales-test-2026";
 import { weeklyBriefing20261008 } from "@/content/articles/weekly-briefing-2026-10-08";
 import { weeklyBriefing20261022 } from "@/content/articles/weekly-briefing-2026-10-22";
+import { weeklyBriefing20261030 } from "@/content/articles/weekly-briefing-2026-10-30";
 import { whyASmallerHarvestMayNotLiftWinePrices } from "@/content/articles/why-a-smaller-harvest-may-not-lift-wine-prices";
 import { wineTradeYouNeverSeeOnALabel } from "@/content/articles/wine-trade-you-never-see-on-a-label";
 import type { ArticleDetail } from "@/services/types";
 
 export const publishedArticles: ArticleDetail[] = [
+  weeklyBriefing20261030,
   portugalWineHarvestReboundSalesTest2026,
   weeklyBriefing20261022,
   weeklyBriefing20261008,
