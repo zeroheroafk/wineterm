@@ -7,11 +7,13 @@
  * month's report per run.
  *
  * The database decides what runs: private.start_cantina_italia_imports()
- * queues one run per closing month in public.import_runs and posts each
- * id here. This function executes only a queued run, so a stray call can
- * at most start an import that was due anyway. It answers at once and
+ * queues one run per closing month in public.import_runs, and
+ * private.dispatch_cantina_italia_imports() posts their ids here one at a
+ * time. This function executes only a queued run, so a stray call can at
+ * most start an import that was due anyway. It answers at once and
  * imports in the background, recording the outcome on the run. One
- * spreadsheet per run keeps the parsing within the function's CPU time.
+ * spreadsheet per run, and one run at a time, keep the parsing within the
+ * CPU time of a worker, which runs posted together would share.
  */
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
