@@ -1,6 +1,6 @@
 import type { ArticleDetail } from "@/services/types";
 
-const id = "weekly-briefing-2026-10-30";
+const id = "wine-weekly-briefing-30-october-2026";
 
 export const weeklyBriefing20261030: ArticleDetail = {
   id,
