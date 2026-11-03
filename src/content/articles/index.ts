@@ -7,6 +7,7 @@
  * articles published the same day, so the first of them leads.
  */
 
+import { franceVineyardRemovalLanguedocHarvest2026 } from "@/content/articles/france-vineyard-removal-languedoc-harvest-2026";
 import { marketReportSeptember2026 } from "@/content/articles/market-report-september-2026";
 import { portugalWineHarvestReboundSalesTest2026 } from "@/content/articles/portugal-wine-harvest-rebound-sales-test-2026";
 import { weeklyBriefing20261008 } from "@/content/articles/weekly-briefing-2026-10-08";
@@ -17,6 +18,7 @@ import { wineTradeYouNeverSeeOnALabel } from "@/content/articles/wine-trade-you-
 import type { ArticleDetail } from "@/services/types";
 
 export const publishedArticles: ArticleDetail[] = [
+  franceVineyardRemovalLanguedocHarvest2026,
   weeklyBriefing20261030,
   portugalWineHarvestReboundSalesTest2026,
   weeklyBriefing20261022,
