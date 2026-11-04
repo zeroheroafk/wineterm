@@ -18,24 +18,6 @@ import type {
   CitationText,
 } from "@/services/types";
 
-/** Bracketed source numbers after a paragraph, each linked to its source. */
-function Citations({ numbers }: { numbers: number[] }) {
-  return (
-    <sup className="ml-0.5 font-mono">
-      {numbers.map((number) => (
-        <a
-          key={number}
-          href={`#source-${number}`}
-          aria-label={`Source ${number}`}
-          className="text-wine hover:text-wine-deep"
-        >
-          [{number}]
-        </a>
-      ))}
-    </sup>
-  );
-}
-
 function Citation({ parts }: { parts: CitationText[] }) {
   return parts.map((part, index) =>
     typeof part === "string" ? (
@@ -69,13 +51,12 @@ function HeroImage({ hero }: { hero: ArticleHero }) {
   );
 }
 
-/** A table of figures in the article, with the sources it cites. */
+/** A table of figures in the article. */
 function FiguresTable({ table, titleId }: { table: ArticleTable; titleId: string }) {
   return (
     <figure aria-labelledby={titleId} className="border-y border-rule py-5">
       <figcaption id={titleId} className="wt-label text-ink-soft">
         {table.title}
-        <Citations numbers={table.cites} />
       </figcaption>
       <div className="mt-3 overflow-x-auto">
         <table className="w-full border-collapse text-left">
@@ -113,7 +94,7 @@ function FiguresTable({ table, titleId }: { table: ArticleTable; titleId: string
 
 /**
  * A published article in full: header and photograph, text with its
- * subheadings, chart and tables, and the numbered sources it cites.
+ * subheadings, chart and tables, and the sources it draws on.
  */
 export function ArticleView({
   article,
@@ -166,9 +147,6 @@ export function ArticleView({
                 ) : null}
                 <p className="text-[1.0625rem] leading-[1.7] text-pretty text-ink">
                   {paragraph.text}
-                  {paragraph.cites ? (
-                    <Citations numbers={paragraph.cites} />
-                  ) : null}
                 </p>
                 {article.chart?.afterParagraph === index ? (
                   <ShareChart
@@ -200,28 +178,22 @@ export function ArticleView({
             >
               Sources
             </h2>
-            <ol className="mt-3 space-y-2.5">
-              {article.sources.map((source, index) => (
+            <ul className="mt-3 space-y-2.5">
+              {article.sources.map((source) => (
                 <li
                   key={source.url}
-                  id={`source-${index + 1}`}
-                  className="grid scroll-mt-6 grid-cols-[1.75rem_minmax(0,1fr)] text-sm leading-relaxed text-ink-soft"
+                  className="text-sm leading-relaxed text-ink-soft"
                 >
-                  <span className="tnum font-mono text-xs leading-[1.6rem] text-wine">
-                    {index + 1}.
-                  </span>
-                  <span>
-                    <a
-                      href={source.url}
-                      className="underline decoration-rule underline-offset-2 hover:text-wine"
-                    >
-                      <Citation parts={source.citation} />
-                    </a>
-                    .{source.note ? ` ${source.note}` : null}
-                  </span>
+                  <a
+                    href={source.url}
+                    className="underline decoration-rule underline-offset-2 hover:text-wine"
+                  >
+                    <Citation parts={source.citation} />
+                  </a>
+                  .{source.note ? ` ${source.note}` : null}
                 </li>
               ))}
-            </ol>
+            </ul>
           </section>
 
           <p className="mt-8">

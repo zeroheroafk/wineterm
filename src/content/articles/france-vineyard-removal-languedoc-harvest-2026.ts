@@ -33,16 +33,13 @@ export const franceVineyardRemovalLanguedocHarvest2026: ArticleDetail = {
   body: [
     {
       text: "Languedoc-Roussillon is forecast to produce 10.59 million hectolitres of wine in 2026, up 19.6% on last year, according to the regional agriculture administration's 7 October estimate. France has meanwhile offered growers support to remove vines permanently.",
-      cites: [1],
     },
     {
       text: "Across the wider Occitanie region, the productive vineyard has shrunk by more than 6,000 hectares, or 2.8%, yet the harvest is forecast to rise by 18% from the exceptionally weak 2025 campaign. Higher yields on the remaining vines have more than offset the loss of land, bringing expected output slightly above the five-year average.",
-      cites: [1],
     },
     {
       heading: "Rain helped the remaining vines recover",
       text: "The administration recorded repeated heatwaves and worsening drought during the summer. Rainfall in the second half of August then improved yields enough for the October forecast to be revised upwards. Better water reserves earlier in the year and the absence of significant spring frost also helped, although results varied sharply between vineyards.",
-      cites: [1],
     },
     {
       text: "For a cooperative winery, a larger intake can spread processing costs over more wine. When orders are slow, however, the additional volume also ties up working capital and storage.",
@@ -50,11 +47,9 @@ export const franceVineyardRemovalLanguedocHarvest2026: ArticleDetail = {
     {
       heading: "Funding a permanent reduction",
       text: "A 16 June update from FranceAgriMer records 5,823 expressions of interest covering 27,926 hectares. These were intentions declared during the February call, not verified completed removals or final payment claims. The national programme offers €4,000 for each eligible hectare permanently removed. The government set aside €130 million for the scheme, following European Commission approval on 1 June.",
-      cites: [2, 3],
     },
     {
       text: "France's total vineyard area had already fallen by around 34,000 hectares in 2025, to 740,000 hectares, according to the OIV, whose broader series includes vines grown for uses other than wine.",
-      cites: [4],
     },
     {
       text: "Removing a low-yielding hectare takes less wine out of future harvests than removing a high-yielding one. If growers use the payment to leave cultivation or give up their least productive land, the reduction in output will be smaller than the reduction in area. The commercial adjustment also has to absorb wine produced before those vines were removed.",
@@ -62,15 +57,12 @@ export const franceVineyardRemovalLanguedocHarvest2026: ArticleDetail = {
     {
       heading: "Consumption and the wines left to sell",
       text: "The OIV estimated world wine consumption at 208 million hectolitres in 2025, down 2.7%, while global vineyard area contracted for a sixth consecutive year. It also described the overall wine balance as broadly contained after several small harvests.",
-      cites: [4],
     },
     {
       text: "The EU measures adopted in February 2026 allow member states to support permanent vineyard removal. In France, reducing the supply of wines that are struggling to sell would address the imbalance more directly. A buyer seeking white wine with a specified appellation still needs that wine when inexpensive red is plentiful; additional red supply does little to fill the order.",
-      cites: [5],
     },
     {
       text: "France's growers have until 10 December to submit their harvest declarations. That filing deadline is the next fixed checkpoint for the crop, rather than a promised publication date for final figures. Completed-removal data will then be needed to establish how much of the 27,926 hectares has actually left production.",
-      cites: [6],
     },
   ],
   sources: [

@@ -35,7 +35,6 @@ export const november2026WineMarketOutlook: ArticleDetail = {
     },
     {
       text: "At Pescara on 26 October, ISMEA quoted common white wine at €5.50 per hectograde for the row with an average strength of 10.5 degrees. Its common red and rosé row averaging 12 degrees stood at €4.75 per hectograde. Both were ex-cellar and unchanged from the previous week.",
-      cites: [1],
     },
     {
       text: "A hectograde is one degree of alcohol in one hectolitre. At the listed strengths, those quotations imply €57.75/hl for the white and €57/hl for the red and rosé, before transport. The near-equal cost per hectolitre disappears if the two original unit prices are read as ordinary euro-per-hectolitre quotations. These are local product references, with their stated alcohol strengths, rather than a European price index.",
@@ -43,11 +42,9 @@ export const november2026WineMarketOutlook: ArticleDetail = {
     {
       heading: "Spain's stocks and the pace of sales",
       text: "OIVE's campaign-closing report, published on 14 September, puts end-July wine and must stocks 0.8% above the preceding campaign close. Wine alone fell 0.8% to 30.1 million hectolitres; must accounts for the increase in the combined total. The industry still had a substantial volume available before the new vintage began entering tanks.",
-      cites: [2],
     },
     {
       text: "OIVE's 19 October analysis estimated apparent Spanish wine consumption at 8.96 million hectolitres in the twelve months to July, down 8.1%. The closing report recorded a 9.4% decline in INFOVI wine export movements to 16.73 million hectolitres. These indicators have different statistical scopes, but both record weaker outflows.",
-      cites: [3, 2],
     },
     {
       text: "For cellars selling bulk wine to finance the next campaign, slower turnover extends the time between paying for the crop and collecting sales revenue. Lower quotations may attract orders, but also reduce the return on the wine sold. The balance between those two effects will shape the pressure to release stocks during November.",
@@ -55,28 +52,22 @@ export const november2026WineMarketOutlook: ArticleDetail = {
     {
       heading: "A recovery in Portugal, a smaller French crop",
       text: "France's corrected 8 October Agreste estimate put the harvest at 34.9 million hectolitres, down 2% on 2025 and 14% below the five-year average. Better yields in Languedoc-Roussillon lifted the estimate from September's level.",
-      cites: [4],
     },
     {
       text: "Portugal's IVV forecast points to 6.7 million hectolitres for 2026/27, up 12% but 4% below its five-campaign average. Douro's expected increase is 25%; Alentejo, Península de Setúbal and Trás-os-Montes each show 15%. Those four regions account for roughly half a million hectolitres of the expected national gain.",
-      cites: [5],
     },
     {
       text: "An 8 October report citing European Commission estimates puts Italy at about 41.1 million hectolitres of wine and must. That remains a preliminary, secondary-source estimate with broader product coverage than France's wine total.",
-      cites: [6],
     },
     {
       heading: "The demand carried into November",
       text: "The OIV's May report on 2025 estimated world wine consumption at 208 million hectolitres, down 2.7%. International export volume fell 4.7% to 94.8 million hectolitres and value fell 6.7% to €33.8 billion. That is the prior-year backdrop to the new vintage, not a reading of October orders.",
-      cites: [7],
     },
     {
       text: "Portugal's 2025 exports also show the cost of selling more volume at a lower average value: the IVV reported 341 million litres, up 1.1%, and €954 million in receipts, down 1.1%. The resulting €2.80/litre average reflects the mix of destinations and products as well as prices.",
-      cites: [8],
     },
     {
       text: "November's subsequent INFOVI reports will show more of the new Spanish vintage in storage. Updated Agreste estimates and Portuguese harvest declarations will firm up production volumes. France's growers face a 10 December harvest-declaration deadline; that is a filing deadline, not a date for the release of final results. Alongside those releases, comparable local quotations such as ISMEA's will show what sellers are asking for the wine buyers can actually purchase.",
-      cites: [9],
     },
   ],
   sources: [

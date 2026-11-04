@@ -15,26 +15,21 @@ export const whyASmallerHarvestMayNotLiftWinePrices: ArticleDetail = {
   body: [
     {
       text: "In France, another small harvest will not necessarily give growers the price recovery they need. Agreste's estimate at 1 September put 2026 wine production at close to 34 million hectolitres, 6% below the previous year. A reduction of that kind can ease pressure on the market, but it leaves the wine from earlier vintages in place. The new crop will arrive alongside stocks that producers, merchants and bottlers are still trying to sell, making the pace of those sales as important as the size of the harvest.",
-      cites: [1],
     },
     {
       text: "Recent global figures show why lower output has brought limited relief. The International Organisation of Vine and Wine described 2025 as the third consecutive year of low production, while estimating that world consumption fell a further 2.7% to 208 million hectolitres. Its assessment was that below-average production would help stocks decline gradually, rather than create widespread shortages. Even after several difficult vintages, the industry was adjusting to a market buying less wine.",
-      cites: [2],
     },
     {
       text: "France has already experienced the effect on prices. In an assessment published on 29 April 2026, Agreste reported that limited production had coincided with weaker exports and continuing erosion in producer prices for appellation wines. Demand in several major importing markets had weakened, while trade barriers and currency movements added to exporters' difficulties. Some categories performed better than others, but the broader message was clear: producing less had not been enough to strengthen producers' negotiating position across the market.",
-      cites: [3],
     },
     {
       text: "The wine carried over from previous years helps explain that outcome. Italy's official cellar register recorded approximately 42.5 million hectolitres of wine held in reporting facilities at the end of July 2026, 6.9% more than a year earlier. Stocks had fallen during July, yet they remained above the comparable point in 2025. The figure concerns wine held in Italy, with must reported separately. It shows why a seasonal decline in cellars does not, on its own, establish that supply is becoming scarce.",
-      cites: [4],
     },
     {
       text: "A national stock total needs interpretation, however. It cannot reveal how much wine is freely available to a particular buyer, how much is already committed, or how closely the available stocks match current orders. Wine being matured for a future release serves a different purpose from a tank whose owner needs an immediate sale. What matters commercially is how quickly saleable stocks can be absorbed. If orders slow sufficiently, a cellar can hold fewer litres than before and still have more wine than it needs for the months ahead.",
     },
     {
       text: "The differences between wines also limit what a national harvest figure can tell us. A shortage in one region or category may coexist with an excess elsewhere. France's €40 million crisis-distillation programme for 2026 illustrates how specific the problem can be: it targeted eligible red and rosé wines, with the resulting alcohol destined for industrial or energy uses. FranceAgriMer linked the measure to elevated stocks and deteriorating market conditions in those categories. The programme addressed wine already struggling to find a market; a smaller harvest in another segment would offer it little direct help.",
-      cites: [5],
     },
     {
       text: "For a merchant or bottler, purchasing decisions depend on the orders that must be supplied. News of a smaller crop may encourage earlier buying where the required wine is becoming difficult to find. A business with ample inventory and slow sales has more reason to wait, even if national production is falling. Buying additional wine would commit cash to stock whose sale is uncertain. In those circumstances, the first effect of a weaker harvest may be to reduce the number of offers available to the buyer, with little immediate change in the price it is prepared to pay.",
