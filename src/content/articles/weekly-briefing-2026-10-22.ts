@@ -29,27 +29,22 @@ export const weeklyBriefing20261022: ArticleDetail = {
     {
       heading: "Prices: white wine turns up",
       text: "The national average for white wine without PDO or PGI rose to €45.76/hl in the week to 11 October, 8.5% above the €42.19 of two weeks earlier and its highest since July, though still 7.2% below the same week of 2025. Red reached €50.30/hl, its highest since early August and 8.9% above a year earlier. Brokers do not read a turn yet: Ciatti's October report describes bulk buying as hesitant and highly sensitive to price, with soft consumption and large carryover stocks leaving buyers in the stronger position.",
-      cites: [1, 2],
     },
     {
       heading: "Spain and Portugal: exports fall in August",
       text: "Eurostat's August figures confirm the drop in shipments that Spain's declarations showed. Spain exported 1.21 Mhl of wine, 13.7% less than in August 2025, worth €183.7 million, 9.7% less. Bulk wine, in containers of more than 10 litres, fell 20.2% to 0.64 Mhl at an average €52.68/hl, 3.4% more than a year earlier. From January to August Spain's exports are down 15.1% in volume, to 11.48 Mhl, and 7.7% in value. Portugal shipped 0.22 Mhl in August, 11.5% less, worth 5.3% less.",
-      cites: [3],
     },
     {
       heading: "Italy: the new crop is already in the tanks",
       text: "Italy's cellars held 41.0 Mhl of wine at 30 September, 14.2% more than a year earlier. Beside it sat 12.8 Mhl of must and 8.9 Mhl of new wine still fermenting, nearly twice the 4.6 Mhl of September 2025, a measure of how early the harvest came in. The crop itself is smaller: the European Commission's figures of 12 October put Italy's 2026 production at 41.1 Mhl, 7.6% below 2025, and the EU's at 139 Mhl, about the same as last year.",
-      cites: [4, 5],
     },
     {
       heading: "France: lower stocks, late grubbing-up",
       text: "French producers and traders declared 48.5 Mhl of wine in stock at 31 July, 5.4% less than a year earlier and the least since 2018, in the customs figures published on 15 October. Producers held 26.5 Mhl, 8.6% less, and traders 22.0 Mhl, 1.3% less. The grubbing-up meant to shrink the vineyard is running late: 7,800 hectares had been pulled up by 7 October, leaving some 20,000 to go before the 31 December deadline for the €4,000/ha aid. Drought is part of it: with no rain from early July to early October, one Gironde grower told Vitisphere, the ground was too hard to dig.",
-      cites: [6, 7],
     },
     {
       heading: "Brussels: wine in the market rules",
       text: "EU governments agreed their position on the reform of the common market organisation on 19 October, leaving its budget to the 2028–2034 negotiations. They want sector programmes to be mandatory for beekeeping and for fruit and vegetables, but for wine only in certain circumstances, with national exemptions. Talks with the European Parliament can now open, and agriculture ministers meet in Luxembourg on 26 and 27 October to seek a partial general approach on the rest of the farm reform. In the Parliament, the public health committee's review of the Beating Cancer Plan dropped language suggesting no level of drinking is safe and did not call for stronger health warnings, wine regions say; the plenary vote is provisionally set for 11 November.",
-      cites: [8, 9, 10],
     },
     {
       heading: "Coming up",

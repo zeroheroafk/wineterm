@@ -1,10 +1,9 @@
 /**
  * Consistency checks for the published articles, briefings and reports:
  * each is served at the address its preview links to, its description
- * fits in search results, every citation
- * names a listed source and every source is cited, a photograph is in
- * public/ with its credit, a chart shows the figures the paragraph it
- * follows states, and every table row fills its columns.
+ * fits in search results, a photograph is in public/ with its credit,
+ * a chart shows the figures the paragraph it follows states, and every
+ * table row fills its columns.
  */
 
 import assert from "node:assert/strict";
@@ -34,22 +33,6 @@ describe("published articles", () => {
     for (const article of publishedArticles) {
       const description = article.description ?? article.standfirst;
       assert.ok(description.length <= 160, `${article.id}: ${description.length}`);
-    }
-  });
-
-  it("cite only listed sources, and cite each of them", () => {
-    for (const article of publishedArticles) {
-      const cited = new Set([
-        ...article.body.flatMap((p) => p.cites ?? []),
-        ...(article.tables ?? []).flatMap((t) => t.cites),
-      ]);
-      for (const number of cited) {
-        assert.ok(
-          number >= 1 && number <= article.sources.length,
-          `${article.id} cites [${number}]`,
-        );
-      }
-      assert.equal(cited.size, article.sources.length, article.id);
     }
   });
 

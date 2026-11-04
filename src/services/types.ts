@@ -199,16 +199,14 @@ export interface Article {
 /** A run of citation text: plain, or the title of a work, set in italics. */
 export type CitationText = string | { title: string };
 
-/** One paragraph of an article, with the sources it cites at its end. */
+/** One paragraph of an article. */
 export interface ArticleParagraph {
   /** A subheading set before the paragraph, opening a section. */
   heading?: string;
   text: string;
-  /** Numbers of the sources cited, counting from 1. */
-  cites?: number[];
 }
 
-/** One numbered source in an article's source list. */
+/** One source in an article's source list. */
 export interface ArticleSource {
   /** The citation as printed, linked to its address. */
   citation: CitationText[];
@@ -245,8 +243,6 @@ export interface ArticleTable {
   /** Headings of the figure columns, after the row labels'. */
   columns: string[];
   rows: { label: string; cells: string[] }[];
-  /** Numbers of the sources the figures come from, counting from 1. */
-  cites: number[];
   /** The paragraph the table follows, counting from 0. */
   afterParagraph: number;
 }
