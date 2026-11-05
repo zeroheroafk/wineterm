@@ -8,6 +8,7 @@
  */
 
 import { franceVineyardRemovalLanguedocHarvest2026 } from "@/content/articles/france-vineyard-removal-languedoc-harvest-2026";
+import { franceWineExportValueVolumeUsUkSpain2026 } from "@/content/articles/france-wine-export-value-volume-us-uk-spain-2026";
 import { marketReportSeptember2026 } from "@/content/articles/market-report-september-2026";
 import { november2026WineMarketOutlook } from "@/content/articles/november-2026-wine-market-outlook-harvest-stocks-demand";
 import { portugalWineHarvestReboundSalesTest2026 } from "@/content/articles/portugal-wine-harvest-rebound-sales-test-2026";
@@ -19,6 +20,7 @@ import { wineTradeYouNeverSeeOnALabel } from "@/content/articles/wine-trade-you-
 import type { ArticleDetail } from "@/services/types";
 
 export const publishedArticles: ArticleDetail[] = [
+  franceWineExportValueVolumeUsUkSpain2026,
   november2026WineMarketOutlook,
   franceVineyardRemovalLanguedocHarvest2026,
   weeklyBriefing20261030,
