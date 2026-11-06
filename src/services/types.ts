@@ -263,83 +263,6 @@ export interface MarketCommentary {
   publishedAt: string;
 }
 
-/** One entry in the compact market status strip. */
-export interface StripQuote {
-  id: string;
-  /** Short display name, e.g. "CLM red". */
-  name: string;
-  country: CountryCode;
-  value: number;
-  unit: PriceUnit;
-  changePercent: number;
-  observedAt: string;
-  status: DataStatus;
-  /** Publisher of a real quote; illustrative quotes have none. */
-  source?: DataSource;
-}
-
-/** The editorial market briefing that leads the homepage. */
-export interface MarketBriefing {
-  headline: string;
-  summary: string;
-  /** At most one further development, when it adds to the summary. */
-  development?: string;
-  updatedAt: string;
-  status: DataStatus;
-  outlookHref: string;
-}
-
-/**
- * One producer country's row in the supply snapshot, taken from the
- * campaign's supply balance.
- */
-export interface SupplyCountryRow {
-  country: ProducerCountry;
-  /** Estimated production for the campaign, million hl. */
-  productionMhl: number;
-  /** Opening stocks carried into the campaign, million hl. */
-  openingStocksMhl: number;
-  /** Imports expected over the campaign, as stated in the balance, million hl. */
-  importsMhl: number;
-  /** Opening stocks plus production plus imports, million hl. */
-  availabilityMhl: number;
-  /** Availability against the previous campaign's balance, percent. */
-  vsPreviousPercent: number;
-}
-
-export interface SupplySnapshot {
-  /** Campaign code, e.g. "2026/27". */
-  campaign: string;
-  /** Campaign the comparison column refers to, e.g. "2025/26". */
-  previousCampaign: string;
-  rows: SupplyCountryRow[];
-  /** The desk's one-sentence reading of the rows. */
-  takeaway: string;
-  /** Short definition of the figures; full methodology lives elsewhere. */
-  note: string;
-  status: DataStatus;
-  source: DataSource;
-  updatedAt: string;
-}
-
-export type HarvestStageDirection = "up" | "down" | "flat";
-export type HarvestCondition = "good" | "mixed" | "stressed";
-
-/** One region's row in the harvest monitor. */
-export interface HarvestRegion {
-  id: string;
-  region: string;
-  country: ProducerCountry;
-  /** Current phenological or picking stage. */
-  stage: string;
-  condition: HarvestCondition;
-  conditionNote: string;
-  /** Expected crop against the previous vintage. */
-  expected: HarvestStageDirection;
-  updatedAt: string;
-  status: DataStatus;
-}
-
 /** One ranked row in a trade flow table; any ISO 3166-1 alpha-2 country. */
 export interface TradeRankRow {
   rank: number;
@@ -359,7 +282,7 @@ export interface TradeSplitSegment {
 }
 
 /**
- * The homepage trade snapshot, built from the trade categories. Wine
+ * The trade overview, built from the trade categories. Wine
  * covers every wine category, still wine by container size and sparkling
  * wine; grape must is a separate subheading and is never added to wine.
  */
@@ -429,16 +352,73 @@ export interface IndustryStory {
   publishedAt: string;
 }
 
-/** A compact dated headline for the industry rail. */
-export interface IndustryItem {
-  id: string;
-  headline: string;
-  publishedAt: string;
-  href: string;
+/**
+ * News coverage topics, shown as tags on every story: the business of
+ * wine, and the brands, drinking habits, culture and lifestyle around it.
+ */
+export type NewsTopic =
+  | "brands"
+  | "consumption"
+  | "culture"
+  | "lifestyle"
+  | "wine-tourism"
+  | "hospitality"
+  | "retail"
+  | "packaging"
+  | "sustainability"
+  | "harvest"
+  | "markets"
+  | "trade"
+  | "regulation";
+
+export const NEWS_TOPIC_LABELS: Record<NewsTopic, string> = {
+  brands: "Brands",
+  consumption: "Consumption",
+  culture: "Culture",
+  lifestyle: "Lifestyle",
+  "wine-tourism": "Wine Tourism",
+  hospitality: "Hospitality",
+  retail: "Retail",
+  packaging: "Packaging",
+  sustainability: "Sustainability",
+  harvest: "Harvest",
+  markets: "Markets",
+  trade: "Trade",
+  regulation: "Regulation",
+};
+
+/** Every news topic, in the order topic lists show them. */
+export const NEWS_TOPICS = Object.keys(NEWS_TOPIC_LABELS) as NewsTopic[];
+
+/** A photograph published with a story, with its credit and licence. */
+export interface StoryImage {
+  /** Path under /public, e.g. "/news/<story id>.jpg". */
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  credit: {
+    /** The photographer, when the source names one. */
+    creator?: string;
+    /** Where the photograph was published, e.g. "StockSnap". */
+    source: string;
+    /** The photograph's page at that source. */
+    url: string;
+    licence: string;
+  };
 }
 
-export interface IndustryDigest {
-  news: IndustryItem[];
-  deals: IndustryItem[];
-  regulation: IndustryItem[];
+/** One news story: its preview fields, hero image, tags and text. */
+export interface NewsStory {
+  /** Stable identifier, which is also the story's URL slug. */
+  id: string;
+  headline: string;
+  standfirst: string;
+  publishedAt: string;
+  /** Tags, the first of which is the story's main topic. */
+  topics: NewsTopic[];
+  image: StoryImage;
+  body: string[];
+  status: DataStatus;
+  href: string;
 }

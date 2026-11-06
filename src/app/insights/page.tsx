@@ -8,9 +8,11 @@ import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
+import { getNewsService } from "@/services/news";
 import { getOutlookService } from "@/services/outlook/service";
+import { NEWS_TOPIC_LABELS } from "@/services/types";
 
 export const metadata: Metadata = {
   title: "Insights",
@@ -24,7 +26,7 @@ export default async function InsightsPage() {
   const [edition, analysis, news, briefings, reports] = await Promise.all([
     outlook.getCurrentEdition(),
     editorial.getArticlesByKind("analysis", 4),
-    editorial.getArticlesByKind("news", 5),
+    getNewsService().getLatestStories(5),
     editorial.getBriefingEditions(),
     editorial.getMonthlyReports(),
   ]);
@@ -33,7 +35,7 @@ export default async function InsightsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={navSection("/insights")}
         crumbs={[{ label: "Insights" }]}
         kicker="Insights"
         title="Insights"
@@ -42,7 +44,7 @@ export default async function InsightsPage() {
       />
 
       <div className="mt-8">
-        <DevContentNotice text="Development content: the Market Outlook and Weekly Briefing editions below are illustrative placeholders demonstrating the editorial format, not published reporting." />
+        <DevContentNotice text="Development content: the Market Outlook, the Weekly Briefing editions and the news stories below are illustrative placeholders demonstrating the editorial format, not published reporting." />
       </div>
 
       <section className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -114,26 +116,28 @@ export default async function InsightsPage() {
               <SectionHeader
                 kicker="News"
                 title="News"
-                action={{ label: "All news", href: "/insights/news" }}
+                action={{ label: "All news", href: "/news" }}
               />
               {news.length > 0 ? (
                 <ul className="mt-5">
-                  {news.map((article) => (
+                  {news.map((story) => (
                     <li
-                      key={article.id}
+                      key={story.id}
                       className="border-t border-rule py-2.5 first:border-t-0 first:pt-0"
                     >
-                      <p className="wt-label text-wine">{article.section}</p>
+                      <p className="wt-label text-wine">
+                        {NEWS_TOPIC_LABELS[story.topics[0]]}
+                      </p>
                       <p className="mt-0.5 text-sm leading-snug font-medium text-ink">
-                        <Link href={article.href} className="hover:text-wine-deep">
-                          {article.headline}
+                        <Link href={story.href} className="hover:text-wine-deep">
+                          {story.headline}
                         </Link>
                       </p>
                       <time
-                        dateTime={article.publishedAt}
+                        dateTime={story.publishedAt}
                         className="wt-label mt-1 block text-ink-soft"
                       >
-                        {formatDate(article.publishedAt)}
+                        {formatDate(story.publishedAt)}
                       </time>
                     </li>
                   ))}

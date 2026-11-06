@@ -1,9 +1,9 @@
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { SectionNav } from "@/components/layout/SectionNav";
 import { PageHeader } from "@/components/ui/SectionHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 
-const MARKETS_SECTION = primaryNavigation[0];
+const MARKETS_SECTION = navSection("/markets");
 
 /** Shared header block for Markets routes: breadcrumb, title, section rail. */
 export function MarketsPageHeader({

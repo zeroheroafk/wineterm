@@ -6,7 +6,7 @@
  * src/fixtures/README.md for the rules this file follows.
  */
 
-import { ILLUSTRATIVE_PRICE_SOURCE as ILLUSTRATIVE_SOURCE } from "@/fixtures/home";
+import { ILLUSTRATIVE_PRICE_SOURCE as ILLUSTRATIVE_SOURCE } from "@/fixtures/key-prices";
 import {
   perHectolitre,
   quoteFromPerDegree,

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { DevContentNotice } from "@/components/editorial/DevContentNotice";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function MonthlyReportsPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={navSection("/insights")}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Monthly Reports" },

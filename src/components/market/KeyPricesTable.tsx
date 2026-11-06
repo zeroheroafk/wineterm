@@ -43,7 +43,7 @@ const SHARED_STATUS_NOTES: Record<DataStatus, string | null> = {
  * Category and YoY columns yield on narrow screens so price, movement and
  * date stay in view; on phones the status rides under the market name.
  *
- * "editorial": the homepage table. Market names and prices lead; a unit
+ * "editorial": the Markets overview table. Market names and prices lead; a unit
  * shared by every row moves into the column heading; a status shared by
  * every row becomes one table-level note instead of a badge per row.
  * Columns that yield on narrow screens reappear as a line under the

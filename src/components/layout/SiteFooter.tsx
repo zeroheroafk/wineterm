@@ -18,8 +18,8 @@ export function SiteFooter() {
           <div>
             <WordmarkInverted />
             <p className="mt-3 max-w-xs text-sm leading-relaxed">
-              Prices, supply and trade intelligence for the international
-              wine trade.
+              Wine news on brands, consumption, culture and lifestyle, with
+              prices, supply and trade data for the wine trade.
             </p>
           </div>
 

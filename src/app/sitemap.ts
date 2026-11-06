@@ -3,18 +3,23 @@ import type { MetadataRoute } from "next";
 import { publishedArticles } from "@/content/articles";
 import { SITE_URL } from "@/lib/site";
 import { getMarketsService } from "@/services/markets/service";
+import { getNewsService } from "@/services/news";
+import { NEWS_TOPICS } from "@/services/types";
 
 /**
  * Public sitemap. Only launched routes are listed; /design-system is
  * internal and is deliberately excluded (and disallowed in robots.ts).
  * Series pages are the markets catalogue's: the imported series and the
- * samples still beside them.
+ * samples still beside them. News lists every story and topic page.
  */
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE_URL;
-  const series = await getMarketsService().listSeries();
+  const [series, stories] = await Promise.all([
+    getMarketsService().listSeries(),
+    getNewsService().getLatestStories(Infinity),
+  ]);
   const seriesEntries: MetadataRoute.Sitemap = series.map((s) => ({
     url: `${base}/markets/series/${s.code}`,
     changeFrequency: "weekly",
@@ -25,8 +30,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "monthly",
     priority: 0.6,
   }));
+  const newsEntries: MetadataRoute.Sitemap = [
+    { url: `${base}/news`, changeFrequency: "daily", priority: 0.9 },
+    ...NEWS_TOPICS.map((topic) => ({
+      url: `${base}/news/topic/${topic}`,
+      changeFrequency: "daily" as const,
+      priority: 0.6,
+    })),
+    ...stories.map((story) => ({
+      url: `${base}${story.href}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  ];
   return [
     { url: `${base}/`, changeFrequency: "daily", priority: 1 },
+    ...newsEntries,
     { url: `${base}/markets`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/markets/bulk-wine`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/markets/grapes`, changeFrequency: "daily", priority: 0.8 },
@@ -47,7 +66,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/trade`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/outlook`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/insights`, changeFrequency: "daily", priority: 0.8 },
-    { url: `${base}/insights/news`, changeFrequency: "daily", priority: 0.7 },
     {
       url: `${base}/insights/analysis`,
       changeFrequency: "daily",

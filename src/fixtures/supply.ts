@@ -2,8 +2,7 @@
  * ILLUSTRATIVE FIXTURE DATA: supply balances, production and stocks.
  *
  * Development stand-ins with plausible magnitudes, marked by status and
- * sample sources. Values agree with the homepage supply snapshot where
- * they overlap. Nothing here is a real declaration. See
+ * sample sources. Nothing here is a real declaration. See
  * src/fixtures/README.md.
  */
 

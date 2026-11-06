@@ -107,7 +107,7 @@ function corrections(walk: number[], pins: Map<number, number>): number[] {
 /**
  * Generates the observation list for one series, oldest first. The walk
  * ends on the anchored latest value and passes through any pinned
- * earlier observation, so the figures the homepage quotes from a series
+ * earlier observation, so the figures the key prices quote from a series
  * are the catalogue's own.
  */
 export function generateHistory(

@@ -23,6 +23,38 @@ export interface NavSection {
 
 export const primaryNavigation: NavSection[] = [
   {
+    label: "News",
+    href: "/news",
+    code: "NWS",
+    items: [
+      {
+        label: "Brands",
+        href: "/news/topic/brands",
+        description: "Labels, launches and how wineries build a name",
+      },
+      {
+        label: "Consumption",
+        href: "/news/topic/consumption",
+        description: "What, where and how people drink wine",
+      },
+      {
+        label: "Culture",
+        href: "/news/topic/culture",
+        description: "Grape varieties, heritage, festivals and wine lists",
+      },
+      {
+        label: "Lifestyle",
+        href: "/news/topic/lifestyle",
+        description: "Wine at the table, at home and on the road",
+      },
+      {
+        label: "Wine Tourism",
+        href: "/news/topic/wine-tourism",
+        description: "Estates, tastings and wine regions to visit",
+      },
+    ],
+  },
+  {
     label: "Markets",
     href: "/markets",
     code: "MKT",
@@ -151,11 +183,6 @@ export const primaryNavigation: NavSection[] = [
         description: "The desk's view over the next one to three months",
       },
       {
-        label: "News",
-        href: "/insights/news",
-        description: "Reporting for the professional wine trade",
-      },
-      {
         label: "Analysis",
         href: "/insights/analysis",
         description: "Interpretation of prices, supply and trade",
@@ -185,6 +212,13 @@ export const primaryNavigation: NavSection[] = [
   },
 ];
 
+/** The primary section at a href, e.g. navSection("/markets"). */
+export function navSection(href: string): NavSection {
+  const section = primaryNavigation.find((candidate) => candidate.href === href);
+  if (!section) throw new Error(`No primary navigation section at ${href}`);
+  return section;
+}
+
 export interface BreadcrumbItem {
   label: string;
   href?: string;
@@ -205,7 +239,7 @@ export const footerNavigation: { heading: string; items: NavLeaf[] }[] = [
   {
     heading: "Editorial",
     items: [
-      { label: "News", href: "/insights/news" },
+      { label: "News", href: "/news" },
       { label: "Analysis", href: "/insights/analysis" },
       { label: "Weekly Briefing", href: "/insights/weekly-briefing" },
       { label: "Monthly Reports", href: "/insights/monthly-reports" },

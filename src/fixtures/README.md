@@ -14,6 +14,8 @@ and Extremadura samples of wine without GI once MAPA's market prices
 are. The sample Market Outlook edition
 stays on the fixtures it was written against.
 Published articles are not fixtures: they live in `src/content`.
+The news stories in `news.ts` are samples like the rest; only their
+photographs are real, public domain images credited on each story.
 
 Rules:
 

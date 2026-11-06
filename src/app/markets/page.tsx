@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
+import { KeyPricesTable } from "@/components/market/KeyPricesTable";
 import { MarketCommentaryBlock } from "@/components/market/MarketCommentaryBlock";
 import { PriceCell } from "@/components/market/PriceCell";
 import { MaybePercent, SeriesCodeLink, TD, TD_RIGHT, TH, TH_RIGHT } from "@/components/markets/cells";
@@ -10,6 +11,7 @@ import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate, formatDateTime } from "@/lib/format";
+import { getKeyPricesService } from "@/services/markets/key-prices";
 import { getMarketsService, isIllustrative } from "@/services/markets/service";
 import type { MarketKind, MarketRow } from "@/services/markets/types";
 
@@ -53,16 +55,27 @@ const PRODUCTS: {
 
 export default async function MarketsPage() {
   const markets = getMarketsService();
+  const keyPrices = getKeyPricesService();
 
-  const [bulkRows, grapeRows, mustRows, bulkCommentary, grapeCommentary, mustCommentary] =
-    await Promise.all([
-      markets.getRows("bulk-wine"),
-      markets.getRows("grape"),
-      markets.getRows("must"),
-      markets.getCommentary("bulk-wine"),
-      markets.getCommentary("grape"),
-      markets.getCommentary("must"),
-    ]);
+  const [
+    bulkRows,
+    grapeRows,
+    mustRows,
+    bulkCommentary,
+    grapeCommentary,
+    mustCommentary,
+    keyQuotes,
+    keyPricesUpdatedAt,
+  ] = await Promise.all([
+    markets.getRows("bulk-wine"),
+    markets.getRows("grape"),
+    markets.getRows("must"),
+    markets.getCommentary("bulk-wine"),
+    markets.getCommentary("grape"),
+    markets.getCommentary("must"),
+    keyPrices.getKeyPrices(),
+    keyPrices.getLastUpdated(),
+  ]);
 
   const rowsByKind: Record<MarketKind, MarketRow[]> = {
     "bulk-wine": bulkRows,
@@ -89,7 +102,29 @@ export default async function MarketsPage() {
         activeHref="/markets"
       />
 
-      <section className="mt-10">
+      <section aria-labelledby="key-prices" className="mt-10">
+        <SectionHeader
+          id="key-prices"
+          kicker="Key prices"
+          title="Key bulk wine prices"
+          description={
+            keyQuotes.some((quote) => quote.status !== "illustrative")
+              ? "Each country's national bulk wine price, then the illustrative regional samples still shown. A change is on the previous price: a week earlier for weekly series, a month earlier for monthly ones."
+              : "Representative bulk wine prices by region. Development figures are illustrative samples. A change is on the previous price."
+          }
+          action={{ label: "All bulk wine prices", href: "/markets/bulk-wine" }}
+        />
+        <div className="mt-5">
+          <KeyPricesTable
+            variant="editorial"
+            quotes={keyQuotes}
+            updatedAt={keyPricesUpdatedAt}
+            methodologyHref="/insights/methodology#bulk-prices"
+          />
+        </div>
+      </section>
+
+      <section className="mt-12">
         <SectionHeader
           kicker="Coverage"
           title="Market coverage"

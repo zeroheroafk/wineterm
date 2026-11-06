@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { formatDate } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default async function WeeklyBriefingPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={navSection("/insights")}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Weekly Briefing" },

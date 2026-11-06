@@ -9,7 +9,7 @@ import { PageHeader, SectionHeader } from "@/components/ui/SectionHeader";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "WineTerm is an independent market desk for the professional wine trade: prices, production, stocks, trade and crop intelligence.",
+    "WineTerm is independent wine news and market intelligence: brands, consumption, culture and lifestyle, with prices, production, stocks, trade and crop data.",
 };
 
 export default function AboutPage() {
@@ -18,8 +18,8 @@ export default function AboutPage() {
       <Breadcrumbs items={[{ label: "About" }]} />
       <PageHeader
         kicker="WineTerm"
-        title="An independent market desk for the wine trade"
-        description="Prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade."
+        title="Independent wine news and market intelligence"
+        description="The brands, consumption, culture and lifestyle of wine, with prices, production, stocks, trade and crop intelligence for wineries, growers and the global wine trade."
       />
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
@@ -34,7 +34,13 @@ export default function AboutPage() {
               data supports it.
             </p>
             <p>
-              Coverage starts with the professional European market, with
+              Around the data, WineTerm reports the news of wine: brands and
+              launches, how and where people drink, grape varieties, festivals
+              and the culture around them, wine at the table and wine tourism,
+              and the markets, trade and regulation behind them all.
+            </p>
+            <p>
+              Market coverage starts with the professional European market, with
               particularly deep coverage of Spain and Portugal and
               comparative series for France and Italy. The platform is built
               for repeated working use by wineries, winegrowers,
@@ -83,7 +89,7 @@ export default function AboutPage() {
           <div className="border border-rule bg-paper px-5 py-4">
             <h2 className="wt-label text-wine">WineTerm is</h2>
             <ul className="mt-2 space-y-1.5 text-sm text-ink">
-              <li>Market intelligence for the wine industry</li>
+              <li>Wine news and market intelligence</li>
               <li>Built for professional, repeated use</li>
               <li>Source-first and unit-exact</li>
             </ul>
@@ -91,8 +97,8 @@ export default function AboutPage() {
               WineTerm is not
             </h2>
             <ul className="mt-2 space-y-1.5 text-sm text-ink-soft">
-              <li>A consumer wine magazine or shop</li>
-              <li>A tasting, rating or lifestyle platform</li>
+              <li>A wine shop or club</li>
+              <li>A tasting or rating platform</li>
               <li>A fine-wine investment or collector tool</li>
               <li>A marketplace or broker</li>
             </ul>

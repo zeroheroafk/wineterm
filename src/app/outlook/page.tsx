@@ -19,7 +19,7 @@ import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { UpdatedAt } from "@/components/ui/SourceLine";
 import { formatDate } from "@/lib/format";
 import { getIllustrativeHarvestService } from "@/services/harvest/service";
-import { getIllustrativeHomeService } from "@/services/home";
+import { getIllustrativeKeyPricesService } from "@/services/markets/key-prices";
 import { getSource } from "@/services/markets/sources";
 import { getOutlookService } from "@/services/outlook/service";
 import { getSupplyService } from "@/services/supply/service";
@@ -57,7 +57,7 @@ export default async function OutlookPage() {
   // real data.
   const harvest = getIllustrativeHarvestService();
   const trade = getIllustrativeTradeService();
-  const home = getIllustrativeHomeService();
+  const keyPriceService = getIllustrativeKeyPricesService();
 
   const edition = await outlook.getCurrentEdition();
   const [balances, forecasts, tradeSummaries, tradePeriod, keyPrices, updatedAt] =
@@ -66,8 +66,8 @@ export default async function OutlookPage() {
       harvest.getCountryForecasts(),
       trade.getCategorySummaries(),
       trade.getPeriod(),
-      home.getKeyPrices(),
-      home.getLastUpdated(),
+      keyPriceService.getKeyPrices(),
+      keyPriceService.getLastUpdated(),
     ]);
 
   return (

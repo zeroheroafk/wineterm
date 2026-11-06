@@ -1,7 +1,7 @@
 /**
  * Trade service: category summaries, ranked partners, relationships and
  * monthly evolution. Categories are never combined, except that the
- * homepage overview adds up the wine categories, whose volumes are all
+ * overview adds up the wine categories, whose volumes are all
  * litres of wine; grape must stays apart.
  *
  * With Supabase configured, figures are Eurostat Comext statistics read
@@ -49,7 +49,7 @@ export interface TradeService {
   getCategoryDetail(category: TradeCategory): Promise<TradeCategoryDetail | null>;
   getAllCategoryDetails(): Promise<TradeCategoryDetail[]>;
   getMonthlyExportVolumes(category: TradeCategory): Promise<TradeMonthlyPoint[]>;
-  /** Homepage view: wine exporters, leading destinations and product split. */
+  /** Summary view: wine exporters, leading destinations and product split. */
   getOverview(): Promise<TradeOverview>;
 }
 
@@ -109,7 +109,7 @@ const EUR_PER_MEUR = 1_000_000;
 const MONTHS_CHARTED = 24;
 
 /**
- * The categories that are wine, and are added up on the homepage: their
+ * The categories that are wine, and are added up in the overview: their
  * volumes are all litres of wine. Grape must is never added to them.
  */
 export const WINE_CATEGORIES: TradeCategory[] = [
@@ -140,7 +140,7 @@ function wineLabel(categories: TradeCategory[]): string {
 }
 
 /**
- * The homepage overview from category details, for trade data without
+ * The overview from category details, for trade data without
  * the database aggregates:
  *
  * - exporters: each country's exports summed across the wine categories;

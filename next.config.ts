@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
       { source: "/trade/bulk", destination: "/trade", permanent: true },
       { source: "/trade/bottled", destination: "/trade", permanent: true },
       { source: "/trade/sparkling", destination: "/trade", permanent: true },
+      // News moved out of Insights to its own section.
+      { source: "/insights/news", destination: "/news", permanent: true },
     ];
   },
 };

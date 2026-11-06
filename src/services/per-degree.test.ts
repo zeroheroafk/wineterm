@@ -7,7 +7,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { getIllustrativeHomeService } from "@/services/home";
+import { getIllustrativeKeyPricesService } from "@/services/markets/key-prices";
 import { getMarketsService } from "@/services/markets/service";
 import {
   describeDegreeBasis,
@@ -71,7 +71,7 @@ describe("per-degree conversion", () => {
 
 describe("sample key prices", () => {
   it("keep the recorded figures beside their EUR/hl conversion", async () => {
-    const samples = await getIllustrativeHomeService().getKeyPrices();
+    const samples = await getIllustrativeKeyPricesService().getKeyPrices();
     assert.ok(samples.length > 0);
     for (const quote of samples) {
       const recorded = quote.perDegree;

@@ -1,9 +1,11 @@
 # WineTerm
 
-Market intelligence for the wine industry. Prices, production, stocks,
-trade and crop intelligence for wineries, growers and the global wine
-trade, with a focus on the professional European market (Spain and
-Portugal first, comparative data for France and Italy).
+Wine news and market intelligence. The homepage leads with the news:
+brands, consumption, culture and lifestyle, with the markets, trade and
+regulation behind them. Beside it, prices, production, stocks, trade and
+crop intelligence for wineries, growers and the global wine trade, with
+a focus on the professional European market (Spain and Portugal first,
+comparative data for France and Italy).
 
 ## Stack
 
@@ -18,18 +20,21 @@ Portugal first, comparative data for France and Italy).
 
 ```
 src/
-  app/               Routes: home, Markets, Crop & Supply, Trade, Insights,
-                     Industry, Directory, institutional pages, /design-system
+  app/               Routes: home, News, Markets, Crop & Supply, Trade,
+                     Insights, Industry, Directory, institutional pages,
+                     /design-system
   components/
     layout/          Global shell: header, navigation, footer, breadcrumbs
     ui/              Section headers, buttons, filters, tabs, labels, states
     market/          Tables, price cells, changes, charts, commentary
-    editorial/       Article previews, newsletter modules
+    editorial/       News lists, article previews, newsletter modules
   lib/               Navigation, formatting, Supabase client and form actions
   services/          Typed service layer: Supabase for trade and imported
                      prices, fixtures elsewhere
   content/           Published editorial content: the Insights articles
   fixtures/          Illustrative sample data only; see fixtures/README.md
+public/
+  news/              News photographs, one per story, named by its id
 ```
 
 The service interfaces in `src/services` are the seam for real data
@@ -45,7 +50,13 @@ price of the country's bulk exports, computed in the database from the
 Eurostat figures. Their samples give way to those prices. The stocks and production pages read Spain's
 month-end wine stocks and wine made since 1 August. Insights articles
 are published content in `src/content/articles`, one file per article,
-each read at `/insights/analysis/<id>`. Everything else
+each read at `/insights/analysis/<id>`. News stories, which lead the
+homepage and fill `/news`, its topic pages at `/news/topic/<topic>` and
+each story at `/news/<id>`, are illustrative fixtures in
+`src/fixtures/news.ts` until reporting starts; their photographs are real,
+public domain (CC0) and credited on each story. The key bulk wine prices,
+one per country followed by the samples still shown, head the Markets
+overview. Everything else
 still uses the fixtures, and nothing
 in `src/fixtures` is real market data: every fixture observation carries
 the Illustrative status, which is how the site tells samples from real
@@ -71,12 +82,11 @@ from the sitemap and marked noindex.
   use `http://localhost:3000`.
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
   the Supabase project. With both set, the forms store briefing signups
-  and contact messages; `/trade` and the homepage trade panel show
-  Eurostat figures, the Markets pages, the homepage key prices and the
-  market strip add MAPA's national wine prices to the illustrative series,
-  the Markets pages add the Spanish and French regional prices, the
-  Markets pages and the homepage show the national bulk prices of
-  Portugal, France and Italy computed from the trade figures,
+  and contact messages; `/trade` shows Eurostat figures, the Markets
+  pages and their key prices add MAPA's national wine prices to the
+  illustrative series, the Markets pages add the Spanish and French
+  regional prices and show the national bulk prices of Portugal, France
+  and Italy computed from the trade figures,
   and `/supply`, `/supply/stocks` and `/supply/production` show Spain's
   INFOVI balance, stocks and wine production.
   Pages regenerate at most hourly and database reads are cached for an

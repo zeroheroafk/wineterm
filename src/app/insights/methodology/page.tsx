@@ -12,7 +12,7 @@ import { TD, TH } from "@/components/markets/cells";
 import { DataStatusLabel } from "@/components/ui/DataStatusLabel";
 import { ScrollRegion } from "@/components/ui/ScrollRegion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import {
   DATA_CLASSIFICATION_LABELS,
   SOURCE_REGISTRY,
@@ -89,7 +89,7 @@ export default function MethodologyPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={navSection("/insights")}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Methodology" },

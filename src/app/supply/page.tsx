@@ -13,7 +13,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate, formatMonthYear } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import { getSource } from "@/services/markets/sources";
 import { getSupplyService } from "@/services/supply/service";
 
@@ -39,7 +39,7 @@ export default async function SupplyPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[1]}
+        section={navSection("/supply")}
         crumbs={[{ label: "Crop & Supply" }]}
         kicker="Crop & Supply"
         title="Supply balance"

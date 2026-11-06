@@ -10,7 +10,7 @@ import { CountryLabel } from "@/components/ui/CountryLabel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SourceLine } from "@/components/ui/SourceLine";
 import { formatDate } from "@/lib/format";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import { getHarvestService } from "@/services/harvest/service";
 import { getSource } from "@/services/markets/sources";
 
@@ -33,7 +33,7 @@ export default async function HarvestPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[1]}
+        section={navSection("/supply")}
         crumbs={[
           { label: "Crop & Supply", href: "/supply" },
           { label: "Harvest" },

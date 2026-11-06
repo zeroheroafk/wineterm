@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
 import { Container } from "@/components/layout/Container";
 import { SectionPageHeader } from "@/components/layout/SectionPageHeader";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 import { getOutlookService } from "@/services/outlook/service";
 
@@ -24,7 +24,7 @@ export default async function AnalysisPage() {
   return (
     <Container className="pb-16">
       <SectionPageHeader
-        section={primaryNavigation[4]}
+        section={navSection("/insights")}
         crumbs={[
           { label: "Insights", href: "/insights" },
           { label: "Analysis" },

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ArticlePreview } from "@/components/editorial/ArticlePreview";
+import { NewsList, TopicTags } from "@/components/editorial/NewsList";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/layout/Container";
@@ -25,9 +26,10 @@ import {
   LoadingState,
   TableSkeleton,
 } from "@/components/ui/states";
-import { primaryNavigation } from "@/lib/navigation";
+import { navSection } from "@/lib/navigation";
 import { getEditorialService } from "@/services/editorial";
 import { getMarketDataService } from "@/services/market-data";
+import { getNewsService } from "@/services/news";
 import type { DataStatus } from "@/services/types";
 
 export const metadata: Metadata = {
@@ -92,15 +94,16 @@ export default async function DesignSystemPage() {
   const marketData = getMarketDataService();
   const editorial = getEditorialService();
 
-  const [quotes, series, commentary, updatedAt, [article]] = await Promise.all([
+  const [quotes, series, commentary, updatedAt, [article], stories] = await Promise.all([
     marketData.getBulkWineQuotes(),
     marketData.getPriceSeries("ES-CLM-RED-GEN"),
     marketData.getMarketCommentary("bulk"),
     marketData.getLastUpdated(),
     editorial.getLatestArticles(1),
+    getNewsService().getLatestStories(2),
   ]);
 
-  const markets = primaryNavigation[0];
+  const markets = navSection("/markets");
 
   return (
     <Container className="pb-16">
@@ -154,7 +157,7 @@ export default async function DesignSystemPage() {
             </p>
             <p className="wt-kicker mt-3 text-wine">Section kicker</p>
             <p className="mt-1 max-w-xl text-sm leading-relaxed text-ink-soft">
-              Editorial layouts such as the homepage use the wt-kicker style:
+              Editorial layouts such as the homepage rail use the wt-kicker style:
               Archivo, uppercase with modest tracking, for short section
               labels only. Figures there use Archivo&apos;s tabular numerals;
               sources, dates and notes stay in sentence case.
@@ -398,6 +401,20 @@ export default async function DesignSystemPage() {
               <ArticlePreview article={article} />
             </div>
           </div>
+        ) : null}
+      </Block>
+
+      <Block title="News list and tags">
+        <Spec>
+          News rows: a 3:2 photograph beside the serif headline in burgundy,
+          the standfirst, and the tags with the date beneath. Tags are the
+          only rounded shape on the site and link to their topic.
+        </Spec>
+        <div className="border border-rule bg-paper p-6">
+          <NewsList stories={stories} />
+        </div>
+        {stories[0] ? (
+          <TopicTags topics={stories[0].topics} className="mt-4" />
         ) : null}
       </Block>
 

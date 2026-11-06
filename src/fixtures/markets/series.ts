@@ -3,7 +3,7 @@
  *
  * Development stand-ins for the series catalogue. Codes, regions and
  * product descriptions are realistic in shape; values and sources are
- * illustrative. The homepage key prices are read from these series; the
+ * illustrative. The key bulk wine prices are read from these series; the
  * ones it shows pin their previous and year-ago observations, so their
  * weekly and annual changes carry the market story the sample text
  * tells.
