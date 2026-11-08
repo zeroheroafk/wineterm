@@ -16,11 +16,13 @@ import { weeklyBriefing20261008 } from "@/content/articles/weekly-briefing-2026-
 import { weeklyBriefing20261022 } from "@/content/articles/weekly-briefing-2026-10-22";
 import { weeklyBriefing20261030 } from "@/content/articles/wine-weekly-briefing-30-october-2026";
 import { weeklyBriefing20261106 } from "@/content/articles/wine-weekly-briefing-6-november-2026-portugal-stocks";
+import { wineBottleWeightAlentejoPackagingBusiness } from "@/content/articles/wine-bottle-weight-alentejo-packaging-business";
 import { whyASmallerHarvestMayNotLiftWinePrices } from "@/content/articles/why-a-smaller-harvest-may-not-lift-wine-prices";
 import { wineTradeYouNeverSeeOnALabel } from "@/content/articles/wine-trade-you-never-see-on-a-label";
 import type { ArticleDetail } from "@/services/types";
 
 export const publishedArticles: ArticleDetail[] = [
+  wineBottleWeightAlentejoPackagingBusiness,
   weeklyBriefing20261106,
   franceWineExportValueVolumeUsUkSpain2026,
   november2026WineMarketOutlook,
